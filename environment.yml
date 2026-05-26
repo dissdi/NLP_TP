@@ -1,0 +1,17 @@
+name: nlp-tp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  # Sprint 0 PoC 의존성 — conda-forge에서 wheel이 더 안정적인 것들
+  - requests>=2.31
+  - beautifulsoup4>=4.12
+  - lxml>=5.0
+  - pandas>=2.0
+  - tqdm>=4.66
+  - pip:
+      # conda-forge에 없거나 버전이 더 좋은 것
+      - pdfplumber>=0.10
+      - jsonlines>=4.0

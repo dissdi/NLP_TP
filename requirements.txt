@@ -1,0 +1,11 @@
+# Sprint 0 PoC 의존성
+# 로컬 Python 우선, Colab Free 호환 (Sprint 1 이후 이식)
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+pdfplumber>=0.10
+pandas>=2.0
+jsonlines>=4.0
+tqdm>=4.66
+# 동적 페이지 대비 (T4·C 검증 결과에 따라 사용 여부 결정)
+# playwright>=1.40
