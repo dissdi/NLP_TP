@@ -8,6 +8,8 @@ REM   scripts\run_sprint2.bat day1         :: Day 1 (RULE_HWP + PDF)
 REM   scripts\run_sprint2.bat day2         :: Day 2
 REM   scripts\run_sprint2.bat day3         :: Day 3 + cross_tag/faq_seed/dorm_js
 REM   scripts\run_sprint2.bat attachments  :: process attachments day1..day3
+REM   scripts\run_sprint2.bat dept-discover :: dept_grad discover only (inspect first)
+REM   scripts\run_sprint2.bat dept-crawl    :: dept_grad crawl only (after discover)
 REM   scripts\run_sprint2.bat dept-grad    :: dept_grad discover + crawl
 REM   scripts\run_sprint2.bat alimi        :: alimi spike only
 REM   scripts\run_sprint2.bat verify       :: verify only
@@ -32,6 +34,19 @@ if /I "!DAY!"=="inspect" (
     echo.
     echo === inspect: dept grad discover ===
     python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    exit /b %ERRORLEVEL%
+)
+
+if /I "!DAY!"=="dept-discover" (
+    python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    echo.
+    echo Inspect: data\sprint2\day1\dept_grad_candidates.jsonl
+    echo Next:    scripts\run_sprint2.bat dept-crawl
+    exit /b %ERRORLEVEL%
+)
+
+if /I "!DAY!"=="dept-crawl" (
+    python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
     exit /b %ERRORLEVEL%
 )
 

@@ -1,0 +1,49 @@
+
+=== sprint2 day2 시작 2026-05-26 20:18:32 ===
+
+[step] A:동아리 안내
+  + 1 청크 / 35자
+  ✓ A:동아리 안내  (1.5s)
+
+[step] A:총학생회
+  + 1 청크 / 287자
+  ✓ A:총학생회  (1.4s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702  pages=3
+  + 24 게시물 / 13716자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702  pages=3  (46.9s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705  pages=5
+  + 40 게시물 / 8080자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705  pages=5  (79.0s)
+
+[step] A:진로상담·박람회 안내
+  + 1 청크 / 395자
+  ✓ A:진로상담·박람회 안내  (1.3s)
+
+[step] A:도서관 좌석 예약 안내
+  + 1 청크 / 51자
+  ✓ A:도서관 좌석 예약 안내  (1.2s)
+
+[step] A:도서관 대출 규정
+  + 1 청크 / 51자
+  ✓ A:도서관 대출 규정  (1.2s)
+
+[step] B:https://library.cnu.ac.kr/library/_prog/_board/?code=sub05_05  pages=2
+  + 0 게시물 / 0자
+  ✓ B:https://library.cnu.ac.kr/library/_prog/_board/?code=sub05_05  pages=2  (1.2s)
+
+[step] A:분관 안내 (중앙·예술·의학 등)
+  + 1 청크 / 51자
+  ✓ A:분관 안내 (중앙·예술·의학 등)  (1.2s)
+
+[step] A:보조 캠퍼스 지도·교통편
+  + 1 청크 / 35자
+  ✓ A:보조 캠퍼스 지도·교통편  (1.5s)
+
+[step] A:체육 예약 안내
+  + 1 청크 / 10923자
+  ✓ A:체육 예약 안내  (1.7s)
+
+=== DUMP 72 chunks / 33624자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day2\chunks.jsonl
+=== day2 종료 138.4s 청크=72 에러=0 ===

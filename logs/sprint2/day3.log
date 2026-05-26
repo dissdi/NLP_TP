@@ -1,0 +1,36 @@
+
+=== sprint2 day3 시작 2026-05-26 20:20:51 ===
+
+[deferred] 8.3_record_cross (CROSS_TAG) — 별도 실행 필요:
+  $ python -m scripts.sprint2_cross_tag
+
+[step] A:자주 찾는 행정부서 (navigation 데이터)
+  + 1 청크 / 35자
+  ✓ A:자주 찾는 행정부서 (navigation 데이터)  (1.5s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703  pages=3
+  + 0 게시물 / 0자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703  pages=3  (2.3s)
+
+[step] A:식권 구매 안내
+  + 1 청크 / 422자
+  ✓ A:식권 구매 안내  (1.5s)
+
+[deferred] 2.4_food_compare (CROSS_TAG) — 별도 실행 필요:
+  $ python -m scripts.sprint2_cross_tag
+
+[step] A:근로장학 안내 (한국장학재단 연동)
+  + 0 청크 / 0자
+  ✓ A:근로장학 안내 (한국장학재단 연동)  (1.2s)
+
+[deferred] 6.6_scholar_compare (CROSS_TAG) — 별도 실행 필요:
+  $ python -m scripts.sprint2_cross_tag
+
+[deferred] 4.1_dorm_main_js (JS_FALLBACK) — 별도 실행 필요:
+  $ python -m scripts.sprint2_dorm_js
+
+[deferred] 5.4_faq_seed (FAQ_SEED) — 별도 실행 필요:
+  $ python -m scripts.sprint2_faq_seed
+
+=== DUMP 2 chunks / 457자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day3\chunks.jsonl
+=== day3 종료 6.7s 청크=2 에러=0 ===

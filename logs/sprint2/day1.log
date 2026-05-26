@@ -1,0 +1,32 @@
+
+=== sprint2 day1 시작 2026-05-26 20:18:28 ===
+
+[step] RULE_HWP:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=0703  max=30
+  + 0 청크 / 0자  (학칙)
+  ✓ RULE_HWP:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=0703  max=30  (1.5s)
+
+[deferred] 1.7_alimi_freshman (ALIMI_PDF) — 별도 실행 필요:
+  $ python -m scripts.sprint2_dstat spike-alimi   (그 다음 fetch-pdf URL 직접)
+
+[step] PDF:https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401
+  ✗ PDF:https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401  err=ValueError: Response is not a PDF (first 64 bytes: '<!DOCTYPE html>\r\n<html lang="ko">\r\n<head>\r\n<meta charset="utf-8"'). URL may be a board page link rather than a direct download.php endpoint. URL: https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401
+Traceback (most recent call last):
+  File "C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\scripts\_common.py", line 88, in step
+    yield
+  File "C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\scripts\_common.py", line 153, in run_pdf
+    new, csvs = crawl_pdf(
+                ^^^^^^^^^^
+  File "C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\crawler\pdf_pipeline.py", line 191, in crawl_pdf
+    local_path = download_pdf(source, client=client) if _is_url(source) else source
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\crawler\pdf_pipeline.py", line 85, in download_pdf
+    raise ValueError(
+ValueError: Response is not a PDF (first 64 bytes: '<!DOCTYPE html>\r\n<html lang="ko">\r\n<head>\r\n<meta charset="utf-8"'). URL may be a board page link rather than a direct download.php endpoint. URL: https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401
+
+
+[deferred] 1.2_dept_grad_spike (DEPT_GRAD) — 별도 실행 필요:
+  $ python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json && python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
+
+=== DUMP 0 chunks / 0자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day1\chunks.jsonl
+=== 에러 1건 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day1\errors.json
+=== day1 종료 3.2s 청크=0 에러=1 ===

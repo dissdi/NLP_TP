@@ -1,0 +1,38 @@
+[
+  {
+    "label": "신입생수",
+    "url": "https://www.academyinfo.go.kr/popup/disclosure5.do?univ_no=000007",
+    "status": 404,
+    "pdf_links": [],
+    "csv_links": [],
+    "excel_links": [],
+    "onclick_dl_count": 0
+  },
+  {
+    "label": "취업률",
+    "url": "https://www.academyinfo.go.kr/popup/disclosure5.do?univ_no=000007&item_no=43",
+    "status": 404,
+    "pdf_links": [],
+    "csv_links": [],
+    "excel_links": [],
+    "onclick_dl_count": 0
+  },
+  {
+    "label": "재학생수",
+    "url": "https://www.academyinfo.go.kr/popup/disclosure5.do?univ_no=000007&item_no=42",
+    "status": 404,
+    "pdf_links": [],
+    "csv_links": [],
+    "excel_links": [],
+    "onclick_dl_count": 0
+  },
+  {
+    "label": "학과별정원",
+    "url": "https://www.academyinfo.go.kr/popup/disclosure5.do?univ_no=000007&item_no=10",
+    "status": 404,
+    "pdf_links": [],
+    "csv_links": [],
+    "excel_links": [],
+    "onclick_dl_count": 0
+  }
+]

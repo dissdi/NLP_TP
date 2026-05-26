@@ -53,16 +53,17 @@ from crawler.hwp_pipeline import crawl_hwp, download_hwp, _is_valid_hwp  # noqa:
 # onclick → ntt_no 파싱
 # --------------------------------------------------------------------------- #
 
-# G1~G4 통합: 따옴표 안 첫 번째 숫자 인자 (대다수 한국 정부/대학 CMS 패턴)
-_ONCLICK_FIRST_ARG = re.compile(r"""['"](\d{3,})['"]""")
-# G4 폴백: 자유 형식 ntt_no=123
-_NTT_NO_FREE = re.compile(r"""ntt_?no\s*[=:]\s*['"]?(\d{3,})['"]?""", re.I)
+# G1~G4 통합: 따옴표 또는 괄호 안 첫 번째 숫자 인자
+# 'X' / "X" / (X) / (X' / 'X) 모두 매칭. \d{3,}이라 false positive 위험 낮음.
+_ONCLICK_FIRST_ARG = re.compile(r"""(?:['"]|\()(\d{3,})(?:['"]|\))""")
+# G4 폴백: 자유 형식 ntt_no=123 또는 mng_no=281 (충남대 학칙은 mng_no)
+_NTT_NO_FREE = re.compile(r"""(?:ntt_?no|mng_?no|seq_?no)\s*[=:]\s*['"]?(\d{3,})['"]?""", re.I)
 # 페이지네이션·검색 폼 안의 GotoPage 등은 제외하기 위한 negative 단어
 _BAD_NUM_CONTEXT = re.compile(r"(GotoPage|page_no|searchCnt)", re.I)
 
 
 def parse_ntt_no_from_onclick(onclick: str) -> Optional[str]:
-    """onclick 문자열에서 ntt_no 후보 1개 추출. 못 찾으면 None."""
+    """onclick 문자열에서 ntt_no/mng_no 후보 1개 추출. 못 찾으면 None."""
     if not onclick:
         return None
     if _BAD_NUM_CONTEXT.search(onclick):
@@ -77,11 +78,19 @@ def parse_ntt_no_from_onclick(onclick: str) -> Optional[str]:
 
 
 def parse_ntt_no_from_tag(tag: Tag) -> Optional[str]:
-    """G5: data-ntt-no / data-no / data-seq 속성, 또는 onclick."""
-    for attr in ("data-ntt-no", "data-ntt_no", "data-no", "data-seq", "data-id"):
+    """data 속성, href query string, onclick 순으로 검사."""
+    # data attr
+    for attr in ("data-ntt-no", "data-ntt_no", "data-mng-no", "data-mng_no", "data-no", "data-seq", "data-id"):
         v = tag.get(attr)
         if v and re.fullmatch(r"\d{3,}", v):
             return v
+    # href query string (충남대 학칙: ?mng_no=281 직접 link)
+    href = tag.get("href") or ""
+    if href and not href.startswith("javascript"):
+        m = _NTT_NO_FREE.search(href)
+        if m:
+            return m.group(1)
+    # onclick
     onclick = tag.get("onclick") or ""
     return parse_ntt_no_from_onclick(onclick)
 
@@ -182,11 +191,15 @@ def print_rule_inspect(rep: RuleListReport) -> None:
 # --------------------------------------------------------------------------- #
 
 def build_view_url(list_url: str, ntt_no: str, *, mode: str = "view") -> str:
-    """리스트 URL 기준으로 상세 페이지 URL 생성.
+    """리스트 URL 기준으로 상세(view popup) 페이지 URL 생성.
 
-    plus CMS 통상 패턴: 동일 endpoint에 ``&mode=view&ntt_no=...`` 추가.
+    충남대 학칙 (확정): ``{site}/_prog/rule/view_pop.php?mng_no=<id>``
+    list_url이 ``_prog/rule/?...`` 형태면 무조건 ``view_pop.php?mng_no=`` 사용.
+    그 외엔 plus CMS 통상 패턴 (?mode=view&ntt_no=...) fallback.
     """
     pu = urlparse(list_url)
+    if "/_prog/rule/" in pu.path:
+        return f"{pu.scheme}://{pu.netloc}/_prog/rule/view_pop.php?mng_no={ntt_no}"
     qs = parse_qs(pu.query, keep_blank_values=True)
     qs["mode"] = [mode]
     qs["ntt_no"] = [ntt_no]
@@ -419,7 +432,7 @@ def main() -> int:
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
         n = write_jsonl(chunks, args.out)
         total = sum(c.char_count for c in chunks)
-        print(f"OK: {n} chunks → {args.out}  total_chars={total}")
+        print(f"OK: {n} chunks -> {args.out}  total_chars={total}")
         return 0
 
     return 1

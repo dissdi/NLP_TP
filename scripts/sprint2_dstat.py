@@ -145,13 +145,75 @@ def fetch_pdf(url: str, out_dir: str, *, title: Optional[str] = None) -> int:
     return 0
 
 
+def scan_pubinfo_list(list_url: str, *, client: Optional[HttpClient] = None) -> list[dict]:
+    """대학알리미 pubinfo1690/list.do 페이지에서 항목 link 자동 발견.
+
+    사용자가 발견한 URL: https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029
+    이 페이지는 학교별 공시정보 목록이라 각 항목 link · onclick 패턴 다양.
+    스캔 결과를 출력해서 사용자가 신입생수/취업률에 해당하는 항목 URL 선택.
+    """
+    client = client or HttpClient(sleep_between=1.0)
+    print(f"=== scan-pubinfo-list ===\n  url: {list_url}")
+    try:
+        resp = client.get(list_url)
+    except Exception as e:
+        print(f"  ✗ fetch fail: {type(e).__name__}: {e}")
+        return []
+
+    soup = BeautifulSoup(resp.text, "lxml")
+    print(f"  HTTP {resp.status_code}  RAW={len(resp.text)}")
+    title = soup.title.get_text(strip=True) if soup.title else None
+    print(f"  TITLE: {title}")
+
+    # 모든 a 태그 + onclick 추출
+    items: list[dict] = []
+    for a in soup.find_all("a"):
+        if not isinstance(a, Tag):
+            continue
+        text = a.get_text(" ", strip=True)
+        if not text:
+            continue
+        href = a.get("href") or ""
+        oc = a.get("onclick") or ""
+        # 키워드 필터: 신입생/취업/충원/졸업/재학 등 D-통계 관련
+        keywords = re.search(
+            r"신입생|충원|취업|진학|졸업생|재학생|학과별\s*정원|정원|등록금",
+            text, re.I,
+        )
+        if not keywords and not re.search(r"신입생|취업|진학|충원|정원", oc, re.I):
+            continue
+        items.append({
+            "text": text[:80],
+            "href": href if href else None,
+            "onclick": oc[:120] if oc else None,
+        })
+
+    print(f"\n--- 키워드 매칭 항목 ({len(items)}) ---")
+    for it in items[:30]:
+        print(f"  · {it['text']}")
+        if it["href"]:
+            print(f"      href:    {it['href']}")
+        if it["onclick"]:
+            print(f"      onclick: {it['onclick']!r}")
+
+    print("\n--- 다음 ---")
+    print("  1) 위 항목 중 신입생수·취업률에 해당하는 행의 href 또는 onclick에서 URL 추출")
+    print("  2) fetch-pdf <URL> --title \"신입생수\" 등으로 실행")
+    return items
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="D-통계 PDF raw 추출")
     sub = p.add_subparsers(dest="mode", required=True)
 
-    p_s = sub.add_parser("spike-alimi", help="대학알리미 PDF link 후보 진단")
+    p_s = sub.add_parser("spike-alimi", help="대학알리미 popup endpoint 진단 (예전 가설)")
     p_s.add_argument("--univ-no", default="000007", help="충남대=000007")
     p_s.add_argument("--out", default="data/sprint2/day1/alimi_spike.json")
+
+    p_l = sub.add_parser("scan-list", help="알리미 pubinfo list.do에서 항목 자동 발견 (권장)")
+    p_l.add_argument("--url", default="https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029",
+                     help="사용자 확인 URL (충남대 schlId=0000029)")
+    p_l.add_argument("--out", default="data/sprint2/day1/alimi_list_scan.json")
 
     p_f = sub.add_parser("fetch-pdf", help="PDF 단건 다운로드 + 표 CSV 추출")
     p_f.add_argument("url")
@@ -165,6 +227,13 @@ def main() -> int:
         with open(args.out, "w", encoding="utf-8") as f:
             json.dump(res, f, ensure_ascii=False, indent=2)
         print(f"\n→ {args.out}")
+        return 0
+    if args.mode == "scan-list":
+        res = scan_pubinfo_list(args.url)
+        os.makedirs(os.path.dirname(args.out), exist_ok=True)
+        with open(args.out, "w", encoding="utf-8") as f:
+            json.dump(res, f, ensure_ascii=False, indent=2)
+        print(f"\n-> {args.out}")
         return 0
     if args.mode == "fetch-pdf":
         return fetch_pdf(args.url, args.out_dir, title=args.title)

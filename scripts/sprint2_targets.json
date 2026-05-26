@@ -3,284 +3,104 @@
     "sprint": 2,
     "p1_count": 24,
     "carryover_count": 3,
-    "expected_chars_p1_only": 118000,
-    "expected_chars_with_rule": 268000,
-    "notes": "P1 24항목 + Sprint 1 이월 3건(1.2 학과 졸업요건·1.3 학칙·4.1 dorm JS). crawling-targets.md §9 Sprint 2 원안 + Sprint 1 이월 통합. D-통계(1.7/7.5/4.7)는 raw 추출까지만(Task 3에서 RAG-ready 변환).",
-    "schema_version": "1.0",
-    "day_split_rationale": "Day 1=이월 우선(학칙·학과 졸업요건·D-통계). Day 2=어댑터 재사용(학생활동·진로·도서관·캠퍼스 보강). Day 3=cross-domain 보강(행정·식당·장학)+dorm JS+FAQ 시드. Day 4=Exit 검증."
+    "notes": "P1 24항목 + Sprint 1 이월 3건. 학칙 URL/기숙사 보운관 사용자 확인 반영 (2026-05).",
+    "schema_version": "1.1"
   },
 
   "_day1_carryover_and_dstat": {
-    "label": "Day 1 — 학칙 HWP + 학과 졸업요건 + D-통계 (이월 + P1)",
+    "label": "Day 1 — 학칙 HWP + 학과 졸업요건 + D-통계 + 기숙사 (이월 + P1)",
     "tasks": [
       {
         "id": "1.3_rule_list",
         "adapter": "RULE_HWP",
-        "url": "https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=0703",
+        "url": "https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1",
         "domains": [1],
         "categories": ["1.3"],
-        "title": "학칙·규정 (HWP 다수)",
+        "title": "학칙·규정 (규정명 list, view_pop.php?mng_no=)",
         "freshness": "S",
-        "notes": "Sprint 1 이월. javascript:void(0) onclick에서 ntt_no 추출 → download.php?code=...&ntt_no=...&atch_no=... 다운로드. 어댑터 RULE_HWP가 list+detail 모두 처리."
+        "notes": "사용자 확인 (2026-05): menu_dvs_cd=06050101. 행 link href에 mng_no=숫자 → view_pop.php?mng_no=N popup → HWP 첨부."
       },
-
       {
         "id": "1.7_alimi_freshman",
         "adapter": "ALIMI_PDF",
-        "url": "https://www.academyinfo.go.kr/popup/disclosure5.do?univ_no=000007",
+        "url": "https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029",
         "domains": [1, 7],
         "categories": ["1.7", "7.5"],
-        "title": "대학알리미 충남대 — 신입생/취업률 통계 PDF",
+        "title": "대학알리미 충남대 공시정보 list (신입생수/취업률 항목 추출)",
         "freshness": "Q",
-        "notes": "신입생수·취업률 통계는 같은 대학알리미 소스에서 분리. 실제 페이지 URL은 사용자 spike 후 확정 — 일단 popup endpoint placeholder. raw CSV/JSON까지만."
+        "notes": "사용자 확인 (2026-05): schlId=0000029 list.do 에 공시정보 다수. 사용자가 신입생수/취업률 항목 직접 URL 확인 → fetch-pdf 실행 권장."
       },
-
       {
-        "id": "4.7_dorm_competition",
-        "adapter": "PDF",
-        "url": "https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401",
+        "id": "4.7_dorm_daedeok",
+        "adapter": "B",
+        "url": "https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501&site_dvs_cd=kr&menu_dvs_cd=030601",
         "domains": [4],
-        "categories": ["4.7"],
-        "title": "기숙사 알림마당 — 경쟁률/정원 통계 PDF (선발결과 게시물)",
+        "categories": ["4.1", "4.2", "4.7"],
+        "title": "대덕관 (일반 학과 학생 기숙사) — 공지·선발결과·통계",
         "freshness": "Q",
-        "notes": "어댑터 B로 게시판 조회 → 첨부 PDF 다운로드 → 표 추출. 실제 게시물 URL은 sprint2_pre_inspect로 식별."
+        "pages": 3,
+        "max_total": 60,
+        "notes": "사용자 확인 (2026-05): 일반 학과 학생용 기숙사. code=sub05_0501. cross-tag 4.1/4.2/4.7."
       },
-
+      {
+        "id": "4.7_dorm_boun",
+        "adapter": "B",
+        "url": "https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0506&site_dvs_cd=kr&menu_dvs_cd=030602",
+        "domains": [4],
+        "categories": ["4.1", "4.2", "4.7"],
+        "title": "보운관 (의과대학 학생 기숙사) — 공지·선발결과",
+        "freshness": "Q",
+        "pages": 3,
+        "max_total": 60,
+        "notes": "사용자 확인 (2026-05): 의대생 전용. 의예/의학/수의/약학/간호 학생 RAG 질문 커버. code=sub05_0506."
+      },
       {
         "id": "1.2_dept_grad_spike",
         "adapter": "DEPT_GRAD",
         "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050202.html",
         "domains": [1],
         "categories": ["1.2"],
-        "title": "공통 졸업요건 (재확인)",
+        "title": "공통 졸업요건 (재확인, dept-grad 별도 실행)",
         "freshness": "S",
-        "notes": "Sprint 1에서 학과 5개 intro01.do = 인사말이라 실패. 학과 졸업요건은 공통 페이지 + 학과 홈 메뉴 'curriculum'/'graduation' 경로 spike 필요. sprint2_dept_grad_spike.py 결과 보고 학과 15개 추가."
+        "notes": "별도 스크립트(sprint2_dept_grad). dept-discover → dept-crawl 흐름. 91/93 학과 확보 완료."
       }
     ]
   },
 
   "_day2_activity_career_lib_campus": {
-    "label": "Day 2 — 학생활동·진로·도서관·캠퍼스 보강 (P1 12개)",
+    "label": "Day 2 — 학생활동·진로·도서관·캠퍼스 보강 (P1 11개)",
     "tasks": [
-      {
-        "id": "5.1_clubs",
-        "adapter": "A",
-        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_0503.html",
-        "domains": [5],
-        "categories": ["5.1"],
-        "title": "동아리 안내",
-        "freshness": "Q",
-        "notes": "sparse 영역. Tier 1: 공식 안내 페이지. Tier 2 fallback은 5.4 백본 게시물에 분산."
-      },
-      {
-        "id": "5.2_student_council",
-        "adapter": "A",
-        "url": "https://cnustudent.cnu.ac.kr/",
-        "domains": [5],
-        "categories": ["5.2"],
-        "title": "총학생회",
-        "freshness": "Q",
-        "notes": "Sprint 0 신규 채택 사이트. 어댑터 A로 정적 페이지 수집."
-      },
-      {
-        "id": "5.3_events",
-        "adapter": "B",
-        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702",
-        "domains": [5],
-        "categories": ["5.3"],
-        "title": "학내 행사·축제 (백마광장 게시판)",
-        "freshness": "Q",
-        "pages": 3,
-        "max_total": 60,
-        "notes": "Sprint 1 5.4 백본의 일부지만 5.3 카테고리로 재태깅. 키워드 필터링은 Phase C에서."
-      },
-      {
-        "id": "7.2_career_board",
-        "adapter": "B",
-        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705",
-        "domains": [7],
-        "categories": ["7.2"],
-        "title": "채용공고 (취업정보 게시판)",
-        "freshness": "M",
-        "pages": 5,
-        "max_total": 100,
-        "notes": "최근 100건. 시점 데이터(F) 영역과 가깝지만 채용공고 자체는 사실/절차 답변 가능."
-      },
-      {
-        "id": "7.4_career_counsel",
-        "adapter": "A",
-        "url": "https://job.cnu.ac.kr/job/intro/intro01.do",
-        "domains": [7],
-        "categories": ["7.4"],
-        "title": "진로상담·박람회 안내",
-        "freshness": "Q",
-        "notes": "취업지원본부 jwxe 사이트. 어댑터 A의 jwxe_main_content 셀렉터로 커버."
-      },
-      {
-        "id": "3.3_seat_reservation",
-        "adapter": "A",
-        "url": "https://library.cnu.ac.kr/library/intro/use02.do",
-        "domains": [3],
-        "categories": ["3.3"],
-        "title": "도서관 좌석 예약 안내",
-        "freshness": "S",
-        "notes": "안내 페이지만. 실시스템은 외부(§8-3 결정)."
-      },
-      {
-        "id": "3.5_loan_rules",
-        "adapter": "A",
-        "url": "https://library.cnu.ac.kr/library/intro/use01.do",
-        "domains": [3],
-        "categories": ["3.5"],
-        "title": "도서관 대출 규정",
-        "freshness": "S",
-        "notes": "도서관 자체 CMS. 어댑터 A 셀렉터로 본문 추출."
-      },
-      {
-        "id": "3.5_loan_board",
-        "adapter": "B",
-        "url": "https://library.cnu.ac.kr/library/_prog/_board/?code=sub05_05",
-        "domains": [3],
-        "categories": ["3.5"],
-        "title": "대출 규정 변경 공지 (게시판)",
-        "freshness": "M",
-        "pages": 2,
-        "max_total": 20,
-        "notes": "정책 변경 공지. URL은 sprint2_pre_inspect로 확정."
-      },
-      {
-        "id": "3.6_branch_compare",
-        "adapter": "A",
-        "url": "https://library.cnu.ac.kr/library/intro/intro03.do",
-        "domains": [3],
-        "categories": ["3.6"],
-        "title": "분관 안내 (중앙·예술·의학 등)",
-        "freshness": "S",
-        "notes": "비교는 3.1+3.5 의존. 분관 메타정보까지만 수집."
-      },
-      {
-        "id": "9.1_map_transport",
-        "adapter": "A",
-        "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0601.html",
-        "domains": [9],
-        "categories": ["9.1"],
-        "title": "보조 캠퍼스 지도·교통편",
-        "freshness": "S",
-        "notes": "셔틀 본 데이터는 Sprint 1 day3에서 처리. 캠퍼스 지도·일반 교통편."
-      },
-      {
-        "id": "9.3_gym_reserve",
-        "adapter": "A",
-        "url": "https://gymn.cnu.ac.kr/",
-        "domains": [9],
-        "categories": ["9.3"],
-        "title": "체육 예약 안내",
-        "freshness": "S",
-        "notes": "안내만. 실시 예약시스템 미커버. 실제 페이지 깊이는 sprint2_pre_inspect로."
-      }
+      { "id": "5.1_clubs", "adapter": "A", "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_0503.html", "domains": [5], "categories": ["5.1"], "title": "동아리 안내", "freshness": "Q" },
+      { "id": "5.2_student_council", "adapter": "A", "url": "https://cnustudent.cnu.ac.kr/", "domains": [5], "categories": ["5.2"], "title": "총학생회", "freshness": "Q" },
+      { "id": "5.3_events", "adapter": "B", "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702", "domains": [5], "categories": ["5.3"], "title": "학내 행사·축제", "freshness": "Q", "pages": 3, "max_total": 60 },
+      { "id": "7.2_career_board", "adapter": "B", "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705", "domains": [7], "categories": ["7.2"], "title": "채용공고", "freshness": "M", "pages": 5, "max_total": 100 },
+      { "id": "7.4_career_counsel", "adapter": "A", "url": "https://job.cnu.ac.kr/job/intro/intro01.do", "domains": [7], "categories": ["7.4"], "title": "진로상담·박람회", "freshness": "Q" },
+      { "id": "3.3_seat_reservation", "adapter": "A", "url": "https://library.cnu.ac.kr/library/intro/use02.do", "domains": [3], "categories": ["3.3"], "title": "도서관 좌석 예약 안내", "freshness": "S" },
+      { "id": "3.5_loan_rules", "adapter": "A", "url": "https://library.cnu.ac.kr/library/intro/use01.do", "domains": [3], "categories": ["3.5"], "title": "도서관 대출 규정", "freshness": "S" },
+      { "id": "3.5_loan_board", "adapter": "B", "url": "https://library.cnu.ac.kr/library/_prog/_board/?code=sub05_05", "domains": [3], "categories": ["3.5"], "title": "대출 규정 변경 공지", "freshness": "M", "pages": 2, "max_total": 20 },
+      { "id": "3.6_branch_compare", "adapter": "A", "url": "https://library.cnu.ac.kr/library/intro/intro03.do", "domains": [3], "categories": ["3.6"], "title": "분관 안내", "freshness": "S" },
+      { "id": "9.1_map_transport", "adapter": "A", "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0601.html", "domains": [9], "categories": ["9.1"], "title": "보조 캠퍼스 지도·교통편", "freshness": "S" },
+      { "id": "9.3_gym_reserve", "adapter": "A", "url": "https://gymn.cnu.ac.kr/", "domains": [9], "categories": ["9.3"], "title": "체육 예약 안내", "freshness": "S" }
     ]
   },
 
   "_day3_admin_food_scholar_cross": {
-    "label": "Day 3 — 행정·식당·장학 cross + dorm JS + 백마광장 FAQ 시드",
+    "label": "Day 3 — 행정·식당·장학 cross + dorm JS + FAQ 시드",
     "tasks": [
-      {
-        "id": "8.3_record_cross",
-        "adapter": "CROSS_TAG",
-        "url": "category-only:8.3",
-        "domains": [8, 1],
-        "categories": ["8.3", "1.5"],
-        "title": "학적변동 (1.5 cross — 도메인 태그만 추가)",
-        "freshness": "S",
-        "notes": "신규 크롤 없음. Sprint 1 day1 1.5 청크에 domain=8, categories+='8.3' 태그만 추가. sprint2_cross_tag.py가 처리."
-      },
-      {
-        "id": "8.4_admin_directory",
-        "adapter": "A",
-        "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0606.html",
-        "domains": [8],
-        "categories": ["8.4"],
-        "title": "자주 찾는 행정부서 (navigation 데이터)",
-        "freshness": "S",
-        "notes": "부서 전화번호·위치 데이터. 표 추출 형태."
-      },
-      {
-        "id": "8.5_mail_docs",
-        "adapter": "B",
-        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703",
-        "domains": [8],
-        "categories": ["8.5"],
-        "title": "학사상담 게시판 — 우편물·서류 송부 관련",
-        "freshness": "Q",
-        "pages": 3,
-        "max_total": 40,
-        "notes": "키워드 'mail|서류|등기' 필터링은 Phase C에서. 일단 게시판 전체 수집."
-      },
-      {
-        "id": "2.3_meal_ticket",
-        "adapter": "A",
-        "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0605.html",
-        "domains": [2],
-        "categories": ["2.3"],
-        "title": "식권 구매 안내",
-        "freshness": "S",
-        "notes": "복지회 안내 페이지. 어댑터 A로 커버."
-      },
-      {
-        "id": "2.4_food_compare",
-        "adapter": "CROSS_TAG",
-        "url": "category-only:2.4",
-        "domains": [2],
-        "categories": ["2.4"],
-        "title": "식당 비교 (2.1+2.2 의존)",
-        "freshness": "S",
-        "notes": "신규 크롤 없음. Sprint 1 day1 2.1·2.2 청크에 categories+='2.4' 태그 추가. Phase D-1에서 비교형 Q&A 생성."
-      },
-      {
-        "id": "6.5_kosaf_loan",
-        "adapter": "A",
-        "url": "https://plus.cnu.ac.kr/html/kr/sub04/sub04_0405.html",
-        "domains": [6],
-        "categories": ["6.5"],
-        "title": "근로장학 안내 (한국장학재단 연동)",
-        "freshness": "S",
-        "notes": "외부 의존. 학내 안내 페이지만 수집, 한국장학재단 자체는 제외."
-      },
-      {
-        "id": "6.6_scholar_compare",
-        "adapter": "CROSS_TAG",
-        "url": "category-only:6.6",
-        "domains": [6],
-        "categories": ["6.6"],
-        "title": "장학금 간 비교 (6.1~6.5 의존)",
-        "freshness": "S",
-        "notes": "신규 크롤 없음. Sprint 1 day2 6.1~6.4 청크에 categories+='6.6' 태그 추가."
-      },
-      {
-        "id": "4.1_dorm_main_js",
-        "adapter": "JS_FALLBACK",
-        "url": "https://dorm.cnu.ac.kr/html/kr/",
-        "domains": [4],
-        "categories": ["4.1"],
-        "title": "기숙사 메인 (JS 렌더링 추정)",
-        "freshness": "S",
-        "notes": "Sprint 1 이월. body_len=0. Playwright 시도 → 안 되면 4.2 공지로 fallback. 실패 허용(평가 5문제 중 4.2로 부분 커버됨)."
-      },
-      {
-        "id": "5.4_faq_seed",
-        "adapter": "FAQ_SEED",
-        "url": "data/sprint1/day2/chunks.jsonl",
-        "domains": [5, 1, 6],
-        "categories": ["faq_seed"],
-        "title": "백마광장 FAQ 시드 추출 (Phase D-1 입력)",
-        "freshness": "S",
-        "notes": "Sprint 1에서 수집한 백마광장 게시물 중 'Q.', '문의', 'FAQ' 키워드 매칭 → seeds.jsonl. Phase D-1 LLM Q&A 생성 시드."
-      }
+      { "id": "8.3_record_cross", "adapter": "CROSS_TAG", "url": "category-only:8.3", "domains": [8, 1], "categories": ["8.3", "1.5"], "title": "학적변동 (cross_tag)", "freshness": "S", "notes": "별도 스크립트." },
+      { "id": "8.4_admin_directory", "adapter": "A", "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0606.html", "domains": [8], "categories": ["8.4"], "title": "자주 찾는 행정부서", "freshness": "S" },
+      { "id": "8.5_mail_docs", "adapter": "B", "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703", "domains": [8], "categories": ["8.5"], "title": "학사상담 게시판", "freshness": "Q", "pages": 3, "max_total": 40 },
+      { "id": "2.3_meal_ticket", "adapter": "A", "url": "https://plus.cnu.ac.kr/html/kr/sub06/sub06_0605.html", "domains": [2], "categories": ["2.3"], "title": "식권 구매 안내", "freshness": "S" },
+      { "id": "2.4_food_compare", "adapter": "CROSS_TAG", "url": "category-only:2.4", "domains": [2], "categories": ["2.4"], "title": "식당 비교 (cross_tag)", "freshness": "S", "notes": "별도 스크립트." },
+      { "id": "6.5_kosaf_loan", "adapter": "A", "url": "https://plus.cnu.ac.kr/html/kr/sub04/sub04_0405.html", "domains": [6], "categories": ["6.5"], "title": "근로장학 안내", "freshness": "S" },
+      { "id": "6.6_scholar_compare", "adapter": "CROSS_TAG", "url": "category-only:6.6", "domains": [6], "categories": ["6.6"], "title": "장학금 비교 (cross_tag)", "freshness": "S", "notes": "별도 스크립트." },
+      { "id": "4.1_dorm_main_js", "adapter": "JS_FALLBACK", "url": "https://dorm.cnu.ac.kr/html/kr/", "domains": [4], "categories": ["4.1"], "title": "기숙사 메인 (JS 렌더)", "freshness": "S", "notes": "Playwright 시도 → 실패 허용." },
+      { "id": "5.4_faq_seed", "adapter": "FAQ_SEED", "url": "data/sprint1/day2/chunks.jsonl", "domains": [5, 1, 6], "categories": ["faq_seed"], "title": "백마광장 FAQ 시드 (Phase D-1 입력)", "freshness": "S", "notes": "별도 스크립트." }
     ]
   },
 
   "_day4_exit_verify": {
-    "label": "Day 4 — Sprint 2 Exit 검증·리포트·핸드오프 (코드 없음, sprint2_verify.py 실행만)",
+    "label": "Day 4 — Exit 검증 (sprint2_verify.py 실행만)",
     "tasks": []
   }
 }
