@@ -1,0 +1,186 @@
+{
+  "list_url": "https://www.academyinfo.go.kr/pubinfo/pubinfo0020/list.do?schlId=0000029&svyYr=2025&pageIdx=all&filePath=01&fileName=01&saveName=01",
+  "rdviewer_requests": [
+    {
+      "url": "https://www.academyinfo.go.kr/uipnh/unt/unmcom/RdViewer.do",
+      "method": "POST",
+      "post_data": "paramSvyYr=2025&paramItemId=9&paramSchlDivCd=02&paramSchlCd=0000029&paramFormClftCd=60&paramSchlKindCd=99&paramSchlEstabCd=99&paramZoneCd=99&ui_schl_knd_cd=03"
+    }
+  ],
+  "page_buttons_count": 246,
+  "page_buttons_sample": [
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('9','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('9','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('9','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('10','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('10','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('10','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('11','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('11','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('11','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('12','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('12','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('12','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "2-가. 성적평가 결과(성적평가 분포)"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('25','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-가. 입학전형 유형별 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('25','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-가. 입학전형 유형별 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('25','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-가. 입학전형 유형별 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('26','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-나. 기회 균형 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('26','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-나. 기회 균형 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2025 보기",
+      "onclick": "fn_RdViewer('26','2025')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-나. 기회 균형 선발 결과 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2023 보기",
+      "onclick": "fn_RdViewer('27','2023')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-다. 신입생 충원 현황 2023 보기 2024 보기 2025 보기"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "2024 보기",
+      "onclick": "fn_RdViewer('27','2024')",
+      "href": "",
+      "class": "btn btn-sm",
+      "label": "4-다. 신입생 충원 현황 2023 보기 2024 보기 2025 보기"
+    }
+  ],
+  "newacinfo_responses_meta": [
+    {
+      "url": "https://www.academyinfo.go.kr/NewAcInfo.do",
+      "status": 200,
+      "len": 31903
+    },
+    {
+      "url": "https://www.academyinfo.go.kr/NewAcInfo.do",
+      "status": 200,
+      "len": 7
+    }
+  ],
+  "errors": []
+}

@@ -202,20 +202,76 @@ def scan_pubinfo_list(list_url: str, *, client: Optional[HttpClient] = None) -> 
     return items
 
 
+def playwright_scan(url: str, *, wait_sec: int = 6) -> tuple[bool, str, list[dict]]:
+    """Playwright headless 로 JS 렌더 후 HTML 받아서 키워드 매칭.
+
+    static fetch 로 0건 매칭된 알리미 endpoint 회수용. Playwright 미설치 시 graceful skip.
+    """
+    try:
+        from playwright.sync_api import sync_playwright  # type: ignore
+    except ImportError:
+        return False, "playwright not installed (pip install playwright; playwright install chromium)", []
+
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            ctx = browser.new_context(user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            ))
+            page = ctx.new_page()
+            page.goto(url, timeout=30_000)
+            try:
+                page.wait_for_load_state("networkidle", timeout=wait_sec * 1000)
+            except Exception:
+                pass
+            html = page.content()
+            browser.close()
+    except Exception as e:
+        return False, f"playwright error: {type(e).__name__}: {e}", []
+
+    soup = BeautifulSoup(html, "lxml")
+    items: list[dict] = []
+    for a in soup.find_all("a"):
+        if not isinstance(a, Tag):
+            continue
+        text = a.get_text(" ", strip=True)
+        if not text:
+            continue
+        href = a.get("href") or ""
+        oc = a.get("onclick") or ""
+        if not re.search(r"신입생|충원|취업|진학|졸업|재학|정원|등록금", text + " " + oc):
+            continue
+        items.append({"text": text[:80], "href": href or None, "onclick": oc[:120] or None})
+
+    print(f"\n--- playwright matched ({len(items)}) ---")
+    for it in items[:30]:
+        print(f"  - {it['text']}")
+        if it["href"]:
+            print(f"      href:    {it['href']}")
+        if it["onclick"]:
+            print(f"      onclick: {it['onclick']!r}")
+    return True, html[:200], items
+
+
 def main() -> int:
-    p = argparse.ArgumentParser(description="D-통계 PDF raw 추출")
+    p = argparse.ArgumentParser(description="D-statistic PDF raw")
     sub = p.add_subparsers(dest="mode", required=True)
 
-    p_s = sub.add_parser("spike-alimi", help="대학알리미 popup endpoint 진단 (예전 가설)")
-    p_s.add_argument("--univ-no", default="000007", help="충남대=000007")
+    p_s = sub.add_parser("spike-alimi")
+    p_s.add_argument("--univ-no", default="000007")
     p_s.add_argument("--out", default="data/sprint2/day1/alimi_spike.json")
 
-    p_l = sub.add_parser("scan-list", help="알리미 pubinfo list.do에서 항목 자동 발견 (권장)")
-    p_l.add_argument("--url", default="https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029",
-                     help="사용자 확인 URL (충남대 schlId=0000029)")
+    p_l = sub.add_parser("scan-list")
+    p_l.add_argument("--url", action="append", default=None)
     p_l.add_argument("--out", default="data/sprint2/day1/alimi_list_scan.json")
 
-    p_f = sub.add_parser("fetch-pdf", help="PDF 단건 다운로드 + 표 CSV 추출")
+    p_p = sub.add_parser("playwright-scan")
+    p_p.add_argument("--url", action="append", default=None)
+    p_p.add_argument("--wait", type=int, default=6)
+    p_p.add_argument("--out", default="data/sprint2/day1/alimi_playwright_scan.json")
+
+    p_f = sub.add_parser("fetch-pdf")
     p_f.add_argument("url")
     p_f.add_argument("--out-dir", default="data/sprint2/day1/dstat")
     p_f.add_argument("--title", default=None)
@@ -224,16 +280,35 @@ def main() -> int:
     if args.mode == "spike-alimi":
         res = spike_alimi(args.univ_no)
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
-        with open(args.out, "w", encoding="utf-8") as f:
-            json.dump(res, f, ensure_ascii=False, indent=2)
-        print(f"\n→ {args.out}")
+        json.dump(res, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
         return 0
     if args.mode == "scan-list":
-        res = scan_pubinfo_list(args.url)
+        urls = args.url or [
+            "https://www.academyinfo.go.kr/pubinfo/pubinfo0020/list.do?schlId=0000029",
+            "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/doInit.do?schlId=0000029",
+            "https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029",
+        ]
+        all_res = [{"url": u, "items": scan_pubinfo_list(u)} for u in urls]
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
-        with open(args.out, "w", encoding="utf-8") as f:
-            json.dump(res, f, ensure_ascii=False, indent=2)
-        print(f"\n-> {args.out}")
+        json.dump(all_res, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        print(f"[summary] items: {[len(r['items']) for r in all_res]}")
+        return 0
+    if args.mode == "playwright-scan":
+        urls = args.url or [
+            "https://www.academyinfo.go.kr/pubinfo/pubinfo0020/list.do?schlId=0000029",
+            "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/doInit.do?schlId=0000029",
+            "https://www.academyinfo.go.kr/popup/pubinfo1690/list.do?schlId=0000029",
+        ]
+        all_res = []
+        for u in urls:
+            print(f"\n=== playwright-scan: {u}")
+            ok, msg, items = playwright_scan(u, wait_sec=args.wait)
+            if not ok:
+                print(f"  [skip] {msg}")
+            all_res.append({"url": u, "ok": ok, "items": items})
+        os.makedirs(os.path.dirname(args.out), exist_ok=True)
+        json.dump(all_res, open(args.out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        print(f"[summary] items: {[len(r['items']) for r in all_res]}")
         return 0
     if args.mode == "fetch-pdf":
         return fetch_pdf(args.url, args.out_dir, title=args.title)

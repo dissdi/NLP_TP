@@ -1,0 +1,193 @@
+{
+  "page_html_size": 53968,
+  "final_url": "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/doInit.do?schlId=0000029",
+  "ui_info": {
+    "selects": [
+      {
+        "id": "vn_svyYr",
+        "name": "",
+        "n_options": 4,
+        "options": [
+          {
+            "value": "2026",
+            "text": "2026"
+          },
+          {
+            "value": "2025",
+            "text": "2025"
+          },
+          {
+            "value": "2024",
+            "text": "2024"
+          },
+          {
+            "value": "2023",
+            "text": "2023"
+          }
+        ]
+      },
+      {
+        "id": "i_dgHtDivCode",
+        "name": "",
+        "n_options": 5,
+        "options": [
+          {
+            "value": "",
+            "text": "전체"
+          },
+          {
+            "value": "A",
+            "text": "주간"
+          },
+          {
+            "value": "B",
+            "text": "야간"
+          },
+          {
+            "value": "C",
+            "text": "계절제"
+          },
+          {
+            "value": "D",
+            "text": "원격"
+          }
+        ]
+      },
+      {
+        "id": "i_schMjrCharCd",
+        "name": "",
+        "n_options": 15,
+        "options": [
+          {
+            "value": "",
+            "text": "전체"
+          },
+          {
+            "value": "01",
+            "text": "일반과정"
+          },
+          {
+            "value": "12",
+            "text": "일반과정(전문학사)"
+          },
+          {
+            "value": "02",
+            "text": "산업체위탁"
+          },
+          {
+            "value": "13",
+            "text": "산업체위탁(전문학사)"
+          },
+          {
+            "value": "03",
+            "text": "특별과정"
+          },
+          {
+            "value": "04",
+            "text": "계약학과"
+          },
+          {
+            "value": "11",
+            "text": "계약학과(학사학위전공심화)"
+          },
+          {
+            "value": "14",
+            "text": "계약학과(전문학사)"
+          },
+          {
+            "value": "05",
+            "text": "산학협력취업약정제"
+          }
+        ]
+      },
+      {
+        "id": "srsLclftCd",
+        "name": "srsLclftCd",
+        "n_options": 7,
+        "options": [
+          {
+            "value": "",
+            "text": "전체"
+          },
+          {
+            "value": "A",
+            "text": "인문사회계열"
+          },
+          {
+            "value": "B",
+            "text": "자연과학계열"
+          },
+          {
+            "value": "C",
+            "text": "예체능계열"
+          },
+          {
+            "value": "D",
+            "text": "공학계열"
+          },
+          {
+            "value": "E",
+            "text": "의학계열"
+          },
+          {
+            "value": "F",
+            "text": "광역계열"
+          }
+        ]
+      },
+      {
+        "id": "srsMclftCd",
+        "name": "srsMclftCd",
+        "n_options": 1,
+        "options": [
+          {
+            "value": "",
+            "text": "전체"
+          }
+        ]
+      },
+      {
+        "id": "srsSclftCd",
+        "name": "srsSclftCd",
+        "n_options": 1,
+        "options": [
+          {
+            "value": "",
+            "text": "전체"
+          }
+        ]
+      }
+    ],
+    "buttons": [],
+    "dept_options": [],
+    "fn_names": [
+      "gnf_add_favrt",
+      "open",
+      "fn_go_schl",
+      "fn_doSelect",
+      "exportGrid"
+    ],
+    "view_btns_count": 0,
+    "view_btns_sample": []
+  },
+  "captures": [
+    {
+      "url": "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/doInit.do?schlId=0000029",
+      "status": 200,
+      "ct": "text/html; charset=utf-8",
+      "body_head": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n <!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n\t<title>공시정보</title>\r\n\t\r\n    <meta charset=\"UTF-8\">\r\n    <!-- <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=0\"> -->\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\r\n    <meta content=\"noindex\" name=\"robots\" />\r\n    <meta name=\"description\" content=\"\">\r\n\t<!-- Vendors CSS -->\r\n\t<link rel=\"stylesheet\" href=\"/vendors/swiper-4.1.6/css/swiper.css\">\r\n\t<link rel=\"stylesheet\" href=\"/vendors/jquery"
+    },
+    {
+      "url": "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/selectChartList.do?",
+      "status": 200,
+      "ct": "application/json;charset=UTF-8",
+      "body_head": "{\"resultList\":[{\"cnt\":34,\"srs_lclft_nm\":\"인문ㆍ사회\"},{\"cnt\":31,\"srs_lclft_nm\":\"자연과학\"},{\"cnt\":8,\"srs_lclft_nm\":\"예ㆍ체능\"},{\"cnt\":24,\"srs_lclft_nm\":\"공학\"},{\"cnt\":2,\"srs_lclft_nm\":\"의학\"},{\"cnt\":2,\"srs_lclft_nm\":\"광역\"}],\"pramMap\":{\"svyYr\":\"2026\",\"schlId\":\"0000029\",\"pulYn\":\"true\",\"schl_div_cd\":\"02\",\"schl_knd_cd\":\"03\",\"schlMjrId\":\"\",\"mjrId\":\"\",\"mjrNm\":\"\",\"schNm\":\"\",\"stsCode\":\"\",\"pageIdx\":\"\",\"dgHtDivCdArr\":\"\",\"schMjrCharCdArr\":\"\",\"schTxt\":\"\",\"srsLclftCd\":\"\",\"srsMclftCd\":\"\",\"srsSclftCd\":\"\",\"COLUMLAUNG\":\"KOR\",\"iCn"
+    },
+    {
+      "url": "https://www.academyinfo.go.kr/pubinfo/pubinfo1600/selectMjrList.do?",
+      "status": 200,
+      "ct": "application/json;charset=UTF-8",
+      "body_head": "{\"resultList\":[{\"kor_cd_nm\":\"간호대학\",\"kor_mjr_nm\":\"간호학과(주간/일반과정)\",\"schl_mjr_id\":\"0009142\",\"mjr_id\":\"0022280\",\"schl_mjr_stat_cd\":\"3\",\"kor_schl_nm\":\"충남대학교\",\"odr\":1,\"mjr_nm\":\"간호학과\",\"schl_mjr_char_cd\":\"A\",\"dght_div_nm\":\"주간\",\"schl_mjr_char_nm\":\"일반과정\",\"mjr_area_nm\":\"대전\",\"mjr_area_signgu_nm\":\"유성구\",\"srs_lclft_cd\":\"B\",\"srs_mclft_cd\":\"21\",\"srs_sclft_cd\":\"112\",\"srs_lclft_nm\":\"자연과학계열\",\"srs_mclft_nm\":\"간호\",\"srs_sclft_nm\":\"간호학\",\"clg_cd\":\"0004\",\"clg_nm\":\"간호대학\"},{\"kor_cd_nm\":\"경상대학\",\"kor_mjr_nm\":\"경영학부(주간/일반과정)\",\"sc"
+    }
+  ]
+}

@@ -30,3 +30,26 @@ ValueError: Response is not a PDF (first 64 bytes: '<!DOCTYPE html>\r\n<html lan
 === DUMP 0 chunks / 0자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day1\chunks.jsonl
 === 에러 1건 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day1\errors.json
 === day1 종료 3.2s 청크=0 에러=1 ===
+
+=== sprint2 day1 시작 2026-05-26 22:14:17 ===
+
+[step] RULE_HWP:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1  max=30
+  + 23 청크 / 915632자  (학칙)
+  ✓ RULE_HWP:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1  max=30  (102.1s)
+
+[deferred] 1.7_alimi_freshman (ALIMI_PDF) — 별도 실행 필요:
+  $ python -m scripts.sprint2_dstat spike-alimi   (그 다음 fetch-pdf URL 직접)
+
+[step] B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501&site_dvs_cd=kr&menu_dvs_cd=030601  pages=3
+  + 24 게시물 / 4112자
+  ✓ B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501&site_dvs_cd=kr&menu_dvs_cd=030601  pages=3  (37.5s)
+
+[step] B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0506&site_dvs_cd=kr&menu_dvs_cd=030602  pages=3
+  + 24 게시물 / 4956자
+  ✓ B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0506&site_dvs_cd=kr&menu_dvs_cd=030602  pages=3  (37.0s)
+
+[deferred] 1.2_dept_grad_spike (DEPT_GRAD) — 별도 실행 필요:
+  $ python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json && python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
+
+=== DUMP 71 chunks / 924700자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint2\day1\chunks.jsonl
+=== day1 종료 176.9s 청크=71 에러=0 ===

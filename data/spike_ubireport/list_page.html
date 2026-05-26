@@ -1,0 +1,2259 @@
+<!DOCTYPE html><html lang="ko" class="wf-inactive"><head>
+	<title>공시정보</title>
+	
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"> -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta content="noindex" name="robots">
+    <meta name="description" content="">
+	<!-- Vendors CSS -->
+	<link rel="stylesheet" href="/vendors/swiper-4.1.6/css/swiper.css">
+	<link rel="stylesheet" href="/vendors/jquery-ui-1.12.1.custom/jquery-ui.structure.min.css">
+	<!-- // Vendors CSS -->
+
+    <link rel="stylesheet" href="/resources/css/reset.css">
+    <link rel="stylesheet" href="/resources/css/layout.css">
+    <link rel="stylesheet" href="/resources/css/ui.css">
+
+    <link rel="stylesheet" href="/resources/css/guide.css">
+
+	<!-- Vendors JS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript" async=""></script><script src="/vendors/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+	<script src="/vendors/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script src="/vendors/swiper-4.1.6/js/swiper.min.js"></script>
+	<!-- // Vendors JS -->
+	
+	<!-- RealGrid JS -->
+    <!-- RealGrid JS 워터마크 있는 버전(개발용)-->
+    <!--
+    <script type="text/javascript" src="/scripts/realgridjs-lic.js"></script> 
+    <script type="text/javascript" src="/scripts/realgridjs_eval.1.1.32.min.js"></script>
+    <script type="text/javascript" src="/scripts/realgridjs-api.1.1.32.js"></script>
+    <script type="text/javascript" src="/scripts/jszip.min.js"></script>
+    <script type="text/javascript" src="/scripts/realgridWrapper.js"></script>
+     -->
+    <!-- RealGrid JS 워터마크 있는 버전(개발용)-->
+    <!-- RealGrid JS 워터마크 없는 버전(운영용)--> 
+    <!-- --> 
+    <script type="text/javascript" src="/scripts/realgridjs-lic.js"></script>
+    <script type="text/javascript" src="/scripts/realgridjs.1.1.32.min.js"></script>
+    <script type="text/javascript" src="/scripts/realgridjs-api.1.1.32.js"></script>
+    <script type="text/javascript" src="/scripts/jszip.min.js"></script>
+    <script type="text/javascript" src="/scripts/realgridWrapper.js"></script>
+    
+    <!-- RealGrid JS 워터마크 없는 버전(운영용)-->
+    <!-- RealGrid JS -->
+
+	<script src="/resources/js/common_p.js"></script> 
+	
+	<script src="/js/common.js"></script>   
+	
+
+
+	
+	
+	
+	
+	
+
+<script type="text/javascript">
+var paramSchlDivCd ="02";
+var messageArr = ["학생","교육여건"
+				 ,"교육연구성과","대학재정/교육비"
+				 ,"대학운영","전체목록"
+				 ];
+var pageIdxArr = ["01","04","02","03","05","all"];
+var arrNum	   = 0;
+$(document).ready(function(){
+	
+		
+		//전체보기
+		 fn_writeAllItemList();
+		
+		
+	
+});
+		
+		/**
+		 * 대학별검색 상세정보 요약표 정보
+		 * UntUnvAcdtSrchPopTab02.js
+		 * @param n
+		 * @returns {String}
+		 */
+
+			function fn_commify(n) {
+
+				if(n == null){
+					
+					return '-';
+				}
+				
+				// n = '1234567.99';
+				n += ''; // 숫자를 문자열로 변환
+				var p = n.split(".");
+				var t = '';
+				var rst = '';
+			
+				// 숫자가 아니면 그대로 return
+				if (isNaN(p[0])) { //문자형 true, 숫자형 false
+					rst = n;
+				} else {
+					if (p.length > 1){
+						t = '.' + p[1];
+					}	
+					/*
+					 * 기존 소스 수정 
+					 * 수정일자 : 2015.01.07
+					 * 수정자 : 김성곤
+					 * 
+					 * Number(n).toLocaleString()를 하게되면 n값이 소수점 3째자리에서 반올림을 한다.
+					 * (IE 오래된 버전 ex: 9)
+					 * 정수가 바뀌는 경우, 기존의 본래값하고 다르게 된다.
+					 * 
+					 * ex) 
+					 * n = 469.9952 일때, Number(n).toLocaleString()를 하면
+					 * 469.9952 -> 470.00 으로 변경된다.
+					 * 그리고 +t (소수점부분)을 하면 470.9952값이 출력된다.
+					 * 
+					 */		
+					if( n < 0 ) {
+						rst = Number(n).toLocaleString().split(".")[0] + t; //기존소스
+					}else{
+						rst = Number(p[0]).toLocaleString().split(".")[0] + t; 
+						
+					}
+					 
+ 					var r = /(^[+-]?\d+)(\d{3})/;
+ 					var n = (rst + '');
+ 					while(r.test(n)) n = n.replace(r, '$1' + ',' + '$2');
+					
+ 					//수정 후 소스 끝
+ 					rst=n;
+				}
+				
+			
+				return rst;
+		    }
+		
+		function fn_callItemList(){
+			 gfn_Submission_Call("/pubinfo/pubinfo0020/itemTable.do", $("#frm").serialize(), function(data){
+		     		// 공통 에러 메시지 처리
+						if( data.M_CODE < 0 ){
+							alert(data.M_RTME);
+						}else{
+							fn_make_itemList(data);
+							
+ 							//요약표를 그린다.
+  					 		$('.smry_chrt').each(function(){
+  					 			fn_tableDataLoad($(this).attr("id").split("_")[1]);
+  					 		});	
+	
+
+						}
+		     	   },'json');   			
+		}
+
+		 
+		 function fn_RdViewer(itemId,svyYr)
+		 {
+			 
+			var frm = document.listForm;
+			frm.paramItemId.value = itemId;
+			frm.paramSvyYr.value = svyYr;
+			frm.paramSchlKindCd.value = "99";
+			frm.paramSchlEstabCd.value = "99";
+			frm.paramZoneCd.value = "99";
+	 		var now = new Date();
+	 		var winNm = "RST" + now.getHours()+ now.getMinutes() + now.getSeconds() + now.getMilliseconds();
+	 		window.open("",winNm);
+	 		frm.target = winNm;
+	 		frm.action = "";
+	 		frm.submit();
+		 }
+		 
+		 function fn_PdfViewer(itemId, svyYr)
+		 {
+			 
+			var frm = document.listForm;
+			frm.paramItemId.value = itemId;
+			frm.paramSvyYr.value = svyYr;
+			frm.paramSchlKindCd.value = "14";
+			frm.paramSchlEstabCd.value = "3";
+	 		var now = new Date();
+	 		var winNm = "PDF" + now.getHours()+ now.getMinutes() + now.getSeconds() + now.getMilliseconds();
+	 		var option = "height=300, width=600, top=10, left=10, scrollbars=1,resizable=0,toolbar=0, status=0, menubar=0,location=0";
+	 		window.open("",winNm,option);
+	 		frm.target = winNm;
+	 		frm.action = "/UIPISA/uipnh/unt/ipsrch/UntUnvAcdtSrchPopPdfViewer.do";
+	 		frm.submit();
+		 }
+			// 항목 리스트를 가져온다.(Ajax)
+		 	function fn_tableDataLoad(itemId)
+			{
+				var ContextPath 	 = "";
+		 		var schl_div_cd		 = "02";
+		 		var schl_id			 = "0000029";
+		 		var schl_knd_cd		 = "03";
+		 		var schl_estb_div_cd = "1";
+		 		
+		 		var param = "";
+		 		var targetObjId = "table_" + itemId
+		 		var contents = "";
+	 			param = param + "schl_div_cd=" + schl_div_cd;
+	 			param = param + "&schl_id=" + schl_id;
+	 			param = param + "&schl_knd_cd=" + schl_knd_cd;
+	 			param = param + "&schl_estb_div_cd=" + schl_estb_div_cd;
+	 			param = param + "&item_id=" + itemId;
+	 			
+		 			//동적으로 원격에 있는 JSON파일(결과값)을 로드
+		     	   gfn_Submission_Call("/pubinfo/pubinfo0020/smvrTable.do", param, function(data){
+		     	    var list=data.list;    		
+    	        		if(data.list.length > 0) {
+    	        			contents = eval("fn_writeTableData_" + targetObjId + "(list, targetObjId, schl_div_cd, schl_id, schl_knd_cd, schl_estb_div_cd, itemId)");		// 목록 출력
+    	        			$('#' + targetObjId).show();
+    	        		} else {
+    	        			contents = '<!-- ※ 요약표 데이터가 없습니다.(' + itemId + ') -->';
+    	        		}	
+    	        		$('#' + targetObjId).html(contents);
+		     	   },'json');      
+		 			
+		 	}		
+
+			
+		
+	function fn_chage_svyYr(){
+		var svyYr=$("#selectSvyYr").val();
+		$("#svyYr").val(svyYr);
+		fn_callItemList();
+		
+	}
+	function fn_make_itemList_btn(eraList, resultList){
+		var btnHtml ="";
+		for(var i=0; i<eraList.length; i++){
+			var eraObj =eraList[i];
+			if( eraObj.item_id == resultList.item_id && resultList.pgm_clft_cd == "P" ){
+				var btnName = resultList.pdf_use_yn == 'Y' ? "PDF":"보기";
+				var fnName  = resultList.pdf_use_yn == 'Y' ? "fn_PdfViewer":"fn_RdViewer";
+				
+				btnHtml +='\n<button type="button" class="btn btn-sm" onclick="'+fnName+'(\''+eraObj.item_id+'\'\,\''+eraObj.svy_yr+'\')">'+eraObj.svy_yr+'&nbsp;'+btnName+'</button>'
+			}
+		} //for end
+		return btnHtml;
+	}
+	
+	function fn_make_itemList(data){
+		var html			= "";
+		var detailItemList2 = data.detailItemList2;
+		var detailItemList3 = data.detailItemList3;
+		var detailItemList4 = data.detailItemList4;
+		var eraList = data.eraList;
+		
+		/* 20260112. 이현섭 추가. 5-가, 5-나, 5-다 공시항목 2024년 삭제 항목의 요약표 제거*/
+		var isDeleted = function(itemId) {
+	        var id = String(itemId);
+	     // 대학, 전문대학 5-나 요약표 제거
+	        if(paramSchlDivCd == '01' || paramSchlDivCd == '02'){
+	            return (id == '44' || id == '45');
+	        }
+	        // 대학원, 대학원대학 5-가, 5-나, 5-다 요약표 제거
+	        if(paramSchlDivCd == '03' || paramSchlDivCd == '04'){
+	            return (['40', '41', '252', '44', '45', '42', '47', '48', '49'].indexOf(id) > -1);
+	        }
+	        return false;
+	    };
+		
+		for(var i=0; i<detailItemList2.length; i++){	
+			var resultList2	 = detailItemList2[i];
+			var count 		 = 0;
+			html+='<li>';
+			html+='<span class="text-list-title">'+resultList2.pgm_estn_nm +'</span>';
+			html+= fn_make_itemList_btn(eraList, resultList2);
+			if(resultList2.smry_chrt_yn == 'Y'){
+				html+='<ul class="depth-2 smry_chrt" id="table_'+resultList2.item_id+'" style="display:none">';
+				html+='</ul>';
+			}
+			
+			for(var j=0; j<detailItemList3.length; j++){
+	
+					var resultList3	= detailItemList3[j];
+					
+					var pgm_estn_nm;
+					
+					if( resultList3.pgm_estn_nm == null ){
+						pgm_estn_nm = ["",""];
+					}else{
+						/*2021.04.19 한지한 수정 점을 기준으로 항목명을 자르다보니 영문에서 항목명이 잘려서 출력되어 수정해줌*/
+                        //pgm_estn_nm = resultList3.pgm_estn_nm.split(".");
+                        var PgmEstnNm = resultList3.pgm_estn_nm;
+                        pgm_estn_nm =  PgmEstnNm.substring(PgmEstnNm.indexOf(".")+1);
+					}
+					
+					if (resultList2.pgm_id == resultList3.uppr_pgm_id){
+						if(count==0){
+							html+='<ul class="depth-2">';
+						}
+						var className3 = resultList3.smry_chrt_yn == 'Y'? 'text-list-title':'depth-text';
+						count	= count+1;														
+						html+='<li>';
+						html+='<span class="'+className3+'">'+pgm_estn_nm+'</span>';
+						html+= fn_make_itemList_btn(eraList, resultList3);
+						/* 20260112. 이현섭 추가. 5-가, 5-나, 5-다 공시항목 2024년 삭제 항목의 요약표 제거 추가*/
+						if(resultList3.smry_chrt_yn == 'Y' && !isDeleted(resultList3.item_id) ){
+							html+='<ul class="depth-3 smry_chrt" style="display:none"  id="table_'+resultList3.item_id+'" >';
+							html+='</ul>';
+						}	
+	
+						var count2 =0;			
+						for(var k=0; k<detailItemList4.length; k++){
+							var resultList4	= detailItemList4[k];
+							var pgm_estn_nm2;
+							
+							if( resultList4.pgm_estn_nm == null ){
+								pgm_estn_nm2 = ["",""];
+							}else{
+								pgm_estn_nm2= resultList4.pgm_estn_nm.split(".")
+							}							
+							
+							if(resultList3.pgm_id == resultList4.uppr_pgm_id){
+								if( count2==0){
+									html+='<ul class="depth-3">';
+								}	
+								count2=count2 + 1;
+								var className4 = resultList4.smry_chrt_yn == 'Y'? 'text-list-title':'depth-text';
+								html+='<li>';
+								html+='<span class="'+className4+'">'+pgm_estn_nm2[1] +'</span>';
+								html+= fn_make_itemList_btn(eraList, resultList4)
+								if(resultList4.smry_chrt_yn == 'Y'){
+									html+='<ul class="depth-4 smry_chrt" id="table_'+resultList4.item_id+'"  style="display:none" >';
+									html+='</ul>';																	
+								}	
+								html+='</li>';
+							}
+							if((count2>0) && ( (k+1)== detailItemList4.length ) ) {
+								html+='</ul>';
+							}
+						}// for k end
+						html+='</li>';	
+				}
+				if((count>0) && ( (j+1)== detailItemList3.length ) ){
+					html+='</ul>';
+				}	
+			} // j end 
+			html+='</li>';
+		}// i end
+ 	   	$("#itemList").html(html);
+ 	   	
+	}		
+	
+	function goTab02(pageIdx){
+		$("#pageIdx").val(pageIdx);
+       	$("#frm").attr("method","get");
+       	$("#frm").attr("action","/pubinfo/pubinfo0020/list.do");
+       	$("#frm").attr("onsubmit","true");
+       	$("#frm").submit();		
+// 		fn_make_tab02(pageIdx);
+// 		fn_callItemList();
+	}
+	//소분류 탭
+	function fn_make_tab02(paramPageIdx){
+		var html ="";
+		for(var i=0; i< messageArr.length; i=i+1){
+			var message = messageArr[i];
+			var pageIdx = pageIdxArr[i];
+			
+			html+='\n<li class="ui-tab';
+			if( paramPageIdx == pageIdx){ //active class 추가
+				html+=' ui-tabs-active">';
+				html+='<span class="ui-tabs-anchor">'
+				
+			}else{
+				html+='">';
+				html+='<a href="#none" onclick="goTab02(\''+pageIdx+'\')" class="ui-tabs-anchor">'
+			}
+			html+=message
+			if( paramPageIdx == pageIdx){ //active class 추가
+				html+='</span>';												
+			}else{
+				html+='</a>';
+			}											
+			html+='</li>';	
+		}
+		
+		$("#tab02").html(html);
+	}
+	
+	function fn_writeTableLabel(itemId){
+		var date ="";
+		var html ="";
+		//2020.07.03 한지한 수정. SR2923요청으로 자료기준일 뒤에 단위 추가해주기 위해 변수 선언함.
+        var unit ="";
+		
+		if( paramSchlDivCd == "02"){	//대학교
+			if( itemId =='46' ) {  //5-다. 졸업생의 취업 현황 (명, %)
+				//2021.06.29 8월공시 5-다 자료기준일 변경
+				//2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경 
+                date='건강보험 및 국세DB연계 취업통계조사는 전전년도 8월과 전년도 2월 졸업자, 전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='51' ) {  //6-가-1. 전체 교원 대비 전임교원 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='52' ) { //6-나-(1) . 전임교원 1인당 학생 수 및 전임교원 확보율 (명, %)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='265' ) date='당해연도. 4. 1.';
+            if( itemId =='60' ) { //6-다. 외국인 전임교원 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            //2021.04.01 송지혁 수정. 12-바 자료기준일
+            if( itemId =='163' ) { //12-바. 대학의 원격강좌 현황 (개, 명)
+                date='전년도 3. 1. ~ 당해연도 2월 말'; 
+                unit='(단위 : 개, 명)'; 
+            }
+            //2021.04.02 송지혁 수정. 3-나 자료기준일
+            if( itemId =='282' ) {  //3-나. 전임 입학사정관 현황 (명)
+                date='전년도 10월 1일'; 
+                unit='(단위 : 명)'; 
+            }
+            //2021.04.13 김여정 수정 3-다 평가자 1명당 서류평가 처리 건수(명, 건)
+            if(itemId =='283') {   //3-다. 평가자 1명당 서류평가 처리 건수(명,건)
+            	date='당해년도의 수시모집, 정시모집, 추가모집시점';
+            	unit='(단위 : 명 , 건)'; 
+            }
+            if( itemId =='63' ) { //7-가. 전임교원의 연구 실적  (명, 건)
+                date='전년도. 1. 1. ～ 12. 31., 전임교원 : 당해연도. 4. 1.'; 
+                unit='(단위 : 명 , 건)'; 
+            }
+            if( itemId =='72' ) { //8-가-1. 국공립대 대학회계 예결산 현황 (원)
+                date='예산 - 당해연도 회계연도'; 
+                unit='(단위 : 원)'; 
+            }
+            if( itemId =='74' ) { //8-가-2. 국공립대 대학회계 예결산 현황 (원)
+            	date='결산 - 전년도 회계연도';
+                unit='(단위 : 원)'; 
+            }
+            if( itemId =='78' ) { //8-다.
+            	date='예산 - 당해연도 회계연도';
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='80' ) { //8-다.
+            	date='결산 - 전년도 회계연도';
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='78' ) { //8-다. 국공립대 발전기금 예결산 현황 (천원)
+                date='예산 - 당해연도 회계연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='80' ) { //8-다. 국공립대 발전기금 예결산 현황 (천원)
+                date='결산 - 전년도 회계연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='82' ) date='예산 - 당해연도 회계연도, 결산 - 전년도 회계연도';
+            if( itemId =='84' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='86' ) date='결산 - 전년도 회계연도';
+            if (itemId == '93') { //8-바-1-(1) 천원
+                date = '예산 - 당해연도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '100') { //8-바-2-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '107') { //8-바-3-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if( itemId =='114' ) date='결산 - 전년도 회계연도';
+            if( itemId =='117' ) date='결산 - 전년도 회계연도';
+            if( itemId =='119' ) date='결산 - 전년도 회계연도';
+            if( itemId =='121' ) date='결산 - 전년도 회계연도';
+            if( itemId =='272' ) date='결산 - 전년도 회계연도';
+            if( itemId =='123' ) date='결산 - 전년도 회계연도';
+            if( itemId =='273' ) date='결산 - 전년도 회계연도';
+            if( itemId =='180' ) date="전년도 1. 1. ～ 전년도 12. 31., 교원 창업규정은 당해연도 4. 1. 기준";
+            if( itemId =='191' ) date='당해연도 4. 1.';
+            if( itemId =='192' ) date='당해연도 4. 1., 단, 사이버대학은 당해연도 3. 1. 기준';
+            if( itemId =='193') { //14-마. 기숙사 현황 (명, 실, %)
+                date='당해연도 4. 1.'; 
+                unit='(단위 : 명 , 실, %)'; 
+            }
+            if( itemId =='253' ) date='전년도 회계연도 결산기준';
+            if( itemId =='266' ) date='당해연도 4. 1.';
+            if( itemId =='195') { //14-사. 직원현황 (명)
+                date='당해연도 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='196') { //14-아. 재정지원사업 수혜 실적 (천원)
+                date='전년도 1. 1. ~ 12. 31.'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='267' ) date='당해연도 4. 1.';
+            if( itemId =='199' ) date='당해연도 4.1. 단, 장애이해 프로그램 운영시간은 전년도 3.1. ~ 당해연도 2.28.';
+            if( itemId =='129') { //8-차. 등록금현황 (천원)
+                date='당해연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            
+            if( itemId =='140') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 천원, 명)'; 
+            }
+            if( itemId =='141') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산';
+                unit='(단위 : 천원, 명)'; 
+            }
+            if( itemId =='150') { // 12-가. 연구비 수혜 실적 (명, 천원)
+                date='전년도. 1. 1. ～ 12. 31., 전임교원 : 당해연도. 4. 1.'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+            if( itemId =='152' ) date='당해연도 1학기(4월), 2학기(10월)';
+            if( itemId =='153') { //12-나. 교원 강의 담당 현황 (학점, %)
+                date='당해연도 1학기(4월), 2학기(10월)'; 
+                unit='(단위 : 학점 , %)'; 
+            }
+            if( itemId =='157') { //12-다. 장학금 수혜 현황_ 장학금 수혜 현황 (명, 천원)
+                date='전년도, 재학생 수 : 전년도 4. 1., 10. 1.'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+            if( itemId =='158') { //12-다. 장학금 수혜 현황_ 학자금 대출 현황 (명, 천원)
+            	// 2022.06.23 김태욱 수정 - 8월 공시 수정사항 요청으로 자료기준일 설명 문구 수정
+                date='전년도(자료추출일 : 당해연도 6.30.), 재학생 수 : 전년도 4.1,10.1, 대학+대학원 합산 값'; 
+                unit='(단위 : 명 , 원)'; 
+            }
+            if( itemId =='25' ) { //4-가. 입학전형 유형별 선발 결과 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='26' ) { //4-나. 기회 균형 선발 결과 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='27' ) { //4-다. 신입생 충원 현황 (명, %)
+                date='입학정원 : 당해연도 1학년 신입생 입학정원, 입학자 : 당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='29' ) { //4-라. 학생 충원 현황_재학생 충원율 (명, %)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='31' ) { //4-마. 재적 학생 현황(2017~2019) (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='33' ) { //4-바. 외국인 유학생 현황_ 외국인 유학생 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='34' ) { //4-바. 외국인 유학생 현황_외국인 유학생 중도탈락 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='35' ) { //4-사. 중도탈락 학생 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2023.04.12 김여정 수정 6월 공시 요청으로 자료기준일 텍스트 변경
+            if( itemId =='37' ) { //4-자. 신입생의 출신 고등학교 유형별 현황 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='39' ) { //5-가. 졸업생 현황(명)
+                date='전년도 8월 졸업시점과 당해년도 2월 졸업 시점'; 
+                unit='(단위 : 명)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='44' ) { //5-나-(1). 졸업생의 진학 현황(명, %)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='45' ) { //5-나-(2). 졸업생의 진학 현황(명, %)
+                date='전년도 8월 졸업자는 전년도 10. 1., 당해연도 2월 졸업자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }           
+            //2020.06.17 한지한 수정 9-나-3 항목 요약표 자료기준일 표기
+            //2022.06.20 송지혁 수정 기준 천원 -> 원 수정
+            if( itemId =='281') { //9-나. 학생1인당 교육비 (원, 명)
+                date='전년도 결산';
+                unit='(단위 : 원, 명)'; 
+            }
+            //2024.09.11 송지혁 추가. 5-나 분리로 요약표로 새로 생성
+            if( itemId =='290' ) { //5-나. 졸업생의 진학 현황(명, %)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            
+		}else if( paramSchlDivCd == "01" ){ //전문대학
+			if( itemId =='25' ) { //4-가. 입학전형 유형별 선발 결과 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='26' ) { //4-나. 기회 균형 선발 결과 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='27' ) { //4-다. 신입생 충원 현황 (명, %)
+                date='입학정원 : 당해연도 1학년 신입생 입학정원, 입학자 : 당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='29' ) { //4-라. 학생 충원 현황_재학생 충원율 (명, %)
+                date='입학정원 : 당해연도 1학년 신입생 입학정원, 입학자 : 당해연도 3월 학기 신입생'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='31' ) { //4-마. 재적 학생 현황(2017~2019) (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='33' ) { //4-바. 외국인 유학생 현황_ 외국인 유학생 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='34' ) { //4-바. 외국인 유학생 현황_외국인 유학생 중도탈락 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='35' ) { //4-사. 중도탈락 학생 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2023.04.12 김여정 수정 6월 공시 요청으로 자료기준일 텍스트 변경
+            if( itemId =='37' ) { //4-자. 신입생의 출신 고등학교 유형별 현황 (명, %)
+                date='당해연도 3월 학기 신입생'; 
+                unit='(단위 : %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='39' ) { //5-가. 졸업생 현황(명)
+                date='전년도 8월 졸업시점과 당해년도 2월 졸업 시점'; 
+                unit='(단위 : 명)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='44' ) { //5-나-1. 졸업생의 진학 현황(명, %)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='45' ) { //5-나-2. 졸업생의 진학 현황(단위 : 명)
+                date='전년도 8월 졸업자는 전년도 10. 1., 당해연도 2월 졸업자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)';  
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='46' ) { //5-다. 졸업생의 취업 현황 (명, %)
+            	//2021.06.29 8월공시 5-다 자료기준일 변경
+                date='건강보험 및 국세DB연계 취업통계조사는 전전년도 8월과 전년도 2월 졸업자, 전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='63' ) { //7-가. 전임교원의 연구 실적  (명, 건)
+                date='전년도. 1. 1. ～ 12. 31., 전임교원 : 당해연도. 4. 1.'; 
+                unit='(단위 : 명 , 건)'; 
+            }
+            if( itemId =='150') { // 12-가. 연구비 수혜 실적 (명, 천원)
+                date='당해연도 1학기(4월), 2학기(10월)'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+          	//2021.04.01 송지혁 수정. 12-바 자료기준일
+            if( itemId =='163' ) { //12-바. 대학의 원격강좌 현황 (개, 명)
+                date='전년도 3. 1. ~ 당해연도 2월 말'; 
+                unit='(단위 : 개, 명)'; 
+            }
+            if( itemId =='180' ) date="전년도 1. 1. ～ 전년도 12. 31., 교원 창업규정은 당해연도 4. 0. 기준";
+            if( itemId =='72' ) { //8-가. 국공립대 대학회계 예결산 현황 (원)
+                date='예산 - 당해연도 회계연도'; 
+                unit='(단위 : 원)'; 
+            }
+            if( itemId =='74' ) { //8-가-2. 국공립대 대학회계 예결산 현황 (원)
+                date='결산 - 전년도 회계연도';
+                unit='(단위 : 원)'; 
+            }
+            if( itemId =='78' ) { //8-다. 국공립대 발전기금 예결산 현황 (천원)
+                date='예산 - 당해연도 회계연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='80' ) { //8-다. 국공립대 발전기금 예결산 현황 (천원)
+                date='결산 - 전년도 회계연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='82' ) date='예산 - 당해연도 회계연도, 결산 - 전년도 회계연도';
+            if( itemId =='84' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='86' ) date='예산 - 전년도 회계연도';
+            if (itemId == '93') { //8-바-1-(1) 천원
+                date = '예산 - 당해연도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '100') { //8-바-2-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '107') { //8-바-3-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if( itemId =='114' ) date='결산 - 전년도회계연도';
+            if( itemId =='117' ) date='결산 - 전년도회계연도';
+            if( itemId =='119' ) date='결산 - 전년도 회계연도';
+            if( itemId =='121' ) date='결산 - 전년도 회계연도';
+            if( itemId =='272' ) date='결산 - 전년도 회계연도';
+            if( itemId =='123' ) date='결산 - 전년도 회계연도';
+            if( itemId =='273' ) date='결산 - 전년도 회계연도';
+            if( itemId =='129') { //8-차. 등록금현황 (천원)
+                date='당해연도'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='140') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 천원, 명)'; 
+            }
+            if( itemId =='141') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 천원, 명)';  
+            }
+            if( itemId =='157') { //12-다. 장학금 수혜 현황_ 장학금 수혜 현황 (명, 천원)
+                date='2017학년도, 재학생 수 : 2017. 4. 1., 10. 1.'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+            if( itemId =='158') { //12-다. 장학금 수혜 현황_ 학자금 대출 현황 (명, 천원)
+            	// 2022.06.23 김태욱 수정 - 8월 공시 수정사항 요청으로 자료기준일 설명 문구 수정
+                date='전년도(자료추출일 : 당해연도 6.30.), 재학생 수 : 전년도 4.1,10.1 '; 
+                unit='(단위 : 명 , 원)'; 
+            }
+            if( itemId =='196') { //14-아. 재정지원사업 수혜 실적 (천원)
+                date='전년도 1. 1. ~ 전년도 12. 31.'; 
+                unit='(단위 : 천원)'; 
+            }
+            if( itemId =='51' ) {  //6-가-1. 전체 교원 대비 전임교원 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='52' ) { //6-나-(1) . 전임교원 1인당 학생 수 및 전임교원 확보율 (명, %)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명, %)'; 
+            }
+            if( itemId =='265' ) date='당해연도. 4. 1.';
+            if( itemId =='60' ) { //6-다. 외국인 전임교원 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='152' ) date='당해연도 1학기(4월), 2학기(10월)';
+            if( itemId =='153') { //12-나. 교원 강의 담당 현황 (학점, %)
+                date='전년도 3. 1. ~ 당해연도 2. 27.'; 
+                unit='(단위 : 학점 , %)'; 
+            }
+            if( itemId =='191' ) date='당해연도 4. 0.';
+            if( itemId =='192' ) date='당해연도 4. 1., 단, 사이버대학은 당해연도 3. 0. 기준';
+            if( itemId =='193') { //14-마. 기숙사 현황 (명, 실, %)
+                date='당해연도 4. 1.'; 
+                unit='(단위 : 명 , 실, %)'; 
+            }
+            if( itemId =='253' ) date='전년도 회계연도 결산기준';
+            if( itemId =='266' ) date='전년도 회계연도 결산기준';
+            if( itemId =='199' ) date='당해연도 4.1. 단, 장애이해 프로그램 운영시간은 전년도 3.1. ~ 당해연도 2.28.';
+            if( itemId =='195') { //14-사. 직원현황 (명)
+                date='당해연도 4. 0.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='267' ) date='당해연도 4. 0.';
+            //2020.06.17 한지한 수정 9-나-3 항목 요약표 자료기준일 표기
+            //2022.06.20 송지혁 수정 기준 천원 -> 원수정
+            if( itemId =='281') { //9-나. 학생1인당 교육비 (원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 원 , 명)'; 
+            }
+            //2024.09.11 송지혁 추가. 5-나 분리로 요약표로 새로 생성
+            if( itemId =='290' ) { //5-나. 졸업생의 진학 현황(명, %)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+		}else if( paramSchlDivCd == "04" ){ //대학원대학
+			if( itemId =='180' ) date="전년도 1. 1. ~ 12. 31., 교원 창업규정은 당해연도 4. 1. 기준";
+            if( itemId =='191' ) date='당해연도 4. 1.';
+            if( itemId =='192' ) date='당해연도 4. 1., 단, 사이버대학은 당해연도 3. 1. 기준';
+            if( itemId =='193' ) { //14-마. 기숙사 현황 (명, 실, %)
+                date='당해연도 4. 1.'; 
+                unit='(단위 : 명 , 실, %)'; 
+            }
+            if( itemId =='253' ) date='전년도 회계연도 결산기준';
+            if( itemId =='266' ) date='당해연도 4. 1.';
+            if( itemId =='195') { //14-사. 직원현황 (명)
+                date='당해연도 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='199' ) date='당해연도 4.1. 단, 장애이해 프로그램 운영시간은 전년도 3.1. ~ 당해연도 2.28.';
+            if( itemId =='27' ) { //4-다. 신입생 충원 현황 (명, %)
+                date='당해연도'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='31' ) { //4-마. 재적 학생 현황(2017~2019) (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='33' ) { //4-바. 외국인 유학생 현황_ 외국인 유학생 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='34' ) { //4-바. 외국인 유학생 현황_외국인 유학생 중도탈락 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='35' ) { //4-사. 중도탈락 학생 현황 (명, %)
+                date='전년도. 3. 1. ～ 당해연도. 2. 28., 재적학생 : 전년도. 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='40' ){ //5-가. 졸업생 현황(일반)
+            	 date='전년도 8월 졸업시점과 당해년도 2월 졸업 시점';
+            	 unit='(단위 : 명)';  	
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='41' ){ //5-가. 졸업생 현황(전문)
+            	date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.';
+            	unit='(단위 : 명)';  	         	
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경 
+            if( itemId =='252' ){ //5-가. 졸업생 현황(특수)
+            	 date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.';
+            	 unit='(단위 : 명)';  	              	
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='44' ) { //5-나-1. 졸업생의 진학 현황(명, %)(일반)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='45' ) { //5-나-2. 졸업생의 진학 현황(명, %)(전문)
+                date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='42' ) { //5-나. 졸업생의 진학 현황(명, %)(특수)
+                date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='47' ) { //5-다. 졸업생의 취업 현황(명, %)
+            	//2021.06.29 8월공시 5-다 자료기준일 변경
+                date='건강보험 및 국세DB연계 취업통계조사는 전전년도 8월과 전년도 2월 졸업자, 전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2024.09.11 송지혁 추가. 5-다 2024년 통합으로 요약표 신규생성
+            if( itemId =='291' ) { //5-다. 졸업생의 취업 현황(명, %)
+                date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId =='48' ) { //5-다. 졸업생의 취업 현황(명, %)
+                date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            //2022.08.30 김여정 수정 sr3997 요청으로 자료기준일 텍스트 변경
+            if( itemId == '49'){
+            	 date='전년도 8월 학위취득자는 전년도 10. 1., 당해연도 2월 학위취득자는 당해연도 4. 1.'; 
+                 unit='(단위 : 명 , %)'; 
+            }
+            if( itemId =='51' ) {  //6-가-1. 전체 교원 대비 전임교원 현황 (명)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명)'; 
+            }
+            if( itemId =='52' ) { //6-나-(1) . 전임교원 1인당 학생 수 및 전임교원 확보율 (명, %)
+                date='당해연도. 4. 1.'; 
+                unit='(단위 : 명, %)'; 
+            }
+            if( itemId =='63' ) { //7-가. 전임교원의 연구 실적  (명, 건)
+                date='전년도. 1. 1 ～ 12. 31., 전임교원 : 당해연도. 4. 1.'; 
+                unit='(단위 : 명 , 건)'; 
+            }
+            if( itemId =='82' ) date='예산 - 당해연도 회계연도, 결산 - 전년도 회계연도';
+            if( itemId =='84' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='86' ) date='결산 - 전년도 회계연도';
+            if (itemId == '93') { //8-바-1-(1) 천원
+                date = '예산 - 당해연도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '100') { //8-바-2-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if (itemId == '107') { //8-바-3-(1) 천원
+                date = '결산 - 전년도 회계연도';
+                unit = '(단위 : 천원)';
+            }
+            if( itemId =='95' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='104' ) date='결산 - 전년도 회계연도';
+            if( itemId =='114' ) date='결산 - 전년도 회계연도';
+            if( itemId =='117' ) date='결산 - 전년도 회계연도';
+            if( itemId =='119' ) date='결산 - 전년도 회계연도';
+            if( itemId =='121' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='272' ) date='예산 - 당해연도 회계연도';
+            if( itemId =='123' ) date='결산 - 전년도 회계연도';
+            if( itemId =='273' ) date='결산 - 전년도 회계연도';
+            if( itemId =='140') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 천원, 명)'; 
+            }
+            if( itemId =='141') { //9-나. 학생1인당 교육비 (천원, 명)
+                date='전년도 결산';
+                unit='(단위 : 천원, 명)'; 
+            }
+            if( itemId =='150') { // 12-가. 연구비 수혜 실적 (명, 천원)
+                date='전년도 1. 1. ～ 12. 31., 전임교원 : 당해연도 4. 1.'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+            if( itemId =='153') { //12-나. 교원 강의 담당 현황 (학점, %)
+                date='당해연도 1학기(4월), 2학기(10월)'; 
+                unit='(단위 : 학점 , %)'; 
+            }
+            if( itemId =='157') { //12-다. 장학금 수혜 현황_ 장학금 수혜 현황 (명, 천원)
+                date='전년도, 재학생 수 : 전년도 4. 1., 10. 1.'; 
+                unit='(단위 : 명 , 천원)'; 
+            }
+            if( itemId =='158') { //12-다. 장학금 수혜 현황_ 학자금 대출 현황 (명, 원)
+            	// 2022.06.23 김태욱 수정 - 8월 공시 수정사항 요청으로 자료기준일 설명 문구 수정
+                date='전년도(자료추출일 : 당해연도 6.30.), 재학생 수 : 전년도 4.1,10.1 '; 
+                unit='(단위 : 명 , 원)'; 
+            }
+            //2020.06.17 한지한 수정 9-나-3 항목 요약표 자료기준일 표기
+            //2022.06.20 송지혁 수정 기준 천원 -> 원 수정
+            if( itemId =='281') { //9-나. 학생1인당 교육비 (원, 명)
+                date='전년도 결산'; 
+                unit='(단위 : 원, 명)'; 
+            }
+          //2021.04.01 송지혁 수정. 12-바 자료기준일
+            if( itemId =='163' ) { //12-바. 대학의 원격강좌 현황 (개, 명)
+                date='전년도 3. 1. ~ 당해연도 2월 말'; 
+                unit='(단위 : 개, 명)'; 
+            }
+            //2024.09.11 송지혁 추가. 5-나 분리로 요약표로 새로 생성
+            if( itemId =='290' ) { //5-나. 졸업생의 진학 현황(명, %)
+                date='전년도 12. 31.'; 
+                unit='(단위 : 명 , %)'; 
+            }
+            
+        }
+		if( date != ""){
+			html='<div class="tbl-noti-wrap">'
+						+	'<span class="noti-value">자료 기준일 : '+date+''+unit+'</span>'
+					+'</div>';
+		}
+		return html;
+	}
+	
+	//2020.07.03 한지한 수정. SR2923요청으로 8-카-1-(1),(2)는 연도별로 단위가 달라서 연도도 파라미터로 받는 function 추가함
+	
+    function fn_writeTableLabelSvyYr(itemId,svy_yr){
+        var date ="";
+        var html ="";
+        var unit ="";
+        
+        if( paramSchlDivCd != "03"){//대학교,전문대학,대학원대학
+           
+            if( itemId =='132') { //8-카. 입학 전형료 수입 지출 현황_ 입학전형료 수입 현황
+                date='전년도 결산'; 
+
+                if(svy_yr > 2017){ //명, 원
+                    unit='(단위 : 명 , 원)'; 
+                }else{ //명 , 천원
+                    unit='(단위 : 명 , 천원)';
+                }
+            }else if(itemId =='133'){ //8-카. 입학 전형료 수입 지출 현황_ 입학전형료 지출 현황
+                 date='전년도 결산'; 
+
+                 if(svy_yr > 2017){ // 원
+                     unit='(단위 : 원)'; 
+                 }else{ // 천원
+                     unit='(단위 : 천원)';
+                 }
+            }else if( itemId =='29' ) { //4-라-1. 학생 충원 현황_재학생 충원율 (명, %)
+                if(svy_yr < 2021){ //당해연도 4.1
+                    date='당해연도. 4. 1.'; 
+                }else{ //전년도 10.1, 당해연도 4.1
+                    date='전년도 10.1. , 당해연도 4.1.'; 
+                }
+                unit='(단위 : 명 , %)'; 
+            }
+        }
+        
+        if( date != ""){
+            html='<div class="tbl-noti-wrap">'
+                        +   '<span class="noti-value">자료 기준일 : '+date+''+unit+'</span>'
+                    +'</div>';
+        }
+        return html;
+    }
+	
+	
+	//전체목록
+	function fn_writeAllItemList(){
+		if( arrNum< messageArr.length-1){ //전체보기 제외
+			var message = messageArr[arrNum];
+			var pageIdx = pageIdxArr[arrNum];
+			$("#pageIdx").val(pageIdx);
+			 gfn_Submission_Call("/pubinfo/pubinfo0020/itemTable.do", $("#frm").serialize(), function(data){
+		     		// 공통 에러 메시지 처리
+						if( data.M_CODE < 0 ){
+							alert(data.M_RTME);
+						}else{
+							html=fn_make_all_itemList(message,data);
+							$("#allItemList").append(html);
+							
+							arrNum=1+arrNum;
+							fn_writeAllItemList();
+						}
+		     	   },'json');
+		}
+			
+	}
+	
+	function fn_make_all_itemList(message,data){
+		var html			= "";
+		var detailItemList2 = data.detailItemList2;
+		var detailItemList3 = data.detailItemList3;
+		var detailItemList4 = data.detailItemList4;
+		var eraList 		= data.eraList;		
+		var divYN			= true;
+		
+		html+='\n <h3 class="section-title">'+message+'</h3>';
+		html+='\n        <div class="flex-box">         ';
+		html+='\n			<div class="flex-box-inner">';
+		html+='\n				<ol class="text-list">  ';
+		for(var i=0; i<detailItemList2.length; i++){	
+			var resultList2	 = detailItemList2[i];
+			var count 		 = 0;
+			html+='\n				<li>';
+			html+='\n					<span class="text-list-title">'+resultList2.pgm_estn_nm +'</span>';
+			html+= fn_make_itemList_btn(eraList, resultList2);			
+			for(var j=0; j<detailItemList3.length; j++){
+	
+					var resultList3	= detailItemList3[j];
+					
+					var pgm_estn_nm;
+					
+					if( resultList3.pgm_estn_nm == null ){
+						pgm_estn_nm = ["",""];
+					}else{
+						/*2021.04.19 한지한 수정 점을 기준으로 항목명을 자르다보니 영문에서 항목명이 잘려서 출력되어 수정해줌*/
+						//pgm_estn_nm = resultList3.pgm_estn_nm.split(".");
+						var PgmEstnNm = resultList3.pgm_estn_nm;
+						pgm_estn_nm =  PgmEstnNm.substring(PgmEstnNm.indexOf(".")+1);
+					}
+					
+					if (resultList2.pgm_id == resultList3.uppr_pgm_id){
+						if(count==0){
+							html+='\n <ul class="depth-2">';
+						}
+						var className3 = 'depth-text';
+						count	= count+1;														
+						html+='\n		<li>';
+                        html+='\n			<span class="'+className3+'">'+pgm_estn_nm+'</span>';
+						html+= fn_make_itemList_btn(eraList, resultList3);
+	
+						var count2 =0;			
+						for(var k=0; k<detailItemList4.length; k++){
+							var resultList4	= detailItemList4[k];
+							var pgm_estn_nm2;
+							
+							if( resultList4.pgm_estn_nm == null ){
+								pgm_estn_nm2 = ["",""];
+							}else{
+								pgm_estn_nm2= resultList4.pgm_estn_nm.split(".")
+							}							
+							
+							if(resultList3.pgm_id == resultList4.uppr_pgm_id){
+								if( count2==0){
+									html+='<ul class="depth-3">';
+								}	
+								count2=count2 + 1;
+								var className4 = 'depth-text';
+								html+='\n			<li>';
+								html+='\n				<span class="'+className4+'">'+pgm_estn_nm2[1] +'</span>';
+								html+= fn_make_itemList_btn(eraList, resultList4);
+								html+='\n			</li>';								
+																			
+							}
+							if((count2>0) && ( (k+1)== detailItemList4.length ) ) {
+								html+='</ul>';
+							}
+						}// for k end
+						html+='\n		</li>';
+					}
+					
+				if((count>0) && ( (j+1)== detailItemList3.length ) ){
+					html+='</ul>';
+				}	
+			} // j end
+			html+='\n</li>';
+			if( (i+1)%7 == 0 && (i+1)< detailItemList2.length && divYN ){ //7번째
+					html+='	</ol>';
+					html+='</div>';
+					html+='<div class="flex-box-inner">';
+					html+='	<ol class="text-list">';		
+					divYN=false;
+			}
+			
+		}// i end 	
+		html+='</ol>';		
+		html+='</div>';		
+		html+='</div>';	
+			return html;
+	}
+
+	
+	 function fn_RdViewer(itemId,svyYr)
+	 {
+		 fn_open_view_submit(svyYr,$("#paramSchlDivCd").val(),itemId);
+	 }
+	 //PDF리스트를 가져온다.
+	 function fn_PdfViewer(itemId, svyYr)
+	 { 
+		 $(".addhead").remove();
+		 $("#paramSvyYr").val(svyYr);
+		 $("#paramItemId").val(itemId);
+		 
+		 
+		var isURL= false;
+		if( (itemId == '197' || itemId == '19'|| itemId == '22'|| itemId == '2') && svyYr > 2014  ){
+			isURL =true;
+		}
+		if(itemId == '257'){ //9-가-2 등록금심의위원회 회의록
+			$("#pdf-rfm-day").html("회의 개최일");//회의 개최일
+		}else if( itemId == '2' || itemId == '189'){ //1-가 학칙, 14가 정관
+			$("#pdf-rfm-day").html("시행일");//시행일
+		}
+		 gfn_Submission_Call("/pubinfo/pubinfo0020/selectPdfList.do", $("#reportFrm").serialize(), function(data){
+	     		// 공통 에러 메시지 처리
+					if( data.M_CODE < 0 ){
+						alert(data.M_RTME);
+					}else{
+						fn_make_pdf_pop(data,isURL);
+
+					}
+	     	   },'json');		 
+	 }
+	 var result;
+	 function fn_make_pdf_pop(data,isURL){
+		 $("#pdf-apy-yr").hide();
+		 $("#pdf-rfm-day").hide();
+		 $("#pdf-rfm-day2").hide();
+		 result=data;
+		 var resultList=data.resultList;
+		 var rmkMap=data.rmkMap;
+		 var html ='';
+		 var addhead=0;
+	 		$(resultList).each(function(index,obj){
+	 			var dataStr ='\''+obj.file_name+'\''
+	 							+',\''+obj.file_path+'\''
+	 							+',\''+obj.pc_file+'\'';
+				html +='<tr>';
+				html +='	<td>'+(index+1)+'</td>';
+				if( typeof obj.apy_yr == 'undefined' ){
+					html +='	<td style="display:none;"></td>';
+				}else{
+					html +='	<td>'+obj.apy_yr+'</td>'; 
+					$("#pdf-apy-yr").show();
+				}
+				/*2025.08.13 김여정 수정. sr4868 요청으로 개정일,시행일 컬럼 위치 변경*/
+				if( typeof obj.rfm_day2 == 'undefined' ){
+					html +='	<td style="display:none;" ></td>';
+				}else{
+					var d =obj.rfm_day2;
+					if(d!=null && d.length == 8){
+						d=d.substr(0,4)+'-'+d.substr(4,2)+'-'+d.substr(6,2);
+					}
+					html +='	<td>'+d+'</td>';
+					$("#pdf-rfm-day2").show();
+				}
+				if( typeof obj.rfm_day == 'undefined' ){
+					html +='	<td style="display:none;" ></td>';
+				}else{
+					var d =obj.rfm_day;
+					if( d!=null && d.length == 8){
+						d=d.substr(0,4)+'-'+d.substr(4,2)+'-'+d.substr(6,2);
+					}
+					html +='	<td>'+d+'</td>';
+					$("#pdf-rfm-day").show();
+				}
+				html +='	<td>'+obj.title+'</td>';
+				html +='	<td><a href="javascript:fn_pdf_down('+dataStr+')" class="btn-pdf no-line">PDF 다운로드</a></td>';
+				if( obj.col_14_val != null && obj.col_14_val != ""  && obj.col_14_val != "1" && isURL && obj.col_14_val != "about:blank"){
+					html +='	<td><a href="'+obj.col_14_val+'" class="no-line" target="_blank">'+obj.col_14_val+'</a></td>';
+					if( addhead == 0){
+						$("#pdf_thead").append('<th scope="col" class="addhead" >원본보기</th>');
+					}
+					addhead=addhead+1;
+	 			}
+				html +='</tr>';		 
+		 	});		
+	 		$("#pdf_tbody").html(html);
+	 		if( rmkMap!=null && rmkMap.item_rmk_ctnt != null && rmkMap.item_rmk_ctnt !="" ){
+	 		    $("#pdf_desc").html(rmkMap.item_rmk_ctnt);
+	 		}else{
+	 		//2020.11.18 한지한 수정 SR3200번 비고값이 없는데도 이전에 조회되었던 비고가 출력되어 비고값이 없을 경우 값을 지워줌
+	 			$("#pdf_desc").empty();
+	 		}
+		   $("#dialogPDFDownload").dialog("open");
+	 }
+	 function fn_pdf_down(fileName,filePath,saveName){
+		 $("#fileName").val ( fileName);
+		 $("#filePath").val ( filePath);
+		 $("#saveName").val ( saveName);
+		 $("#frm").attr("action","/file/fileDownPram.do");
+		 $("#frm").attr("target","filedown");
+		 $("#frm").submit();
+		 $("#frm").attr("target","_self");
+		 
+	 }
+	</script>
+	
+	<script type="text/javascript">
+	/**
+	 * 학교 상세 팝업
+	 * @param {String} schl_id  :학교 아이디
+	 * @param {String} gubun    : pubinfo(공시정보) / mjr(학과정보) /compt(우리대학경쟁력) /finc(재정회계지표) 
+	 * @return true/false
+	 * */
+	function go_tab( gubun){
+		var link ="";
+		var schl_id="0000029";
+		if( gubun == "pubinfo" ){ //공시정보
+			link="/pubinfo/pubinfo0020/list.do?schlId="+schl_id;
+		}else if( gubun == "mjr" ){ //학과정보
+			link="/pubinfo/pubinfo1600/doInit.do?schlId="+schl_id;
+		}else if( gubun == "compt" ){ //우리대학경쟁력
+			link="/popup/pubinfo1690/list.do?schlId="+schl_id;
+		}else if( gubun == "finc" ){ //재정회계지표
+			link="/pubinfo/pubinfo0140/selectListLink.do?schlId="+schl_id;			
+		}
+		location.href=link;
+	}  
+	 /**
+		 * 학교 이동
+		 * @param {String} schl_id  :학교 아이디
+		 * */	
+		function fn_go_schl(schl_id,schl_div_cd){
+			var url	   = schl_div_cd =='03' ? "/pubinfo/pubinfo0020/list.do?schlId="+schl_id:"/popup/pubinfo1690/list.do?schlId="+schl_id;
+//	 		var Hei	   =  screen.availHeight - 60;			
+//	 		gfn_winOpen(url,'schl',1180,Hei)
+			window.location.href=url;
+		}
+		 
+		 $(document).ready(function(){
+			 if( gnf_favrtYN("schl", $(".btn-favorite").val() ) ){
+				 $(".btn-favorite").addClass("active");
+			 }	 
+		});
+		 
+	</script>
+</head>
+<body> 
+<div class="app win-popup content-width">
+		<div class="header-wrap popup-header">
+			<div class="inner-wrap">
+				<h2 class="page-title">공시정보</h2>
+            </div>
+        </div>
+        <div id="contentsWrap" class="contents-wrap">
+            <div class="contents-inner-wrap">
+                <div class="inner-wrap">
+					
+					
+
+
+
+
+
+
+
+
+<script>
+function winPopup(url, customWidth, customHeight) {
+	var popWidth, popHeight, option;
+	popWidth = screen.availWidth - 30;
+	popHeight = screen.availHeight - 80;
+	if (customWidth !== undefined && customWidth !== null && !isNaN(customWidth) && customWidth > 0) {
+		popWidth = customWidth;
+		//console.log(customWidth);
+	}
+	if (customHeight !== undefined && customHeight !== null && !isNaN(customHeight) && customHeight > 0) {
+		popHeight = customHeight;
+		//console.log(customHeight);
+	}
+	option = "resizable=yes,scrollbars=no,status=no,left=0,top=0,width=" + popWidth + ", height=" + popHeight;
+	window.open(url, "", option);
+}
+</script>
+
+<form name="reportFrm" id="reportFrm" method="post">
+		<!-- RDviewer -->
+		<input type="hidden" id="paramSvyYr" name="paramSvyYr" value=""><!-- 공시년도 -->
+		<input type="hidden" id="paramItemId" name="paramItemId" value=""><!-- 항목 선택값 -->
+		<input type="hidden" id="paramSchlDivCd" name="paramSchlDivCd" value="02"><!-- 학교구분 -->
+		<input type="hidden" name="paramSchlCd" value="0000029"><!-- 학교아이디 -->
+		<input type="hidden" name="paramFormClftCd" value="60"><!-- 기본양식 -->
+		<input type="hidden" name="paramSchlKindCd" value="99"><!-- 유형 선택값 -->
+		<input type="hidden" name="paramSchlEstabCd" value="99"><!-- 설립 선택값 -->
+		<input type="hidden" name="paramZoneCd" value="99"><!-- 지역 선택값 -->
+		<input type="hidden" name="ui_schl_knd_cd" id="ui_schl_knd_cd" value="03">
+</form>		
+					<div class="college-info-box">
+						<div class="college-info-inner">
+							<div class="img-box">
+								<img src="/image/schlInfoJspImgLoad.do?paramUrl=/infofile/PDF_UPLOAD/ANNOUNCE/20150917154301572.jpg&amp;refParamUrl=/infofile/PDF_UPLOAD/ANNOUNCE/20150917154301572.jpg" alt="충남대학교" width="200">
+							</div>
+							<div class="info-box">
+								<div class="college-name-wrap">
+									<span class="college-name">충남대학교[본교]
+										
+											<button type="button" class="btn-favorite" onclick="gnf_add_favrt('schl','0000029',this);" value="0000029">관심 추가</button>
+										
+										
+										
+										<button type="button" class="btn" onclick="window.open('http://www.cnu.ac.kr')">
+											학교홈페이지
+										</button>
+										<button type="button" class="btn" onclick="window.open('/html/SC-AIP-0020_MAP.html?addr=대전광역시 유성구 대학로 99 (궁동, 충남대학교)&amp;nm=충남대학교')">
+                                            지도보기
+                                        </button>
+                                        
+                                        
+									</span>
+								</div>
+								<div class="college-info-wrap">
+									<div class="info-row">
+										<span class="info-cell"> <span class="info-label">주소 :</span><span class="info-value">대전광역시 유성구 대학로 99 (궁동, 충남대학교)
+												(우  : 34134)</span>
+										</span>
+									</div>
+									<div class="info-row">
+										<span class="info-cell"> <span class="info-label">대표전화 :</span><span class="info-value">042-821-5114</span>
+										</span> <span class="info-cell"> <span class="info-label">대표팩스 :</span><span class="info-value">042-823-5875</span>
+										</span>
+									</div>
+									<div class="info-row">
+										<span class="info-cell"> <span class="info-label">유형 :</span><span class="info-value">대학교</span>
+										</span> <span class="info-cell"> <span class="info-label">설립 :</span><span class="info-value">국립</span>
+										</span>
+											
+											<span class="info-cell"> <span class="info-label">학교설립일:</span><span class="info-value">1952.05.25</span>
+											</span>
+											 
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="college-desc">
+							<p>1952년에 개교한 국립 충남대학교는 창의·개발·봉사의 교육이념을 실천하면서 세계 100대 대학으로 도약하기 위해 최선을 다하고 있습니다.
+ 대덕R&amp;D특구, 행정중심복합도시, 정부대전청사, 특허법원, 계룡대를 비롯하여 3군 본부 등 국가 전략기관들이 주변에 위치하고 있는 충남대학교는 천혜의
+ 교육·연구 여건을 갖추고 있으며, 오랜 전통과 유능한 인재 배출, 지역민들의 사랑을 통해 지역의 대표대학으로서 그 위상을 확고히 하고 있습니다.
+ 충남대학교가 이제 세계적인 명문대학으로의 비상을 꿈꾸고 있습니다. 미래의 꿈이 현실이 되는 대학, 그 곳이 바로 우리 충남대학교입니다.</p>
+						</div>
+					</div>
+					<span class="notice-text">보다 정확한 정보공시를 위하여, 일부 대학의 데이터 값이 수정될 수 있으니 이점 양해하여 주십시오.</span>
+					<div class="college-info-list-wrap">
+						<ul class="college-info-list">
+							
+								<li class="current">
+									<a href="#none" onclick="fn_go_schl('0000029','02')">충남대학교</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000867','03')">충남대학교 경영대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000868','03')">충남대학교 교육대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0002614','03')">충남대학교 국가정책대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0003320','03')">충남대학교 국가정책전문대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000866','03')">충남대학교 대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000873','03')">충남대학교 법학전문대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000869','03')">충남대학교 보건대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000877','03')">충남대학교 분석과학기술대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000870','03')">충남대학교 산업대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0003106','03')">충남대학교 스마트농업대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000879','03')">충남대학교 신약전문대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0002743','03')">충남대학교 에너지과학기술대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000871','03')">충남대학교 특허법무대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000874','03')">충남대학교 평화안보대학원</a>
+								</li>
+							
+								<li>
+									<a href="#none" onclick="fn_go_schl('0000872','03')">충남대학교 행정대학원</a>
+								</li>
+							
+						</ul>
+						
+						<ul class="college-info-list">
+							
+						</ul>
+					</div>
+					<div class="ui-tabs-wrap">
+						<div class="ui-tabs">
+							
+							<ul class="ui-tabs-nav">
+									
+									<li class="ui-tab"><a href="javascript:go_tab('compt')" class="ui-tabs-anchor">우리대학경쟁력</a></li><!--우리대학경쟁력 -->
+									
+								<li class="ui-tab ui-tabs-active"><a href="javascript:go_tab('pubinfo')" class="ui-tabs-anchor">공시정보</a></li><!--공시정보 -->
+								<li class="ui-tab"><a href="javascript:go_tab('mjr')" class="ui-tabs-anchor">학과정보</a></li><!--학과정보 -->
+									
+							</ul>
+
+
+
+
+										
+					
+					<div class="ui-tabs-panel">						               	        								
+						
+	<form id="frm" name="frm" action="/pubinfo/pubinfo0020/list.do?schlId=0000029&amp;svyYr=2025&amp;pageIdx=all&amp;filePath=01&amp;fileName=01&amp;saveName=01" method="post">
+        <input type="hidden" id="schlId" name="schlId" value="0000029">
+        <input type="hidden" id="svyYr" name="svyYr" value="2025">
+        <input type="hidden" id="pageIdx" name="pageIdx" value="05">
+        <input type="hidden" id="filePath" name="filePath" value="all">
+        <input type="hidden" id="fileName" name="fileName" value="all">
+        <input type="hidden" id="saveName" name="saveName" value="all">
+     </form> 
+							
+								<div class="ui-tabs sub-tabs">
+									
+									<ul class="ui-tabs-nav" id="tab02">
+										<li class="ui-tab">
+											
+												
+												<a href="#none" onclick="goTab02('01')" class="ui-tabs-anchor">
+											
+											학생
+											
+												
+												</a>
+																						
+											</li>
+										<li class="ui-tab">
+											
+												
+												<a href="#none" onclick="goTab02('04')" class="ui-tabs-anchor">
+											
+											교육여건
+											
+												
+												</a>
+																						
+										</li>
+										<li class="ui-tab">
+											
+												
+												<a href="#none" onclick="goTab02('02')" class="ui-tabs-anchor">
+											
+											교육연구성과
+											
+												
+												</a>
+																						
+										</li>
+										<li class="ui-tab">
+											
+												
+												<a href="#none" onclick="goTab02('03')" class="ui-tabs-anchor">
+											
+											대학재정/교육비
+											
+												
+												</a>
+																						
+										</li>
+										<li class="ui-tab">
+											
+												
+												<a href="#none" onclick="goTab02('05')" class="ui-tabs-anchor">
+											
+											대학운영
+											
+												
+												</a>
+																						
+										</li>
+										<li class="ui-tab ui-tabs-active">
+											
+												<span class="ui-tabs-anchor">
+												
+											
+											전체목록
+											
+												</span>
+												
+																						
+										</li>
+									</ul>
+										
+									<div class="ui-tabs-panel" id="allItemList">
+									 
+								
+ <h3 class="section-title">학생</h3>
+        <div class="flex-box">         
+			<div class="flex-box-inner">
+				<ol class="text-list">  
+				<li>
+					<span class="text-list-title">2-가. 성적평가 결과(성적평가 분포)</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 전공과목 성적 분포</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('9','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('9','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('9','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 교양과목 성적 분포</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('10','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('10','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('10','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 교직과목 성적 분포</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('11','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('11','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('11','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 졸업생의 졸업성적 분포</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('12','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('12','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('12','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">3-가. 모집요강(편입학 포함)</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 신입생 모집요강[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('19','2023')">2023&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('19','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('19','2025')">2025&nbsp;PDF</button>
+		</li>
+		<li>
+			<span class="depth-text"> 편입생 모집요강[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('22','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('22','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('22','2026')">2026&nbsp;PDF</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">4-가. 입학전형 유형별 선발 결과</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('25','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('25','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('25','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">4-나. 기회 균형 선발 결과</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('26','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('26','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('26','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">4-다. 신입생 충원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('27','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('27','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('27','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">4-라. 학생 충원 현황(편입학 포함)</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 재학생 충원율</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('29','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('29','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('29','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 편입학 선발 결과</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('30','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('30','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('30','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">4-마. 재적 학생 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('31','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('31','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('31','2025')">2025&nbsp;보기</button>
+</li>	</ol></div><div class="flex-box-inner">	<ol class="text-list">
+				<li>
+					<span class="text-list-title">4-바. 외국인 학생 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 외국학생 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('33','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('33','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('33','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 외국학생 중도탈락 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('34','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('34','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('34','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">4-사. 중도탈락 학생 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('35','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('35','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('35','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">4-자. 신입생의 출신 고등학교 유형별 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('37','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('37','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('37','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-라. 외국대학과 교류 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 외국대학과 교류 현황[PDF](2024년 삭제 항목)</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('160','2023')">2023&nbsp;PDF</button>
+		</li>
+		<li>
+			<span class="depth-text"> 외국대학과 학점 교류 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('161','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('161','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('161','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">12-카. 현장중심 실무형 교육과정 개설 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 현장실습 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('175','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('175','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('175','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 캡스톤 디자인(창의적 설계) 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('176','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('176','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('176','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 사회맞춤형 교육과정</span><ul class="depth-3">
+			<li>
+				<span class="depth-text"> 계약학과 및 계약정원제 설치 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('173','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('173','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('173','2025')">2025&nbsp;보기</button>
+			</li>
+			<li>
+				<span class="depth-text"> 주문식 교육과정 설치 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('264','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('264','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('264','2025')">2025&nbsp;보기</button>
+			</li></ul>
+		</li></ul>
+</li></ol></div></div>
+ <h3 class="section-title">교육여건</h3>
+        <div class="flex-box">         
+			<div class="flex-box-inner">
+				<ol class="text-list">  
+				<li>
+					<span class="text-list-title">3-나. 전임 입학사정관 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('282','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('282','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('282','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">3-다. 학교생활기록부의 기록 등 교과성적 외의 자료를 활용하는 입학전형에서 서류평가를 담당한 평가자 1명당 서류평가 건수</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('283','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('283','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('283','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">6-가-1. 전체 교원 대비 전임교원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('51','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('51','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('51','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">6-가-2. 전체 신규 전임교원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('277','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('277','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('277','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">6-나-(1). 전임교원 1인당 학생 수 및 전임교원 확보율</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('52','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('52','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('52','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">6-다. 외국인 전임교원 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 국가별 외국인 전임교원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('60','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('60','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('60','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 전공계열별 외국인 전임교원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('61','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('61','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('61','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">12-나. 교원 강의 담당 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 학생 규모별 강좌수</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('152','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('152','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('152','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 교원 강의 담당 비율</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('153','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('153','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('153','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 대학 강의 공개 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('154','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('154','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('154','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>	</ol></div><div class="flex-box-inner">	<ol class="text-list">
+				<li>
+					<span class="text-list-title">12-바. 대학의 원격강좌 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('163','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('163','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('163','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-아. 산업체 경력 전임교원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('165','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('165','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('165','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-차. 공동활용 연구장비 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('172','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('172','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('172','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-거. 기술지주회사 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('183','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('183','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('183','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">13-가 . 장서 보유 및 도서관 자료 구입비 결산 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('185','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('185','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('185','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">13-나. 대학 부설 연구소 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('187','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('187','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('187','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-다. 교지(校地) 확보 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('191','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('191','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('191','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-라. 교사(校舍)시설 확보 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('192','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('192','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('192','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-마. 기숙사  현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 기숙사 수용 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('193','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('193','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('193','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 기숙사 운영 결과(국·공립_민자)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('262','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('262','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('262','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 기숙사 운영 결과(국·공립_직영)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('278','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('278','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('278','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 기숙사비 납부제도 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('266','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('266','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('266','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">14-카. 장애학생지원체제 구축 및 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('199','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('199','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('199','2025')">2025&nbsp;보기</button>
+</li></ol></div></div>
+ <h3 class="section-title">교육연구성과</h3>
+        <div class="flex-box">         
+			<div class="flex-box-inner">
+				<ol class="text-list">  
+				<li>
+					<span class="text-list-title">5-가. 졸업생 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('39','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('39','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('39','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">5-나. 졸업생의 진학 현황 </span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('290','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('290','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">5-나. 졸업생의 진학 현황 (2024년 삭제항목)</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 졸업생의 진학 현황 (2024년 삭제항목)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('44','2023')">2023&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">5-다. 졸업생의 취업 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('46','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('46','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('46','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">7-가. 전임교원의 연구 실적</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('63','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('63','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('63','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-가. 연구비 수혜 실적</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('150','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('150','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('150','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-마. 대학의 사회봉사 역량</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 대학의 사회봉사 역량</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('263','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('263','2025')">2025&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('263','2026')">2026&nbsp;보기</button>
+		</li></ul>
+</li>	</ol></div><div class="flex-box-inner">	<ol class="text-list">
+				<li>
+					<span class="text-list-title">12-사. 산학협력 친화형 교원 인사 운영 현황[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('164','2023')">2023&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('164','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('164','2025')">2025&nbsp;PDF</button>
+</li>
+				<li>
+					<span class="text-list-title">12-타. 기술이전 수입료 및 계약 실적</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('178','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('178','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('178','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-파. 특허 출원 및 등록 실적</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('179','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('179','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('179','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">12-하. 창업 현황 및 창업교육 등 지원 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 교원·학생의 창업 및 창업지원 현황</span><ul class="depth-3">
+			<li>
+				<span class="depth-text"> 교원의 창업 및 창업지원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('180','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('180','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('180','2025')">2025&nbsp;보기</button>
+			</li>
+			<li>
+				<span class="depth-text"> 학생의 창업 및 창업지원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('182','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('182','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('182','2025')">2025&nbsp;보기</button>
+			</li></ul>
+		</li>
+		<li>
+			<span class="depth-text"> 창업교육 지원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('204','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('204','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('204','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li></ol></div></div>
+ <h3 class="section-title">대학재정/교육비</h3>
+        <div class="flex-box">         
+			<div class="flex-box-inner">
+				<ol class="text-list">  
+				<li>
+					<span class="text-list-title">8-가. 국·공립대 대학회계 예·결산 현황(2014년 이전 : 기성회회계 현황)</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 국·공립대 대학회계 예산(2014년 이전 : 기성회회계 현황 - 세입)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('72','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('72','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('72','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 국·공립대 대학회계 결산(2014년 이전 : 기성회회계 현황 - 세출)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('74','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('74','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('74','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">8-다. 국·공립대 발전기금 예·결산 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 국·공립대 발전기금회계 예산(2014년 이전 : 발전기금회계 현황 - 세입)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('78','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('78','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('78','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 국·공립대 발전기금회계 결산(2014년 이전 : 발전기금회계 현황 - 세출)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('80','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('80','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('80','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">8-자. 산학협력단 회계 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 현금예산서(예산)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('121','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('121','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('121','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 현금흐름표(결산)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('123','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('123','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('123','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 운영(손익) 계산서</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('125','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('125','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('125','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 재무상태표</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('127','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('127','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('127','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">8-차. 등록금 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 등록금 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('129','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('129','2025')">2025&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('129','2026')">2026&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 등록금 납부제도 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('130','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('130','2025')">2025&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('130','2026')">2026&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">8-카. 입학 전형료 수입·지출 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 입학 전형료 수입·지출 현황</span><ul class="depth-3">
+			<li>
+				<span class="depth-text"> 입학전형료 수입 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('132','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('132','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('132','2025')">2025&nbsp;보기</button>
+			</li>
+			<li>
+				<span class="depth-text"> 입학전형 관련 지출 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('133','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('133','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('133','2025')">2025&nbsp;보기</button>
+			</li></ul>
+		</li>
+		<li>
+			<span class="depth-text"> 입학전형료 산정 근거[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('134','2023')">2023&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('134','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('134','2025')">2025&nbsp;PDF</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">9-가. 등록금 산정 근거</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 등록금 산정근거[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('138','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('138','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('138','2026')">2026&nbsp;PDF</button>
+		</li>
+		<li>
+			<span class="depth-text"> 등록금심의위원회 회의록</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('257','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('257','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('257','2026')">2026&nbsp;PDF</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">9-나. 학생 1인당 교육비 산정 근거</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 학생 1인당 교육비(국·공립대, 국립대법인, 특별법국립, 특별법법인)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('140','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('140','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('140','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>	</ol></div><div class="flex-box-inner">	<ol class="text-list">
+				<li>
+					<span class="text-list-title">12-다. 장학금 수혜 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 장학금 수혜 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('157','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('157','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('157','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 학자금 대출 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('158','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('158','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('158','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">14-아. 재정지원사업 수혜 실적(2022년 삭제 항목)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('196','2019')">2019&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('196','2020')">2020&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('196','2021')">2021&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-차. 강사 강의료</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('198','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('198','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('198','2025')">2025&nbsp;보기</button>
+</li></ol></div></div>
+ <h3 class="section-title">대학운영</h3>
+        <div class="flex-box">         
+			<div class="flex-box-inner">
+				<ol class="text-list">  
+				<li>
+					<span class="text-list-title">1-가. 학교규칙 및 그 밖에 학교운영에 관한 각종 규정[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('2','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('2','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('2','2026')">2026&nbsp;PDF</button>
+</li>
+				<li>
+					<span class="text-list-title">10-가. 위반 내용 및 조치 결과</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('143','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('143','2025')">2025&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('143','2026')">2026&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">11-가. 학교 발전계획 및 특성화 계획</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 학교 발전계획 및 특성화 계획[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('146','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('146','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('146','2026')">2026&nbsp;PDF</button>
+		</li>
+		<li>
+			<span class="depth-text"> 학교 특성화 현황(2022년 삭제 항목)</span>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">12-자. 산학협력단 인력 및 조직 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 산학협력단 고용주체별 인력 현황(2021년 삭제 항목)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('168','2018')">2018&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('168','2019')">2019&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('168','2020')">2020&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 산학협력단 담당업무별 인력 현황(2022년 삭제 항목)</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('170','2019')">2019&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('170','2020')">2020&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('170','2021')">2021&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">12-카. 현장중심 실무형 교육과정 개설 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 학교기업 운영현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('177','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('177','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('177','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li>
+				<li>
+					<span class="text-list-title">14-사. 직원 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('195','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('195','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('195','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-자.「고등교육법」제11조의2에 따른 대학 평가 결과</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 대학 자체 평가 결과[PDF]</span>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('197','2024')">2024&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('197','2025')">2025&nbsp;PDF</button>
+<button type="button" class="btn btn-sm" onclick="fn_PdfViewer('197','2026')">2026&nbsp;PDF</button>
+		</li>
+		<li>
+			<span class="depth-text"> 대학별 평가 인증 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('267','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('267','2025')">2025&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('267','2026')">2026&nbsp;보기</button>
+		</li></ul>
+</li>	</ol></div><div class="flex-box-inner">	<ol class="text-list">
+				<li>
+					<span class="text-list-title">14-타. 성희롱·성폭력·가정폭력·성매매 예방교육 이수 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('279','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('279','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('279','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-파. 인권 보호 및 성희롱·성폭력 대응 전담 조직의 운영 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('287','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('287','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('287','2025')">2025&nbsp;보기</button>
+</li>
+				<li>
+					<span class="text-list-title">14-하. 안전관리 현황</span>
+ <ul class="depth-2">
+		<li>
+			<span class="depth-text"> 실험·실습실 안전관리 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('261','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('261','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('261','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 시설 안전관리 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('260','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('260','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('260','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 정보보안 및 개인정보보호 수준 진단</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('258','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('258','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('258','2025')">2025&nbsp;보기</button>
+		</li>
+		<li>
+			<span class="depth-text"> 안전관리 계획 및 안전사고 보험(공제) 현황</span>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('288','2023')">2023&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('288','2024')">2024&nbsp;보기</button>
+<button type="button" class="btn btn-sm" onclick="fn_RdViewer('288','2025')">2025&nbsp;보기</button>
+		</li></ul>
+</li></ol></div></div></div>
+							</div>
+						
+					<iframe style="display: none" name="filedown"></iframe>
+
+					</div>
+						
+				</div>
+			</div>
+			<div class="layer-favorite js-layer-favorite">
+                관심대학에 추가 되었습니다.
+            </div>
+			
+         </div>
+            </div>
+        </div> 
+    </div>
+
+    
+
+<div id="dialogContainer" class="ui-dialog-container"><div class="ui-dialog-container-inner"><div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="dialogPDFDownload" aria-labelledby="ui-id-1" style="display: none;"><div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix"><span id="ui-id-1" class="ui-dialog-title">PDF 다운로드</span><button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close"><span class="ui-button-icon ui-icon ui-icon-closethick"></span><span class="ui-button-icon-space"> </span>Close</button></div><div id="dialogPDFDownload" class="ui-dialog-contents ui-dialog-content ui-widget-content" style="">
+						<div class="tbl-wrap">
+							<table class="tbl-col">
+								<caption>통·폐합 및 학제변경에 따른 항목별 공시방법 테이블 목록이며 번호, 조사연도, 개정일, 시행일, 제목, 보기을(를) 나타낸 표입니다.</caption>
+								<thead>
+									<tr id="pdf_thead">
+										<th scope="col" style="width: 50px;">번호</th>	
+										
+                                                
+                                                    <th scope="col" style="display:none;width: 80px;" id="pdf-apy-yr">조사연도</th>
+                                                
+                                                
+                                        
+                                        <th scope="col" style="display:none;width: 80px;" id="pdf-rfm-day2">개정일</th> 
+										<th scope="col" style="display:none;width: 80px;" id="pdf-rfm-day">시행일</th>
+										<th scope="col">제목</th>
+										<th scope="col" style="width: 50px;">보기</th>
+									</tr>
+								</thead>
+								<tbody id="pdf_tbody">
+								</tbody>
+							</table>
+						</div>
+
+						<h3 class="section-title">비고</h3>
+						<div class="gray-line-bg-box">
+							<p class="pdf-down-desc" id="pdf_desc"></p>
+						</div>
+					</div></div></div></div></body></html>
