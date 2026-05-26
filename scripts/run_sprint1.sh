@@ -15,22 +15,22 @@ cd "$(dirname "$0")/.."
 DAY="${1:-all}"
 
 if [[ "$DAY" == "verify-only" ]]; then
-  python -m scripts.sprint1_verify
+  python -m scripts.sprint1.verify
   exit 0
 fi
 
 echo "=== 0. 사전 inspect ==="
-python -m scripts.sprint1_pre_inspect || echo "(사전 inspect 경고 — Day 진행 가능)"
+python -m scripts.sprint1.pre_inspect || echo "(사전 inspect 경고 — Day 진행 가능)"
 
 run_day() {
   local d="$1"
   echo ""
   echo "=== ${d} 시작 ==="
-  python -m scripts.sprint1_runner "${d}"
+  python -m scripts.sprint1.runner "${d}"
   if [[ "${d}" == "day4" ]]; then
     echo ""
     echo "=== ${d} 첨부 후처리 (HWP/PDF) ==="
-    python -m scripts.sprint1_process_attachments "${d}" \
+    python -m scripts.sprint1.process_attachments "${d}" \
       --hwp-prefer hwp5txt --max 30 || true
   fi
 }
@@ -45,4 +45,4 @@ fi
 
 echo ""
 echo "=== 검증 ==="
-python -m scripts.sprint1_verify
+python -m scripts.sprint1.verify

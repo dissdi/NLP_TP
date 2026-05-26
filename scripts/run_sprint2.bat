@@ -21,7 +21,7 @@ set "DAY=%~1"
 if "!DAY!"=="" set "DAY=all"
 
 if /I "!DAY!"=="verify" (
-    python -m scripts.sprint2_verify
+    python -m scripts.sprint2.verify
     exit /b %ERRORLEVEL%
 )
 
@@ -30,15 +30,15 @@ if /I "!DAY!"=="inspect" (
     python -m crawler.adapters.e_rule_hwp inspect "https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=0703"
     echo.
     echo === inspect: alimi spike ===
-    python -m scripts.sprint2_dstat spike-alimi
+    python -m scripts.sprint2.dstat spike-alimi
     echo.
     echo === inspect: dept grad discover ===
-    python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    python -m scripts.sprint2.dept_grad discover --dept-list scripts/sprint2_dept_list.json
     exit /b %ERRORLEVEL%
 )
 
 if /I "!DAY!"=="dept-discover" (
-    python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    python -m scripts.sprint2.dept_grad discover --dept-list scripts/sprint2_dept_list.json
     echo.
     echo Inspect: data\sprint2\day1\dept_grad_candidates.jsonl
     echo Next:    scripts\run_sprint2.bat dept-crawl
@@ -46,80 +46,62 @@ if /I "!DAY!"=="dept-discover" (
 )
 
 if /I "!DAY!"=="dept-crawl" (
-    python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
+    python -m scripts.sprint2.dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
     exit /b %ERRORLEVEL%
 )
 
 if /I "!DAY!"=="dept-grad" (
-    python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
-    python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
+    python -m scripts.sprint2.dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    python -m scripts.sprint2.dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
     exit /b %ERRORLEVEL%
 )
 
 if /I "!DAY!"=="alimi" (
-    python -m scripts.sprint2_dstat spike-alimi
+    python -m scripts.sprint2.dstat spike-alimi
     echo.
     echo NOTE: If PDF URL found, then:
-    echo   python -m scripts.sprint2_dstat fetch-pdf "URL"
+    echo   python -m scripts.sprint2.dstat fetch-pdf "URL"
     exit /b %ERRORLEVEL%
 )
 
 if /I "!DAY!"=="attachments" (
     for %%d in (day1 day2 day3) do (
         echo === %%d attachments ===
-        python -m scripts.sprint2_process_attachments %%d --hwp-prefer hwp5txt --max 80
+        python -m scripts.sprint2.process_attachments %%d --hwp-prefer hwp5txt --max 80
     )
-    python -m scripts.sprint2_verify
+    python -m scripts.sprint2.verify
     exit /b %ERRORLEVEL%
 )
 
 if /I "!DAY!"=="all" (
     echo === 0. inspect ===
     python -m crawler.adapters.e_rule_hwp inspect "https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=0703"
-    python -m scripts.sprint2_dstat spike-alimi
-    python -m scripts.sprint2_dept_grad discover --dept-list scripts/sprint2_dept_list.json
+    python -m scripts.sprint2.dstat spike-alimi
+    python -m scripts.sprint2.dept_grad discover --dept-list scripts/sprint2_dept_list.json
 
     for %%d in (day1 day2 day3) do (
         echo.
         echo === %%d main runner ===
-        python -m scripts.sprint2_runner %%d
+        python -m scripts.sprint2.runner %%d
     )
 
     echo.
     echo === day1 dept_grad crawl ===
-    python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
+    python -m scripts.sprint2.dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
 
     echo.
     echo === day3 cross_tag / faq_seed / dorm_js ===
-    python -m scripts.sprint2_cross_tag
-    python -m scripts.sprint2_faq_seed
-    python -m scripts.sprint2_dorm_js
+    python -m scripts.sprint2.cross_tag
+    python -m scripts.sprint2.faq_seed
+    python -m scripts.sprint2.dorm_js
 
     echo.
     echo === attachments day1..day3 ===
     for %%d in (day1 day2 day3) do (
-        python -m scripts.sprint2_process_attachments %%d --hwp-prefer hwp5txt --max 80
+        python -m scripts.sprint2.process_attachments %%d --hwp-prefer hwp5txt --max 80
     )
 ) else (
     echo === !DAY! main runner ===
-    python -m scripts.sprint2_runner !DAY!
+    python -m scripts.sprint2.runner !DAY!
     if /I "!DAY!"=="day1" (
-        python -m scripts.sprint2_dept_grad crawl --candidates data/sprint2/day1/dept_grad_candidates.jsonl
-        python -m scripts.sprint2_process_attachments day1 --hwp-prefer hwp5txt --max 50
-    )
-    if /I "!DAY!"=="day2" (
-        python -m scripts.sprint2_process_attachments day2 --hwp-prefer hwp5txt --max 100
-    )
-    if /I "!DAY!"=="day3" (
-        python -m scripts.sprint2_cross_tag
-        python -m scripts.sprint2_faq_seed
-        python -m scripts.sprint2_dorm_js
-        python -m scripts.sprint2_process_attachments day3 --hwp-prefer hwp5txt --max 50
-    )
-)
-
-echo.
-echo === verify ===
-python -m scripts.sprint2_verify
-
-endlocal
+        python -m scripts.sprint2.dept_gra
