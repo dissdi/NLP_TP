@@ -1,0 +1,61 @@
+
+=== Sprint1 day2 시작 2026-05-26 19:27:22 ===
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0701  pages=5
+  + 40 게시물 / 13089자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0701  pages=5  (78.4s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702  pages=8
+  + 64 게시물 / 29584자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702  pages=8  (125.9s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703  pages=3
+  + 0 게시물 / 0자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703  pages=3  (2.4s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705  pages=5
+  + 40 게시물 / 8080자
+  ✓ B:https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705  pages=5  (77.4s)
+
+[step] A:장학제도 안내
+  + 1 청크 / 830자
+  ✓ A:장학제도 안내  (1.3s)
+
+[step] A:교내장학금
+  + 1 청크 / 7063자
+  ✓ A:교내장학금  (1.4s)
+
+[step] A:교외장학금
+  + 1 청크 / 1454자
+  ✓ A:교외장학금  (1.3s)
+
+[step] A:장학금 신청 절차
+  + 1 청크 / 387자
+  ✓ A:장학금 신청 절차  (1.3s)
+
+[step] A:등록금 일정
+  + 1 청크 / 47자
+  ✓ A:등록금 일정  (1.3s)
+
+[step] A:등록금 분할납부
+  + 1 청크 / 414자
+  ✓ A:등록금 분할납부  (1.3s)
+
+[step] A:증명서 발급 안내
+  + 1 청크 / 1514자
+  ✓ A:증명서 발급 안내  (1.5s)
+
+[step] A:학생증 안내
+  + 1 청크 / 2178자
+  ✓ A:학생증 안내  (1.4s)
+
+[step] A:학생증 (국내)
+  + 1 청크 / 1454자
+  ✓ A:학생증 (국내)  (1.3s)
+
+[step] A:학생증 (국제)
+  + 1 청크 / 811자
+  ✓ A:학생증 (국제)  (1.3s)
+
+=== DUMP 154 chunks / 66905자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint1\day2\chunks.jsonl
+=== day2 종료 297.4s 청크=154 에러=0 ===

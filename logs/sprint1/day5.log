@@ -1,0 +1,29 @@
+
+=== Sprint1 day5 시작 2026-05-26 19:32:52 ===
+
+[step] A:졸업·학위수여 (공통)
+  + 1 청크 / 35자
+  ✓ A:졸업·학위수여 (공통)  (1.5s)
+
+[step] A:국어국문학과
+  + 0 청크 / 0자
+  ✓ A:국어국문학과  (1.2s)
+
+[step] A:행정학부
+  + 0 청크 / 0자
+  ✓ A:행정학부  (1.2s)
+
+[step] A:수학과
+  + 0 청크 / 0자
+  ✓ A:수학과  (1.2s)
+
+[step] A:컴퓨터융합학부
+  + 0 청크 / 0자
+  ✓ A:컴퓨터융합학부  (1.2s)
+
+[step] A:약학과
+  + 0 청크 / 0자
+  ✓ A:약학과  (1.2s)
+
+=== DUMP 1 chunks / 35자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint1\day5\chunks.jsonl
+=== day5 종료 7.9s 청크=1 에러=0 ===

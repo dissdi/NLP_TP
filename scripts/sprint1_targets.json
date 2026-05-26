@@ -1,0 +1,455 @@
+{
+  "_meta": {
+    "sprint": 1,
+    "p0_count": 27,
+    "expected_chars": 490000,
+    "notes": "P0 27항목 URL 카탈로그. crawling-targets.md §2/§7-2/§10-2 기반. 각 entry는 day·adapter·url·domains·categories·title을 가짐. Day 러너가 이 JSON을 import해 호출.",
+    "schema_version": "1.0"
+  },
+
+  "_day1_domain1_2_4": {
+    "label": "Day 1 — 학사·식생활·기숙사 (어댑터 A 중심)",
+    "tasks": [
+      {
+        "id": "1.1",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/_prog/academic_calendar/?menu_dvs_cd=05020101",
+        "domains": [1],
+        "categories": ["1.1"],
+        "title": "학사일정",
+        "freshness": "Q",
+        "notes": "캘린더 UI 가능성 — 어댑터 A로 텍스트 추출 시 부분 누락 가능. inspect 먼저 권장."
+      },
+      {
+        "id": "1.4_1.5_1.6",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_05020101_01.html",
+        "domains": [1, 8],
+        "categories": ["1.4", "1.5", "1.6", "8.3"],
+        "title": "학사안내",
+        "freshness": "S",
+        "notes": "cross-domain — 1.4·1.5·1.6·8.3 동일 페이지. 청크 분할 시 각 도메인 태깅."
+      },
+      {
+        "id": "1.4_b",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050202.html",
+        "domains": [1],
+        "categories": ["1.4"],
+        "title": "학사업무안내",
+        "freshness": "S"
+      },
+      {
+        "id": "2.1",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_05050101.html",
+        "domains": [2],
+        "categories": ["2.1"],
+        "title": "편의시설 안내 (식당)",
+        "freshness": "S",
+        "notes": "Sprint 0 검증된 페이지."
+      },
+      {
+        "id": "2.2_cnucoop",
+        "adapter": "A",
+        "url": "http://www.cnucoop.co.kr/",
+        "domains": [2],
+        "categories": ["2.2"],
+        "title": "충남대 생활협동조합 메인",
+        "freshness": "Q",
+        "notes": "외부 .co.kr — CMS 미확인. 어댑터 A inspect 우선. 실패 시 fallback 필요."
+      },
+      {
+        "id": "4.1",
+        "adapter": "A",
+        "url": "https://dorm.cnu.ac.kr/html/kr/",
+        "domains": [4],
+        "categories": ["4.1"],
+        "title": "기숙사 메인 (생활관 안내)",
+        "freshness": "S"
+      },
+      {
+        "id": "4.2",
+        "adapter": "B",
+        "url": "https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501",
+        "domains": [4],
+        "categories": ["4.2"],
+        "title": "기숙사 공지사항 (신청 일정)",
+        "freshness": "Q",
+        "pages": 3,
+        "max_total": 60
+      }
+    ]
+  },
+
+  "_day2_domain5_6_8": {
+    "label": "Day 2 — 백마광장 백본 + 장학·행정 (어댑터 B 중심)",
+    "tasks": [
+      {
+        "id": "5.4_sub07_0701",
+        "adapter": "B",
+        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0701",
+        "domains": [5],
+        "categories": ["5.3", "5.4"],
+        "title": "백마광장 새소식",
+        "freshness": "M",
+        "pages": 5,
+        "max_total": 100
+      },
+      {
+        "id": "5.4_sub07_0702",
+        "adapter": "B",
+        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0702",
+        "domains": [5, 1, 6],
+        "categories": ["5.4", "1보조FAQ", "6.3"],
+        "title": "백마광장 학사정보 (등록금·졸업·휴학 등)",
+        "freshness": "M",
+        "pages": 8,
+        "max_total": 150,
+        "notes": "5.4 백본의 핵심 — 학사·등록금 공지 다수 포함. cross-domain 태그 다수."
+      },
+      {
+        "id": "5.4_sub07_0703",
+        "adapter": "B",
+        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0703",
+        "domains": [5, 2],
+        "categories": ["5.4", "2보조"],
+        "title": "백마광장 CNU뉴스",
+        "freshness": "M",
+        "pages": 3,
+        "max_total": 60
+      },
+      {
+        "id": "5.4_sub07_0705",
+        "adapter": "B",
+        "url": "https://plus.cnu.ac.kr/_prog/_board/?code=sub07_0705",
+        "domains": [5, 7],
+        "categories": ["5.4", "7.2"],
+        "title": "백마광장 채용/초빙",
+        "freshness": "M",
+        "pages": 5,
+        "max_total": 100
+      },
+      {
+        "id": "6.1",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_030301.html",
+        "domains": [6],
+        "categories": ["6.1"],
+        "title": "장학제도 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "6.1_b",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_030302.html",
+        "domains": [6],
+        "categories": ["6.1"],
+        "title": "교내장학금",
+        "freshness": "S"
+      },
+      {
+        "id": "6.1_c",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_030303.html",
+        "domains": [6],
+        "categories": ["6.1"],
+        "title": "교외장학금",
+        "freshness": "S"
+      },
+      {
+        "id": "6.2",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_030304.html",
+        "domains": [6],
+        "categories": ["6.2"],
+        "title": "장학금 신청 절차",
+        "freshness": "S",
+        "notes": "URL 추정 — inspect 후 보정 가능"
+      },
+      {
+        "id": "6.3",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/account/account_070201.html",
+        "domains": [6],
+        "categories": ["6.3"],
+        "title": "등록금 일정",
+        "freshness": "Q",
+        "notes": "URL 추정 — 실패 시 백마광장 sub07_0702 매학기 공지로 fallback"
+      },
+      {
+        "id": "6.4",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/account/account_070203.html",
+        "domains": [6],
+        "categories": ["6.4"],
+        "title": "등록금 분할납부",
+        "freshness": "S"
+      },
+      {
+        "id": "8.1",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050102.html",
+        "domains": [8],
+        "categories": ["8.1"],
+        "title": "증명서 발급 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "8.2_a",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050401.html",
+        "domains": [8],
+        "categories": ["8.2"],
+        "title": "학생증 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "8.2_b",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_03020101.html",
+        "domains": [8],
+        "categories": ["8.2"],
+        "title": "학생증 (국내)",
+        "freshness": "S"
+      },
+      {
+        "id": "8.2_c",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_03020102.html",
+        "domains": [8],
+        "categories": ["8.2"],
+        "title": "학생증 (국제)",
+        "freshness": "S"
+      }
+    ]
+  },
+
+  "_day3_domain3_7_9": {
+    "label": "Day 3 — 도서관·취업·캠퍼스 (어댑터 C·D + FAQ)",
+    "tasks": [
+      {
+        "id": "3.1_a",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/webcontent/info/130",
+        "domains": [3],
+        "categories": ["3.1", "3.2"],
+        "title": "도서관 이용안내",
+        "freshness": "S"
+      },
+      {
+        "id": "3.1_b",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/webcontent/info/47",
+        "domains": [3],
+        "categories": ["3.1", "3.2"],
+        "title": "분관 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "3.1_c",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/webcontent/info/326",
+        "domains": [3],
+        "categories": ["3.1"],
+        "title": "층별 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "3.4_a",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/webcontent/info/325",
+        "domains": [3],
+        "categories": ["3.4"],
+        "title": "대출/연장/예약",
+        "freshness": "S"
+      },
+      {
+        "id": "3.4_b",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/webcontent/info/313",
+        "domains": [3],
+        "categories": ["3.4"],
+        "title": "서비스 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "3_FAQ",
+        "adapter": "D",
+        "url": "https://library.cnu.ac.kr/faqlib/faq?code=all",
+        "domains": [3],
+        "categories": ["도서관FAQ"],
+        "title": "도서관 FAQ ★★★",
+        "freshness": "S",
+        "notes": "평가셋 시드 골드마인. 구조 미확인 — inspect 우선."
+      },
+      {
+        "id": "7.1_a",
+        "adapter": "C",
+        "url": "https://job.cnu.ac.kr/job/intro/intro01.do",
+        "domains": [7],
+        "categories": ["7.1"],
+        "title": "인재개발원 소개",
+        "freshness": "S"
+      },
+      {
+        "id": "7.1_b",
+        "adapter": "C",
+        "url": "https://job.cnu.ac.kr/job/intro/map.do",
+        "domains": [7],
+        "categories": ["7.1"],
+        "title": "오시는 길",
+        "freshness": "S"
+      },
+      {
+        "id": "7.3",
+        "adapter": "C",
+        "url": "https://job.cnu.ac.kr/job/jobcenter/busi04.do",
+        "domains": [7],
+        "categories": ["7.3"],
+        "title": "인턴십·현장실습",
+        "freshness": "Q"
+      },
+      {
+        "id": "9.2_a",
+        "adapter": "C",
+        "url": "https://gymn.cnu.ac.kr/gymn/info/usage-fee.do",
+        "domains": [9],
+        "categories": ["9.2"],
+        "title": "체육시설 이용료",
+        "freshness": "S"
+      },
+      {
+        "id": "9.2_b",
+        "adapter": "C",
+        "url": "https://gymn.cnu.ac.kr/gymn/info/usage-and-compliance.do",
+        "domains": [9],
+        "categories": ["9.2"],
+        "title": "체육시설 이용 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "9.4_a",
+        "adapter": "C",
+        "url": "https://health.cnu.ac.kr/health/index.do",
+        "domains": [9],
+        "categories": ["9.4"],
+        "title": "보건진료소 메인",
+        "freshness": "S"
+      },
+      {
+        "id": "9.4_FAQ",
+        "adapter": "C",
+        "url": "https://health.cnu.ac.kr/health/info/faq.do",
+        "domains": [9],
+        "categories": ["보건FAQ"],
+        "title": "보건진료소 FAQ ★",
+        "freshness": "S",
+        "notes": "평가셋 시드 가치 있음"
+      }
+    ]
+  },
+
+  "_day4_shuttle_faq_hwp": {
+    "label": "Day 4 — 셔틀 + 장학 FAQ + 학칙 HWP",
+    "tasks": [
+      {
+        "id": "9.1_shuttle_static",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html",
+        "domains": [9],
+        "categories": ["9.1", "9.5"],
+        "title": "셔틀 안내",
+        "freshness": "S"
+      },
+      {
+        "id": "6_FAQ_장학",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/hub/support/support_030305.html",
+        "domains": [6],
+        "categories": ["장학FAQ"],
+        "title": "장학 FAQ ★★★",
+        "freshness": "S",
+        "notes": "평가셋 시드 ★★★"
+      },
+      {
+        "id": "1.3_학칙_HWP_list",
+        "adapter": "B",
+        "url": "https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1",
+        "domains": [1],
+        "categories": ["1.3"],
+        "title": "충남대 학칙 (HWP 다수)",
+        "freshness": "S",
+        "pages": 2,
+        "max_total": 30,
+        "notes": "HWP 첨부 자동 다운로드 — 첨부 메타 수집 후 hwp_pipeline로 별도 처리"
+      }
+    ]
+  },
+
+  "_day5_graduation": {
+    "label": "Day 5 — 1.2 졸업요건 Stage 1 (공통 + 5학과 샘플)",
+    "tasks": [
+      {
+        "id": "1.2_common",
+        "adapter": "A",
+        "url": "https://plus.cnu.ac.kr/html/kr/sub05/sub05_050201.html",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "졸업·학위수여 (공통)",
+        "freshness": "S",
+        "notes": "URL 추정 — inspect 후 보정"
+      },
+      {
+        "id": "1.2_humanities",
+        "adapter": "A",
+        "url": "https://korean.cnu.ac.kr/korean/intro/intro01.do",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "국어국문학과",
+        "freshness": "S",
+        "notes": "샘플 학과 #1 (인문). 졸업요건 페이지로 inspect → 보정"
+      },
+      {
+        "id": "1.2_social",
+        "adapter": "A",
+        "url": "https://cnupa.cnu.ac.kr/cnupa/intro/intro01.do",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "행정학부",
+        "freshness": "S",
+        "notes": "샘플 학과 #2 (사회)"
+      },
+      {
+        "id": "1.2_science",
+        "adapter": "A",
+        "url": "https://math.cnu.ac.kr/math/intro/intro01.do",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "수학과",
+        "freshness": "S",
+        "notes": "샘플 학과 #3 (자연)"
+      },
+      {
+        "id": "1.2_engineering",
+        "adapter": "A",
+        "url": "https://computer.cnu.ac.kr/computer/intro/intro01.do",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "컴퓨터융합학부",
+        "freshness": "S",
+        "notes": "샘플 학과 #4 (공학)"
+      },
+      {
+        "id": "1.2_pharmacy",
+        "adapter": "A",
+        "url": "https://pharm.cnu.ac.kr/pharm/intro/intro01.do",
+        "domains": [1],
+        "categories": ["1.2"],
+        "title": "약학과",
+        "freshness": "S",
+        "notes": "샘플 학과 #5 (의약)"
+      }
+    ]
+  }
+}

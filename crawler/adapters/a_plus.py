@@ -32,15 +32,27 @@ from crawler.schema import Chunk, write_jsonl  # noqa: E402
 
 
 # 본문 컨테이너 후보 (우선순위 순)
-# 충남대 plus 사이트의 일반적 구조에 대한 가설 — inspect 결과 보고 보정 필요
+# Sprint 0 검증: 충남대는 적어도 4가지 CMS 혼용 — plus / jwxe / 도서관 자체 / cnustudent 자체
+# 각 CMS 1순위 컨테이너를 모두 등록해 자동 매칭 → 다른 사이트 첫 inspect 비용 절감
 CONTENT_CONTAINER_CANDIDATES = [
+    # plus CMS
     ("id", "contents"),
     ("id", "content"),
+    # jwxe (Spring 기반) — job/dorm/gymn/health 일부에서 가능성
+    ("id", "jwxe_main_content"),
+    ("class_", "detail_con"),
+    # 도서관 자체 CMS
+    ("id", "divContent"),
+    ("class_", "guideW"),
+    # cnustudent 자체 CMS
+    ("class_", "main_con_wrap"),
+    # 일반 fallback
     ("class_", "contents"),
     ("class_", "content"),
     ("class_", "sub_contents"),
     ("class_", "sub_content"),
     ("class_", "sub_con"),
+    ("class_", "al_box"),
 ]
 
 # 명백히 본문이 아닌 영역 (제거 대상)

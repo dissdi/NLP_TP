@@ -1,0 +1,17 @@
+[
+  {"name": "컴퓨터공학과",  "home": "https://computer.cnu.ac.kr/computer/index.do"},
+  {"name": "전기공학과",    "home": "https://elec.cnu.ac.kr/elec/index.do"},
+  {"name": "기계공학과",    "home": "https://mech.cnu.ac.kr/mech/index.do"},
+  {"name": "수학과",        "home": "https://math.cnu.ac.kr/math/index.do"},
+  {"name": "물리학과",      "home": "https://physics.cnu.ac.kr/physics/index.do"},
+  {"name": "화학과",        "home": "https://chem.cnu.ac.kr/chem/index.do"},
+  {"name": "경영학부",      "home": "https://biz.cnu.ac.kr/biz/index.do"},
+  {"name": "경제학과",      "home": "https://econ.cnu.ac.kr/econ/index.do"},
+  {"name": "국어국문학과",  "home": "https://korean.cnu.ac.kr/korean/index.do"},
+  {"name": "영어영문학과",  "home": "https://english.cnu.ac.kr/english/index.do"},
+  {"name": "사학과",        "home": "https://history.cnu.ac.kr/history/index.do"},
+  {"name": "행정학부",      "home": "https://pa.cnu.ac.kr/pa/index.do"},
+  {"name": "사회학과",      "home": "https://socio.cnu.ac.kr/socio/index.do"},
+  {"name": "심리학과",      "home": "https://psy.cnu.ac.kr/psy/index.do"},
+  {"name": "정치외교학과",  "home": "https://polisci.cnu.ac.kr/polisci/index.do"}
+]

@@ -1,0 +1,33 @@
+
+=== Sprint1 day1 시작 2026-05-26 19:26:35 ===
+
+[step] A:학사일정
+  + 1 청크 / 2166자
+  ✓ A:학사일정  (1.6s)
+
+[step] A:학사안내
+  + 1 청크 / 329자
+  ✓ A:학사안내  (1.4s)
+
+[step] A:학사업무안내
+  + 1 청크 / 343자
+  ✓ A:학사업무안내  (1.5s)
+
+[step] A:편의시설 안내 (식당)
+  + 1 청크 / 771자
+  ✓ A:편의시설 안내 (식당)  (1.5s)
+
+[step] A:충남대 생활협동조합 메인
+  + 1 청크 / 687자
+  ✓ A:충남대 생활협동조합 메인  (1.5s)
+
+[step] A:기숙사 메인 (생활관 안내)
+  + 0 청크 / 0자
+  ✓ A:기숙사 메인 (생활관 안내)  (1.4s)
+
+[step] B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501  pages=3
+  + 24 게시물 / 4112자
+  ✓ B:https://dorm.cnu.ac.kr/_prog/_board/?code=sub05_0501  pages=3  (37.5s)
+
+=== DUMP 29 chunks / 8408자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint1\day1\chunks.jsonl
+=== day1 종료 46.5s 청크=29 에러=0 ===

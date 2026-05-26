@@ -1,0 +1,17 @@
+
+=== Sprint1 day4 시작 2026-05-26 19:32:38 ===
+
+[step] A:셔틀 안내
+  + 1 청크 / 1316자
+  ✓ A:셔틀 안내  (1.5s)
+
+[step] A:장학 FAQ ★★★
+  + 1 청크 / 1765자
+  ✓ A:장학 FAQ ★★★  (1.3s)
+
+[step] B:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1  pages=2
+  + 0 게시물 / 0자
+  ✓ B:https://plus.cnu.ac.kr/_prog/rule/?site_dvs_cd=kr&menu_dvs_cd=06050101&gubun=1  pages=2  (10.0s)
+
+=== DUMP 2 chunks / 3081자 → C:\Users\iksdg\Documents\Claude\Projects\NLP_TP\data\sprint1\day4\chunks.jsonl
+=== day4 종료 12.9s 청크=2 에러=0 ===
