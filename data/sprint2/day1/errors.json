@@ -1,7 +1,0 @@
-[
-  {
-    "step": "PDF:https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401",
-    "error": "Response is not a PDF (first 64 bytes: '<!DOCTYPE html>\\r\\n<html lang=\"ko\">\\r\\n<head>\\r\\n<meta charset=\"utf-8\"'). URL may be a board page link rather than a direct download.php endpoint. URL: https://dorm.cnu.ac.kr/_prog/_board/?code=sub04_0401",
-    "type": "ValueError"
-  }
-]
