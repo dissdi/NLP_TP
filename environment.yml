@@ -12,6 +12,10 @@ dependencies:
   # --- 데이터 처리 ---
   - pandas>=2.0
   - tqdm>=4.66
+  # --- Phase C 04_index ---
+  # faiss-cpu는 conda-forge가 더 안정 (특히 macOS)
+  - faiss-cpu>=1.7
+  - pyarrow>=14.0
   - pip:
       # --- 문서 추출 ---
       - pdfplumber>=0.10
@@ -21,7 +25,14 @@ dependencies:
       - playwright>=1.40
       # --- 보조 ---
       - jsonlines>=4.0
+      # --- Phase C 04_index ---
+      - rank_bm25>=0.2.2
+      - kiwipiepy>=0.20
+      - sentence-transformers>=2.7
 
 # 시스템 의존성 (Colab 또는 Linux 로컬):
 #   apt-get install -y libreoffice    # HWP→PDF 폴백 (옵션 a)
 #   python -m playwright install chromium
+# GPU 사용 시 (연구실 서버):
+#   conda install -c pytorch -c nvidia pytorch pytorch-cuda=12.1
+#   (또는 시스템 CUDA에 맞는 버전; sentence-transformers는 자동으로 GPU 감지)

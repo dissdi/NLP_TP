@@ -24,6 +24,18 @@ playwright>=1.40
 jsonlines>=4.0
 tqdm>=4.66
 
+# --- Phase C 04_index ---
+# BM25 sparse 인덱스
+rank_bm25>=0.2.2
+# 한국어 형태소 토크나이저 (kiwipiepy 0.23+; pure-rust 바인딩, conda/pip 둘 다 OK)
+kiwipiepy>=0.20
+# Dense 임베딩 (bge-m3, e5, ko-sroberta)
+sentence-transformers>=2.7
+# Dense 인덱스 (Colab/연구실 서버에서 GPU 가속 가능)
+faiss-cpu>=1.7
+# meta lookup (선택 — meta.parquet 생성 시)
+pyarrow>=14.0
+
 # --- 시스템 의존성 (수동 설치) ---
 #   apt-get install -y libreoffice  # HWP→PDF 폴백용 (옵션 a)
 #   python -m playwright install chromium  # Playwright 브라우저

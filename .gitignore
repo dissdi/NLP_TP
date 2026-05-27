@@ -12,6 +12,21 @@ data/sprint0/*.html
 data/sprint0/*.jsonl
 !data/sprint0/.gitkeep
 
+# 크롤링/가공 데이터 일체 (라이센스 / 권리관계 보수적 처리)
+# 학내 공식 페이지 크롤링 결과 + Phase C derived 산출물 모두 외부 공개 X
+data/sprint1/
+data/sprint2/
+data/sprint3/
+data/phase_c/
+data/_archive/
+
+# 단, .gitkeep 같은 디렉토리 placeholder는 예외
+!data/**/.gitkeep
+
+# HuggingFace 모델 캐시
+.cache/huggingface/
+hf_cache/
+
 # 노트북 출력
 notebooks/.ipynb_checkpoints/
 
