@@ -5,13 +5,23 @@ channels:
 dependencies:
   - python=3.11
   - pip
-  # Sprint 0 PoC 의존성 — conda-forge에서 wheel이 더 안정적인 것들
+  # --- HTTP / 파싱 (conda-forge wheel 더 안정) ---
   - requests>=2.31
   - beautifulsoup4>=4.12
   - lxml>=5.0
+  # --- 데이터 처리 ---
   - pandas>=2.0
   - tqdm>=4.66
   - pip:
-      # conda-forge에 없거나 버전이 더 좋은 것
+      # --- 문서 추출 ---
       - pdfplumber>=0.10
+      - pyhwp>=0.1b15
+      # --- 동적 페이지 (어댑터 F · sprint2 dorm_js·dstat) ---
+      # 설치 후: python -m playwright install chromium
+      - playwright>=1.40
+      # --- 보조 ---
       - jsonlines>=4.0
+
+# 시스템 의존성 (Colab 또는 Linux 로컬):
+#   apt-get install -y libreoffice    # HWP→PDF 폴백 (옵션 a)
+#   python -m playwright install chromium

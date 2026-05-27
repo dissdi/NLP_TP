@@ -1,0 +1,537 @@
+[
+  {
+    "path": "data/sprint1/day1/attachments.jsonl",
+    "records": 161,
+    "total_chars": 158792,
+    "avg_chars": 986,
+    "max_chars": 1620,
+    "min_chars": 351,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T3": 161
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day1/chunks.jsonl",
+    "records": 29,
+    "total_chars": 8408,
+    "avg_chars": 289,
+    "max_chars": 2166,
+    "min_chars": 113,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T2": 24,
+      "T1": 5
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day2/attachments.jsonl",
+    "records": 344,
+    "total_chars": 329264,
+    "avg_chars": 957,
+    "max_chars": 1620,
+    "min_chars": 351,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T3": 344
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day2/chunks.jsonl",
+    "records": 154,
+    "total_chars": 66905,
+    "avg_chars": 434,
+    "max_chars": 7063,
+    "min_chars": 47,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T2": 144,
+      "T1": 10
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day3/chunks.jsonl",
+    "records": 13,
+    "total_chars": 16168,
+    "avg_chars": 1243,
+    "max_chars": 4648,
+    "min_chars": 85,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T1": 13
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day4/attachments.jsonl",
+    "records": 0,
+    "total_chars": 0,
+    "avg_chars": 0,
+    "max_chars": 0,
+    "min_chars": 0,
+    "fields": [],
+    "top_sources": {},
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day4/chunks.jsonl",
+    "records": 2,
+    "total_chars": 3081,
+    "avg_chars": 1540,
+    "max_chars": 1765,
+    "min_chars": 1316,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T1": 2
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint1/day5/chunks.jsonl",
+    "records": 1,
+    "total_chars": 35,
+    "avg_chars": 35,
+    "max_chars": 35,
+    "min_chars": 35,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T1": 1
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day1/attachments.jsonl",
+    "records": 308,
+    "total_chars": 303776,
+    "avg_chars": 986,
+    "max_chars": 1620,
+    "min_chars": 351,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T3": 308
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day1/chunks.jsonl",
+    "records": 71,
+    "total_chars": 924700,
+    "avg_chars": 13023,
+    "max_chars": 81437,
+    "min_chars": 113,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T2": 60,
+      "T3": 11
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day1/dept_grad_candidates.jsonl",
+    "records": 93,
+    "total_chars": 0,
+    "avg_chars": 0,
+    "max_chars": 0,
+    "min_chars": 0,
+    "fields": [
+      "candidates",
+      "dept_name",
+      "home",
+      "status"
+    ],
+    "top_sources": {},
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day1/dept_grad_chunks.jsonl",
+    "records": 85,
+    "total_chars": 477380,
+    "avg_chars": 5616,
+    "max_chars": 17479,
+    "min_chars": 32,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T1": 85
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day2/attachments.jsonl",
+    "records": 356,
+    "total_chars": 354134,
+    "avg_chars": 994,
+    "max_chars": 1620,
+    "min_chars": 351,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T3": 356
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day2/chunks.jsonl",
+    "records": 72,
+    "total_chars": 33624,
+    "avg_chars": 467,
+    "max_chars": 10923,
+    "min_chars": 35,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T2": 64,
+      "T1": 8
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day3/attachments.jsonl",
+    "records": 0,
+    "total_chars": 0,
+    "avg_chars": 0,
+    "max_chars": 0,
+    "min_chars": 0,
+    "fields": [],
+    "top_sources": {},
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day3/chunks.jsonl",
+    "records": 2,
+    "total_chars": 457,
+    "avg_chars": 228,
+    "max_chars": 422,
+    "min_chars": 35,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T1": 2
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day3/cross_tag.jsonl",
+    "records": 242,
+    "total_chars": 204074,
+    "avg_chars": 843,
+    "max_chars": 7063,
+    "min_chars": 47,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T3": 169,
+      "T2": 64,
+      "T1": 9
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day3/dorm_js.jsonl",
+    "records": 0,
+    "total_chars": 0,
+    "avg_chars": 0,
+    "max_chars": 0,
+    "min_chars": 0,
+    "fields": [],
+    "top_sources": {},
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint2/day3/faq_seeds.jsonl",
+    "records": 1,
+    "total_chars": 1500,
+    "avg_chars": 1500,
+    "max_chars": 1500,
+    "min_chars": 1500,
+    "fields": [
+      "categories",
+      "domains",
+      "seed_reason",
+      "source_title",
+      "source_url",
+      "src_path",
+      "text"
+    ],
+    "top_sources": {},
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint3/dept_info/chunks.jsonl",
+    "records": 2235,
+    "total_chars": 173761,
+    "avg_chars": 77,
+    "max_chars": 111,
+    "min_chars": 65,
+    "fields": [
+      "categories",
+      "char_count",
+      "chunk_id",
+      "chunk_index",
+      "crawled_at",
+      "domains",
+      "freshness",
+      "lang",
+      "notes",
+      "parent_post_id",
+      "posted_at",
+      "section_path",
+      "source_title",
+      "source_type",
+      "source_url",
+      "text"
+    ],
+    "top_sources": {
+      "T6": 2235
+    },
+    "top_domains": {}
+  },
+  {
+    "path": "data/sprint3/dstat/chunks.jsonl",
+    "records": 0,
+    "total_chars": 0,
+    "avg_chars": 0,
+    "max_chars": 0,
+    "min_chars": 0,
+    "fields": [],
+    "top_sources": {},
+    "top_domains": {}
+  }
+]

@@ -1,32 +1,19 @@
 {
   "schl_id": "0000029",
   "year": "2025",
-  "started_at": "2026-05-26T16:00:36+00:00",
-  "targets": [
-    {
-      "domain": 7,
-      "category": "7.5",
-      "pid": "46",
-      "hint": "졸업생의 취업 현황"
-    }
+  "generated_at": "2026-05-27T05:07:21+00:00",
+  "source": "어댑터 F (UbiReport) 수집 산출물 → 표준 청크 변환",
+  "pids": [
+    "193",
+    "266",
+    "262",
+    "278"
   ],
-  "results": [
-    {
-      "pid": "46",
-      "year": "2025",
-      "domain": 7,
-      "category": "7.5",
-      "label": "5-다. 졸업생의 취업 현황",
-      "ok": false,
-      "n_cells": 0,
-      "n_records": 0,
-      "n_chunks": 0,
-      "title": "",
-      "errors": [
-        "no NewAcInfo response captured"
-      ]
-    }
-  ],
-  "finished_at": "2026-05-26T16:01:55+00:00",
-  "n_chunks_total": 0
+  "n_chunks_total": 19,
+  "per_pid": {
+    "193": 15,
+    "266": 2,
+    "262": 1,
+    "278": 1
+  }
 }

@@ -1,11 +1,29 @@
-# Sprint 0 PoC 의존성
-# 로컬 Python 우선, Colab Free 호환 (Sprint 1 이후 이식)
+# Phase B (Sprint 0~3) 의존성
+# 로컬 Python 우선, Colab Free 호환
+
+# --- HTTP / 파싱 ---
 requests>=2.31
 beautifulsoup4>=4.12
 lxml>=5.0
+
+# --- 문서 추출 ---
 pdfplumber>=0.10
+# HWP 텍스트 추출 (옵션 b — hwp5txt CLI 제공)
+# 시스템 의존성: 또는 LibreOffice CLI (apt: libreoffice) 가 (옵션 a)로 폴백됨
+pyhwp>=0.1b15
+
+# --- 데이터 처리 ---
 pandas>=2.0
+
+# --- 동적 페이지 (Sprint 1+ 활성화) ---
+# 어댑터 F (UbiReport), sprint2/dorm_js.py, sprint2/dstat.py 에서 사용
+# 설치 후: python -m playwright install chromium
+playwright>=1.40
+
+# --- 보조 ---
 jsonlines>=4.0
 tqdm>=4.66
-# 동적 페이지 대비 (T4·C 검증 결과에 따라 사용 여부 결정)
-# playwright>=1.40
+
+# --- 시스템 의존성 (수동 설치) ---
+#   apt-get install -y libreoffice  # HWP→PDF 폴백용 (옵션 a)
+#   python -m playwright install chromium  # Playwright 브라우저
