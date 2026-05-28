@@ -3,10 +3,14 @@
 Each tool implements:
   - matches(query: str) -> bool      # keyword check
   - run(query: str) -> dict | None   # returns {"context": str, "sources": list[dict]}
+
+Tool order matters: more specific (dorm) before generic (cafeteria) so that
+queries like "기숙사 메뉴" hit the dorm tool, not the student-union one.
 """
+from .dorm_cafeteria import DormCafeteriaTool
 from .cafeteria import CafeteriaTool
 
-TOOLS = [CafeteriaTool()]
+TOOLS = [DormCafeteriaTool(), CafeteriaTool()]
 
 
 def maybe_use_tool(query: str):
