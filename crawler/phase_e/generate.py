@@ -29,7 +29,7 @@ class GenerationResult:
     sources: list[dict]
 
 
-def _format_context(chunks: list, max_chunks: int = 5) -> str:
+def _format_context(chunks: list, max_chunks: int = 8) -> str:
     lines: list[str] = []
     for i, c in enumerate(chunks[:max_chunks], 1):
         m = c.meta or {}
@@ -47,8 +47,8 @@ def generate_answer(
     query: str,
     reranked: list,
     fallback_threshold: float = RERANK_FALLBACK_THRESHOLD,
-    max_chunks: int = 5,
-    max_new_tokens: int = 256,
+    max_chunks: int = 8,
+    max_new_tokens: int = 512,
     model_id: str = DEFAULT_LLM,
     load_in_4bit: bool = DEFAULT_4BIT,
 ) -> GenerationResult:

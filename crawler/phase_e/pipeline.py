@@ -34,8 +34,8 @@ class RAGPipeline:
         bm25_pool: int = 100,
         dense_pool: int = 50,
         retrieve_top_k: int = 30,
-        rerank_top_k: int = 5,
-        max_new_tokens: int = 256,
+        rerank_top_k: int = 8,
+        max_new_tokens: int = 512,
     ) -> AnswerResult:
         # 1) Tool routing first (real-time data trumps static corpus for dynamic questions)
         tool_hit = maybe_use_tool(query)
