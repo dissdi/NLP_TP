@@ -36,6 +36,7 @@ class RAGPipeline:
         retrieve_top_k: int = 30,
         rerank_top_k: int = 8,
         max_new_tokens: int = 512,
+        enable_expand: bool = False,
     ) -> AnswerResult:
         # 1) Tool routing first (real-time data trumps static corpus for dynamic questions)
         tool_hit = maybe_use_tool(query)
@@ -43,8 +44,9 @@ class RAGPipeline:
             tool_name, tr = tool_hit
             return self._answer_with_tool(query, tool_name, tr, max_new_tokens)
 
-        # 2) Standard RAG path
-        expanded = expand_query(query)
+        # 2) Standard RAG path. expand_query default OFF — caused -16% on D-1 eval.
+        # Useful only for slang/abbrev user queries; opt-in via enable_expand=True.
+        expanded = expand_query(query) if enable_expand else query
         pool = self.retriever.retrieve(
             expanded,
             top_k=retrieve_top_k,
