@@ -1,8 +1,4 @@
-"""Answer generation from retrieved + reranked chunks.
-
-Prompts are kept in crawler/phase_e/prompts/*.txt to avoid multi-byte
-truncation issues we hit with long Korean strings inside .py files.
-"""
+"""Answer generation. Prompts live in prompts/*.txt to dodge .py Korean truncation."""
 from __future__ import annotations
 
 import os
@@ -12,12 +8,13 @@ from typing import Optional
 from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 
 _PROMPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts")
-RERANK_FALLBACK_THRESHOLD = 0.3
+# v3: 0.3 -> 0.25 to recover FP cases (G260528102/103/124).
+RERANK_FALLBACK_THRESHOLD = 0.25
+FALLBACK_MSG = "관련 정보를 찾지 못했습니다. 학사 담당 부서에 문의 바랍니다."
 
 
 def _load_prompt(name: str) -> str:
-    path = os.path.join(_PROMPTS_DIR, f"{name}.txt")
-    with open(path, "r", encoding="utf-8") as f:
+    with open(os.path.join(_PROMPTS_DIR, f"{name}.txt"), "r", encoding="utf-8") as f:
         return f.read().strip()
 
 
@@ -55,15 +52,8 @@ def generate_answer(
     model_id: str = DEFAULT_LLM,
     load_in_4bit: bool = DEFAULT_4BIT,
 ) -> GenerationResult:
-    FALLBACK_MSG = "관련 정보를 찾지 못했습니다. 학사 담당 부서에 문의 바랍니다."
-
     if not reranked:
-        return GenerationResult(
-            answer=FALLBACK_MSG,
-            used_fallback=True,
-            top_rerank_score=0.0,
-            sources=[],
-        )
+        return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=0.0, sources=[])
 
     top_score = float((reranked[0].meta or {}).get("_rerank_score", 0.0))
     sources: list[dict] = []
@@ -75,17 +65,11 @@ def generate_answer(
             "source_url": (m.get("_canonical_url") or m.get("source_url") or "").strip(),
             "rerank_score": float(m.get("_rerank_score", 0.0)),
         })
-
     if top_score < fallback_threshold:
-        return GenerationResult(
-            answer=FALLBACK_MSG,
-            used_fallback=True,
-            top_rerank_score=top_score,
-            sources=sources,
-        )
+        return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=top_score, sources=sources)
 
     context = _format_context(reranked, max_chunks=max_chunks)
-    user_msg = f"[질문]\n{query}\n\n[참고자료]\n{context}"
+    user_msg = "[질문]\n" + query + "\n\n[참고자료]\n" + context
     answer = chat(
         user_msg=user_msg,
         system_msg=_ANSWER_SYS,
@@ -94,9 +78,4 @@ def generate_answer(
         max_new_tokens=max_new_tokens,
         temperature=0.0,
     )
-    return GenerationResult(
-        answer=answer.strip(),
-        used_fallback=False,
-        top_rerank_score=top_score,
-        sources=sources,
-    )
+    return GenerationResult(answer=answer.strip(), used_fallback=False, top_rerank_score=top_score, sources=sources)
