@@ -1,12 +1,11 @@
-"""Query rewriting + HyDE.
+"""Query rewriting + HyDE (deprioritized — see project-nlp-tp-phase-e-strategy).
 
-Two strategies (apply independently or together):
-  rewrite_query(q)  -> 학내 도메인 용어로 재작성된 검색 쿼리
-  hyde_query(q)     -> LLM이 만든 가상 답변 텍스트 (dense 임베딩 대상)
-
-Both call the same local LLM (see llm.py).
+Smoke test showed 4B LLM hallucinations made retrieval WORSE on 2/7 queries.
+Kept as opt-in; default pipeline does not call these.
 """
 from __future__ import annotations
+
+from typing import Optional
 
 from .llm import DEFAULT_LLM, chat
 
@@ -16,9 +15,9 @@ _REWRITE_SYS = """너는 충남대학교 학내 정보 검색 시스템의 질�
 
 규칙:
 - 학과 약어를 정식 명칭으로 풀어라 (예: 컴공 -> 컴퓨터인공지능학부, 전기과 -> 전기공학과).
-- 일상어를 학칙·행정 용어로 바꿔라 (예: 쉬다 -> 휴학, 학교 그만두다 -> 자퇴, 다른 과 가다 -> 전과).
+- 일상어를 학칙·행정 용어로 바꿔라 (예: 쉬다 -> 휴학, 학교 그만두다 -> 자퇴).
 - 핵심 키워드(학점/기간/절차/대상/금액)는 명확히 남겨라.
-- 결과는 한 줄, 한국어, 따옴표 없이만 출력하라. 설명·머리말·"검색어:" 같은 prefix 금지.
+- 결과는 한 줄, 한국어, 따옴표/머리말/prefix 없이만 출력.
 """
 
 _HYDE_SYS = """너는 충남대학교 학내 정보 답변 작성자다.
@@ -26,21 +25,20 @@ _HYDE_SYS = """너는 충남대학교 학내 정보 답변 작성자다.
 
 규칙:
 - 2~4문장, 학칙/안내 본문 같은 어투.
-- 구체적 조항·기간·학점 같은 숫자가 들어가도 좋다 (실제 정확할 필요는 없다; 의미 매칭용).
-- 머리말·인사·markdown 금지. 본문만 출력.
+- 머리말·인사·markdown 금지. 본문만.
 """
 
 
-def rewrite_query(query: str, model_id: str = DEFAULT_LLM, load_in_4bit: bool = False) -> str:
+def rewrite_query(query: str, model_id: str = DEFAULT_LLM, load_in_4bit: Optional[bool] = None) -> str:
+    kwargs = {"load_in_4bit": load_in_4bit} if load_in_4bit is not None else {}
     out = chat(
         user_msg=query,
         system_msg=_REWRITE_SYS,
         model_id=model_id,
-        load_in_4bit=load_in_4bit,
         max_new_tokens=80,
         temperature=0.0,
+        **kwargs,
     )
-    # take first non-empty line, strip wrapping quotes
     for line in out.splitlines():
         line = line.strip().strip('"').strip("'")
         if line:
@@ -48,13 +46,14 @@ def rewrite_query(query: str, model_id: str = DEFAULT_LLM, load_in_4bit: bool = 
     return query
 
 
-def hyde_query(query: str, model_id: str = DEFAULT_LLM, load_in_4bit: bool = False) -> str:
+def hyde_query(query: str, model_id: str = DEFAULT_LLM, load_in_4bit: Optional[bool] = None) -> str:
+    kwargs = {"load_in_4bit": load_in_4bit} if load_in_4bit is not None else {}
     out = chat(
         user_msg=query,
         system_msg=_HYDE_SYS,
         model_id=model_id,
-        load_in_4bit=load_in_4bit,
         max_new_tokens=200,
         temperature=0.0,
+        **kwargs,
     )
     return out.strip()
