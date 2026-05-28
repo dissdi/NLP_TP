@@ -1,7 +1,9 @@
 """Local LLM wrapper.
 
-Default: Qwen/Qwen2.5-7B-Instruct (fp16, ~15GB VRAM, Apache 2.0, strong Korean).
-For lower VRAM, pass model_id="Qwen/Qwen2.5-3B-Instruct" or enable load_in_4bit=True.
+Default: Qwen/Qwen3-4B-Instruct-2507 (fp16, ~8GB VRAM, Apache 2.0, strong Korean).
+Chosen for Colab Free 15GB compatibility (deployment-target constraint).
+For higher quality on server-side ablations: Qwen/Qwen2.5-14B-Instruct (~28GB).
+For lower VRAM: Qwen/Qwen2.5-3B-Instruct or enable load_in_4bit=True.
 """
 from __future__ import annotations
 
@@ -9,7 +11,7 @@ from functools import lru_cache
 from typing import Optional
 
 
-DEFAULT_LLM = "Qwen/Qwen2.5-7B-Instruct"
+DEFAULT_LLM = "Qwen/Qwen3-4B-Instruct-2507"
 
 
 @lru_cache(maxsize=2)

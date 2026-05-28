@@ -36,6 +36,14 @@ faiss-cpu>=1.7
 # meta lookup (선택 — meta.parquet 생성 시)
 pyarrow>=14.0
 
+# --- Phase E (RAG + 로컬 LLM) ---
+# transformers (sentence-transformers가 끌고 옴, 명시)
+transformers>=4.40
+# device_map="auto" 사용 시 필수
+accelerate>=0.30
+# 4-bit 양자화 (선택 — VRAM 부족 시)
+# bitsandbytes>=0.43
+
 # --- 시스템 의존성 (수동 설치) ---
 #   apt-get install -y libreoffice  # HWP→PDF 폴백용 (옵션 a)
 #   python -m playwright install chromium  # Playwright 브라우저
