@@ -44,6 +44,9 @@ accelerate>=0.30
 # 4-bit 양자화 (Qwen2.5-14B를 Colab Free 15GB에 들어가게 — 답변 생성용)
 bitsandbytes>=0.43
 
+# --- Phase F (web app) ---
+gradio>=4.0
+
 # --- 시스템 의존성 (수동 설치) ---
 #   apt-get install -y libreoffice  # HWP→PDF 폴백용 (옵션 a)
 #   python -m playwright install chromium  # Playwright 브라우저
