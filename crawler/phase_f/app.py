@@ -20,7 +20,15 @@ EXAMPLES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "exampl
 print("[app] loading RAG pipeline ... (this can take a minute)", flush=True)
 _t0 = time.time()
 PIPELINE = RAGPipeline()
-print(f"[app] pipeline loaded in {time.time()-_t0:.1f}s", flush=True)
+print(f"[app] retriever+reranker loaded in {time.time()-_t0:.1f}s", flush=True)
+
+# Warmup: force LLM (Qwen 14B 4-bit) into GPU NOW so the first user query
+# does not incur a 30~60s cold-start. Memory stabilizes here.
+print("[app] warming up LLM ...", flush=True)
+_t1 = time.time()
+from crawler.phase_e.llm import chat as _chat
+_ = _chat(user_msg="ping", max_new_tokens=4)
+print(f"[app] LLM warmed up in {time.time()-_t1:.1f}s — ready", flush=True)
 
 
 def _load_examples() -> list[str]:

@@ -59,4 +59,7 @@ def chat(
         )
     gen_tokens = out[0][inputs["input_ids"].shape[1]:]
     text = tok.decode(gen_tokens, skip_special_tokens=True)
+    # Free KV cache + intermediate tensors so peak doesn't accumulate across calls
+    del inputs, out, gen_tokens
+    torch.cuda.empty_cache()
     return text.strip()
