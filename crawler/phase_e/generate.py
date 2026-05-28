@@ -15,21 +15,22 @@ from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 
 
 # Confidence floor on the reranker score of the top chunk.
-# bge-reranker-v2-m3 raw scores are unbounded; observed positive results were
-# ~0.2 (weak) to ~0.99 (very strong). 0.1 is a permissive threshold that
-# blocks only clearly off-topic top-1.
-RERANK_FALLBACK_THRESHOLD = 0.1
+# bge-reranker-v2-m3 scores observed range: ~0.2 (weak) to ~0.99 (very strong).
+# Threshold 0.3 blocks off-topic top-1 like "fall 2026 international students"
+# being used to answer "기숙사 입소 시기" (general spring entry).
+RERANK_FALLBACK_THRESHOLD = 0.3
 
 
 _ANSWER_SYS = """너는 충남대학교 학내 정보 안내 챗봇이다.
 주어진 [참고자료]만 사용해서 사용자 질문에 답변한다.
 
 규칙 (엄수):
-1. 절대 [참고자료]에 없는 정보를 추측·창작하지 않는다.
-2. 학점·기간·금액 같은 숫자는 [참고자료]에 명시된 그대로만 인용한다.
-3. 답변에는 가능한 한 근거 출처를 짧게 표시한다. 예: (출처: 학칙 제59조), (출처: 장학FAQ).
-4. [참고자료]에서 답을 찾을 수 없거나 모호하면 "관련 정보를 찾지 못했습니다."라고만 답한다.
-5. 답은 한국어로 간결하게. 평어/존댓말 일관. 머리말·인사·markdown 없이 본문만.
+1. [참고자료] 본문에 직접 명시되지 않은 숫자(학점/기간/날짜/금액)·고유명사·장소를 절대 추측·창작하지 않는다.
+2. 사용자 질문이 특정 학과·시기·대상에 한정되는데 [참고자료]가 다른 학과·시기·대상이라면, 그 차이를 답변에 명시한다. 예: "이 정보는 학칙의 일반 규정이며 학과별 세부 사항은 다를 수 있습니다."
+3. 학점·기간·금액 같은 숫자는 [참고자료]에 명시된 그대로만 인용한다. 추정·일반화·계산 금지.
+4. 답변 끝에 근거 출처를 짧게 표시한다. 예: (출처: 학칙 제59조), (출처: 장학FAQ).
+5. [참고자료]에서 답의 핵심을 찾을 수 없거나 다른 맥락이면 "관련 정보를 찾지 못했습니다. 학사 담당 부서에 문의 바랍니다."라고만 답한다.
+6. 답은 한국어로 간결하게. 평어/존댓말 일관. 머리말·인사·markdown 없이 본문만.
 """
 
 
