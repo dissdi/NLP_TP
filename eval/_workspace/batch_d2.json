@@ -1,0 +1,53 @@
+[
+  {
+    "qa_id": "G260528110",
+    "question": "충남대학교생활협동조합(생협)의 상담 전화번호는 무엇인가요?",
+    "answer_gold": "충남대학교생활협동조합 상담 전화번호는 042-821-5061이며, 팩스는 042-823-1445, 이메일은 general@cnu.ac.kr입니다.",
+    "domain": 2,
+    "categories": ["2.1"],
+    "question_type": "A",
+    "expected_source_urls": ["http://www.cnucoop.co.kr/"],
+    "is_fallback_expected": false,
+    "tags": ["식생활", "생협", "연락처", "상담전화"],
+    "created_by": "llm-claude",
+    "reviewed_by": null,
+    "created_at": "2026-05-28T20:00:00+09:00",
+    "reviewed_at": null,
+    "gen_prompt_version": "v1.0",
+    "notes": null
+  },
+  {
+    "qa_id": "G260528111",
+    "question": "제1학생회관 1층의 제1학생식당에서는 어떤 종류의 메뉴를 판매하나요?",
+    "answer_gold": "제1학생회관 1층의 제1학생식당에서는 간식, 양식, 스낵, 한식, 일식, 중식 메뉴를 판매합니다. 같은 1층에는 GS편의점, 커피전문점(99street), 하나은행이 함께 있습니다.",
+    "domain": 2,
+    "categories": ["2.2"],
+    "question_type": "A",
+    "expected_source_urls": ["https://plus.cnu.ac.kr/html/kr/sub05/sub05_05050101.html"],
+    "is_fallback_expected": false,
+    "tags": ["식생활", "학생식당", "제1학생회관", "메뉴"],
+    "created_by": "llm-claude",
+    "reviewed_by": null,
+    "created_at": "2026-05-28T20:00:00+09:00",
+    "reviewed_at": null,
+    "gen_prompt_version": "v1.0",
+    "notes": null
+  },
+  {
+    "qa_id": "G260528112",
+    "question": "제2학생회관(인재개발원)에는 어떤 식당과 편의시설이 있나요?",
+    "answer_gold": "제2학생회관(인재개발원) 1층에는 제2학생식당, 제2교직원식당, GS편의점, 커피전문점(99street)이 있습니다. 2층에는 인재개발원과 Job Cafe, 3층에는 인재개발원 취·창업 공간이 있습니다.",
+    "domain": 2,
+    "categories": ["2.2"],
+    "question_type": "A",
+    "expected_source_urls": ["https://plus.cnu.ac.kr/html/kr/sub05/sub05_05050101.html"],
+    "is_fallback_expected": false,
+    "tags": ["식생활", "학생식당", "제2학생회관", "교직원식당"],
+    "created_by": "llm-claude",
+    "reviewed_by": null,
+    "created_at": "2026-05-28T20:00:00+09:00",
+    "reviewed_at": null,
+    "gen_prompt_version": "v1.0",
+    "notes": null
+  }
+]
