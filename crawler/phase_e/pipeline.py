@@ -12,6 +12,7 @@ from .generate import GenerationResult, generate_answer
 from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 from .reranker import rerank
 from .retriever import HybridRetriever, build_default
+from .query_expand import expand_query
 from .tools import maybe_use_tool
 
 
@@ -43,12 +44,14 @@ class RAGPipeline:
             return self._answer_with_tool(query, tool_name, tr, max_new_tokens)
 
         # 2) Standard RAG path
+        expanded = expand_query(query)
         pool = self.retriever.retrieve(
-            query,
+            expanded,
             top_k=retrieve_top_k,
             bm25_pool=bm25_pool,
             dense_pool=dense_pool,
         )
+        # Rerank with the ORIGINAL query so cross-encoder evaluates real intent
         hits = rerank(query, pool, top_k=rerank_top_k)
         gen = generate_answer(
             query,
