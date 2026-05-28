@@ -1,4 +1,4 @@
-"""Answer generation. Prompts live in prompts/*.txt to dodge .py Korean truncation."""
+"""Answer generation. Korean strings in prompts/*.txt."""
 from __future__ import annotations
 
 import os
@@ -8,9 +8,7 @@ from typing import Optional
 from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 
 _PROMPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts")
-# v3: 0.3 -> 0.25 to recover FP cases (G260528102/103/124).
-RERANK_FALLBACK_THRESHOLD = 0.25
-FALLBACK_MSG = "관련 정보를 찾지 못했습니다. 학사 담당 부서에 문의 바랍니다."
+RERANK_FALLBACK_THRESHOLD = 0.3
 
 
 def _load_prompt(name: str) -> str:
@@ -19,6 +17,8 @@ def _load_prompt(name: str) -> str:
 
 
 _ANSWER_SYS = _load_prompt("answer_v2")
+FALLBACK_MSG = _load_prompt("fallback_msg")
+_USER_TEMPLATE = _load_prompt("user_msg_template")
 
 
 @dataclass
@@ -29,7 +29,7 @@ class GenerationResult:
     sources: list[dict]
 
 
-def _format_context(chunks: list, max_chunks: int = 8) -> str:
+def _format_context(chunks: list, max_chunks: int = 5) -> str:
     lines: list[str] = []
     for i, c in enumerate(chunks[:max_chunks], 1):
         m = c.meta or {}
@@ -47,14 +47,13 @@ def generate_answer(
     query: str,
     reranked: list,
     fallback_threshold: float = RERANK_FALLBACK_THRESHOLD,
-    max_chunks: int = 8,
-    max_new_tokens: int = 512,
+    max_chunks: int = 5,
+    max_new_tokens: int = 256,
     model_id: str = DEFAULT_LLM,
     load_in_4bit: bool = DEFAULT_4BIT,
 ) -> GenerationResult:
     if not reranked:
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=0.0, sources=[])
-
     top_score = float((reranked[0].meta or {}).get("_rerank_score", 0.0))
     sources: list[dict] = []
     for c in reranked[:max_chunks]:
@@ -67,9 +66,8 @@ def generate_answer(
         })
     if top_score < fallback_threshold:
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=top_score, sources=sources)
-
     context = _format_context(reranked, max_chunks=max_chunks)
-    user_msg = "[질문]\n" + query + "\n\n[참고자료]\n" + context
+    user_msg = _USER_TEMPLATE.format(query=query, context=context)
     answer = chat(
         user_msg=user_msg,
         system_msg=_ANSWER_SYS,

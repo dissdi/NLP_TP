@@ -34,8 +34,8 @@ class RAGPipeline:
         bm25_pool: int = 100,
         dense_pool: int = 50,
         retrieve_top_k: int = 30,
-        rerank_top_k: int = 8,
-        max_new_tokens: int = 512,
+        rerank_top_k: int = 5,
+        max_new_tokens: int = 256,
     ) -> AnswerResult:
         pool = self.retriever.retrieve(
             query,
