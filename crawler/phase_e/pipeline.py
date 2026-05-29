@@ -36,7 +36,7 @@ class RAGPipeline:
         retrieve_top_k: int = 30,
         rerank_top_k: int = 8,
         max_new_tokens: int = 512,
-        enable_expand: bool = False,
+        enable_expand: bool = True,
     ) -> AnswerResult:
         # 1) Tool routing first (real-time data trumps static corpus for dynamic questions)
         tool_hit = maybe_use_tool(query)
@@ -44,8 +44,13 @@ class RAGPipeline:
             tool_name, tr = tool_hit
             return self._answer_with_tool(query, tool_name, tr, max_new_tokens)
 
-        # 2) Standard RAG path. expand_query default OFF — caused -16% on D-1 eval.
-        # Useful only for slang/abbrev user queries; opt-in via enable_expand=True.
+        # 2) Standard RAG path.
+        # ABLATION A4 (rerank-expanded): expand_query default ON for this branch, and the
+        # expanded query (original + canonical aliases for slang/abbrev) is fed to BOTH
+        # retrieval AND the cross-encoder reranker. Baseline (main) reranked with the
+        # ORIGINAL query; A4 tests whether passing the expanded form to the reranker
+        # directly resolves colloquial cases that the bare query cannot match.
+        # The LLM still receives the ORIGINAL query (natural phrasing).
         expanded = expand_query(query) if enable_expand else query
         pool = self.retriever.retrieve(
             expanded,
@@ -53,8 +58,8 @@ class RAGPipeline:
             bm25_pool=bm25_pool,
             dense_pool=dense_pool,
         )
-        # Rerank with the ORIGINAL query so cross-encoder evaluates real intent
-        hits = rerank(query, pool, top_k=rerank_top_k)
+        # A4: rerank with the EXPANDED query so the cross-encoder sees canonical terms.
+        hits = rerank(expanded, pool, top_k=rerank_top_k)
         gen = generate_answer(
             query,
             hits,
