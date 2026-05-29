@@ -15,13 +15,21 @@ from typing import Optional
 
 MENU_URL = "https://mobileadmin.cnu.ac.kr/food/index.jsp"
 
+# Precise keywords only — "1학" alone causes false matches with "1학기", "1학년".
+# We require either dining-context words OR specific compound forms.
 KEYWORDS = [
-    "학식", "메뉴", "식단", "학생회관", "생활과학",
-    "1학", "2학", "3학", "4학",
-    "조식", "중식", "석식",
-    "아침", "점심", "저녁",
-    "구내식당", "오늘 밥",
+    "학식", "식단", "학생회관 식당", "학생회관 메뉴",
+    "1학 메뉴", "2학 메뉴", "3학 메뉴", "4학 메뉴",
+    "1학 식당", "2학 식당", "3학 식당", "4학 식당",
+    "1학식당", "2학식당", "3학식당", "4학식당",
+    "1학생회관", "2학생회관", "3학생회관", "4학생회관",
+    "제1학생회관", "제2학생회관", "제3학생회관", "제4학생회관",
+    "구내식당", "오늘 점심", "오늘 저녁", "오늘 아침", "오늘 학식",
+    "조식 메뉴", "중식 메뉴", "석식 메뉴",
 ]
+# Words that should EXCLUDE the cafeteria tool (academic-period false matches)
+EXCLUDE_IF_PRESENT = ["1학기", "2학기", "1학년", "2학년", "3학년", "4학년", "장학", "학점", "휴학", "복학"]
+
 
 
 class CafeteriaTool:
@@ -31,6 +39,8 @@ class CafeteriaTool:
 
     def matches(self, query: str) -> bool:
         if not query:
+            return False
+        if any(neg in query for neg in EXCLUDE_IF_PRESENT):
             return False
         return any(k in query for k in KEYWORDS)
 
