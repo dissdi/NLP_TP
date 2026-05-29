@@ -12,7 +12,7 @@ from .generate import GenerationResult, generate_answer
 from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 from .reranker import rerank
 from .retriever import HybridRetriever, build_default
-from .query_expand import expand_query
+from .query_rewrite import rewrite_query
 from .tools import maybe_use_tool
 
 
@@ -36,7 +36,6 @@ class RAGPipeline:
         retrieve_top_k: int = 30,
         rerank_top_k: int = 8,
         max_new_tokens: int = 512,
-        enable_expand: bool = False,
     ) -> AnswerResult:
         # 1) Tool routing first (real-time data trumps static corpus for dynamic questions)
         tool_hit = maybe_use_tool(query)
@@ -44,17 +43,17 @@ class RAGPipeline:
             tool_name, tr = tool_hit
             return self._answer_with_tool(query, tool_name, tr, max_new_tokens)
 
-        # 2) Standard RAG path. expand_query default OFF — caused -16% on D-1 eval.
-        # Useful only for slang/abbrev user queries; opt-in via enable_expand=True.
-        expanded = expand_query(query) if enable_expand else query
+        # 2) A3: LLM rewrites colloquial/abbrev queries into formal Korean before retrieval.
+        # rewritten is used for retrieval + rerank; original query goes to the generator
+        # so the LLM answers in the user's natural phrasing.
+        rewritten = rewrite_query(query)
         pool = self.retriever.retrieve(
-            expanded,
+            rewritten,
             top_k=retrieve_top_k,
             bm25_pool=bm25_pool,
             dense_pool=dense_pool,
         )
-        # Rerank with the ORIGINAL query so cross-encoder evaluates real intent
-        hits = rerank(query, pool, top_k=rerank_top_k)
+        hits = rerank(rewritten, pool, top_k=rerank_top_k)
         gen = generate_answer(
             query,
             hits,
