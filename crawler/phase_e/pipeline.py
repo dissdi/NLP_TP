@@ -38,7 +38,7 @@ class RAGPipeline:
         retrieve_top_k: int = 30,
         rerank_top_k: int = 8,
         max_new_tokens: int = 512,
-        enable_expand: bool = True,
+        enable_expand: bool = False,
     ) -> AnswerResult:
         # 1) Tool routing first (real-time data trumps static corpus for dynamic questions)
         tool_hit = maybe_use_tool(query)
@@ -50,11 +50,11 @@ class RAGPipeline:
         #   RAG_ENABLE_EXPAND=0      -> force expand OFF (shipped baseline behavior)
         #   RAG_ENABLE_EXPAND=1      -> force expand ON
         #   RAG_RERANK_ON_EXPANDED=0 -> rerank with the ORIGINAL query (isolates expand-only)
-        # Unset => branch defaults (expand ON + rerank on expanded = A4).
+        # Unset => A2 defaults: expand OFF + rerank on ORIGINAL (same as master baseline).
         _ee = os.environ.get("RAG_ENABLE_EXPAND")
         if _ee is not None:
             enable_expand = _ee.strip().lower() not in ("0", "false", "no", "")
-        _rerank_on_expanded = os.environ.get("RAG_RERANK_ON_EXPANDED", "1").strip().lower() \
+        _rerank_on_expanded = os.environ.get("RAG_RERANK_ON_EXPANDED", "0").strip().lower() \
             not in ("0", "false", "no", "")
 
         # 2) Standard RAG path.
