@@ -34,10 +34,12 @@ from .llm import DEFAULT_LLM, chat
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT_DIR = os.path.join(ROOT, "eval", "results")
-ANS_PATH = os.path.join(OUT_DIR, "full_eval_answers.jsonl")
-JUDGE_PATH = os.path.join(OUT_DIR, "full_eval_judged.jsonl")
-AGG_PATH = os.path.join(OUT_DIR, "full_eval_judged_agg.json")
-REPORT_PATH = os.path.join(OUT_DIR, "full_eval_judged_report.md")
+_TAG = os.environ.get("EVAL_TAG", "")
+_SUFFIX = f"_{_TAG}" if _TAG else ""
+ANS_PATH = os.path.join(OUT_DIR, f"full_eval_answers{_SUFFIX}.jsonl")
+JUDGE_PATH = os.path.join(OUT_DIR, f"full_eval_judged{_SUFFIX}.jsonl")
+AGG_PATH = os.path.join(OUT_DIR, f"full_eval_judged_agg{_SUFFIX}.json")
+REPORT_PATH = os.path.join(OUT_DIR, f"full_eval_judged_report{_SUFFIX}.md")
 
 
 _JUDGE_SYS = """너는 RAG 시스템의 답변 정확성 평가자다.
