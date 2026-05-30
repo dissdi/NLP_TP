@@ -27,9 +27,12 @@ from collections import defaultdict
 from .pipeline import RAGPipeline
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-EVAL_PATH = os.path.join(ROOT, "eval", "eval-generated.jsonl")
+# Env overrides: EVAL_PATH = input jsonl; EVAL_TAG = suffix for output files.
+_TAG = os.environ.get("EVAL_TAG", "")
+_SUF = f"_{_TAG}" if _TAG else ""
+EVAL_PATH = os.environ.get("EVAL_PATH") or os.path.join(ROOT, "eval", "eval-generated.jsonl")
 OUT_DIR = os.path.join(ROOT, "eval", "results")
-ANS_PATH = os.path.join(OUT_DIR, "full_eval_answers.jsonl")
+ANS_PATH = os.path.join(OUT_DIR, f"full_eval_answers{_SUF}.jsonl")
 
 
 def load_eval() -> list[dict]:
@@ -156,7 +159,7 @@ def auto_metrics() -> dict:
 
 
 def write_report(agg: dict) -> None:
-    path = os.path.join(OUT_DIR, "full_eval_auto_report.md")
+    path = os.path.join(OUT_DIR, f"full_eval_auto_report{_SUF}.md")
     L = ["# D-1 Full RAG Evaluation (auto metrics)", ""]
     L.append(f"- total answered: {agg['n_total']}  (standard {agg['n_standard']} + fallback-expected {agg['n_fallback_expected']})")
     L.append("")
@@ -189,7 +192,7 @@ def main() -> None:
         run_generate()
     if cmd in ("metrics", "all"):
         agg = auto_metrics()
-        agg_path = os.path.join(OUT_DIR, "full_eval_auto.json")
+        agg_path = os.path.join(OUT_DIR, f"full_eval_auto{_SUF}.json")
         with open(agg_path, "w", encoding="utf-8") as fh:
             json.dump(agg, fh, ensure_ascii=False, indent=2)
         write_report(agg)
