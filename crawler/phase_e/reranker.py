@@ -21,7 +21,7 @@ DEFAULT_RERANKER = "BAAI/bge-reranker-v2-m3"
 @lru_cache(maxsize=2)
 def _load_reranker(model_id: str):
     from sentence_transformers import CrossEncoder
-    return CrossEncoder(model_id, max_length=512)
+    return CrossEncoder(model_id, max_length=512, device="cpu")
 
 
 def rerank(
