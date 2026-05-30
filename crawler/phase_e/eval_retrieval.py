@@ -29,7 +29,7 @@ EVAL_PATH = os.path.join(ROOT, "eval", "eval-generated.jsonl")
 OUT_DIR = os.path.join(ROOT, "eval", "results")
 
 # Same threshold used by the live pipeline (generate.py).
-FALLBACK_THRESHOLD = 0.3
+FALLBACK_THRESHOLD = 0.15
 
 K_VALUES = [1, 5, 10, 20]
 

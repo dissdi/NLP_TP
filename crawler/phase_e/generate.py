@@ -8,7 +8,7 @@ from typing import Optional
 from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 
 _PROMPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts")
-RERANK_FALLBACK_THRESHOLD = 0.3
+RERANK_FALLBACK_THRESHOLD = 0.15
 
 
 def _load_prompt(name: str) -> str:
