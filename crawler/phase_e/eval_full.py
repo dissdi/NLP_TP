@@ -27,9 +27,11 @@ from collections import defaultdict
 from .pipeline import RAGPipeline
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-EVAL_PATH = os.path.join(ROOT, "eval", "eval-generated.jsonl")
+EVAL_PATH = os.environ.get("EVAL_PATH", os.path.join(ROOT, "eval", "eval-generated.jsonl"))
 OUT_DIR = os.path.join(ROOT, "eval", "results")
-ANS_PATH = os.path.join(OUT_DIR, "full_eval_answers.jsonl")
+_TAG = os.environ.get("EVAL_TAG", "")
+_SUFFIX = f"_{_TAG}" if _TAG else ""
+ANS_PATH = os.path.join(OUT_DIR, f"full_eval_answers{_SUFFIX}.jsonl")
 
 
 def load_eval() -> list[dict]:
