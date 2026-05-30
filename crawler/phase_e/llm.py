@@ -8,7 +8,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Optional
 
-DEFAULT_LLM = "Qwen/Qwen2.5-14B-Instruct"
+DEFAULT_LLM = "Qwen/Qwen3-14B"
 DEFAULT_4BIT = True
 
 
@@ -47,7 +47,10 @@ def chat(
     if system_msg:
         messages.append({"role": "system", "content": system_msg})
     messages.append({"role": "user", "content": user_msg})
-    prompt = tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    template_kwargs: dict = {"tokenize": False, "add_generation_prompt": True}
+    if "Qwen3" in model_id:
+        template_kwargs["enable_thinking"] = False  # disable CoT; saves 2-3x latency
+    prompt = tok.apply_chat_template(messages, **template_kwargs)
     inputs = tok(prompt, return_tensors="pt").to(model.device)
     with torch.no_grad():
         out = model.generate(
