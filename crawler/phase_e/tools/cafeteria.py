@@ -27,8 +27,18 @@ KEYWORDS = [
     "구내식당", "오늘 점심", "오늘 저녁", "오늘 아침", "오늘 학식",
     "조식 메뉴", "중식 메뉴", "석식 메뉴",
 ]
-# Words that should EXCLUDE the cafeteria tool (academic-period false matches)
-EXCLUDE_IF_PRESENT = ["1학기", "2학기", "1학년", "2학년", "3학년", "4학년", "장학", "학점", "휴학", "복학"]
+# Words that should EXCLUDE the cafeteria tool.
+# 1) academic-period false matches
+# 2) static facility-info queries — tool only returns "today's menu" and cannot
+#    answer building-layout / shop-list questions even though "학생회관" matches.
+#    Confirmed via D-1 G260528111/112 regression analysis (2026-05-31).
+EXCLUDE_IF_PRESENT = [
+    "1학기", "2학기", "1학년", "2학년", "3학년", "4학년",
+    "장학", "학점", "휴학", "복학",
+    # static facility-info signals
+    "편의시설", "어떤 식당", "어떤 종류", "어떤 메뉴",
+    "복지시설", "편의점", "은행", "카페", "층에",
+]
 
 
 
