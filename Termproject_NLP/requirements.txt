@@ -1,0 +1,42 @@
+# Termproject 의존성 (가이드: Python 3.10.12, torch 2.5.1)
+
+# --- Core ML ---
+torch==2.5.1
+transformers>=4.40,<5.0
+accelerate>=0.30
+# 4-bit 양자화: Qwen3-14B를 15GB GPU에 적재 (enable_thinking=False로 CoT 차단)
+bitsandbytes>=0.43
+sentence-transformers>=2.7
+
+# --- Retrieval ---
+faiss-cpu>=1.7
+rank_bm25>=0.2.2
+kiwipiepy>=0.20
+
+# --- Data ---
+numpy>=1.24,<2.0
+pandas>=2.0
+pyarrow>=14.0
+jsonlines>=4.0
+tqdm>=4.66
+
+# --- UI ---
+gradio>=4.0
+
+# --- 옵션 (학사일정·식단 크롤링 fetch) ---
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+
+# --- 옵션 (기숙사 식당 client-rendered 페이지) ---
+# dorm.cnu.ac.kr가 JS 렌더링이라 BeautifulSoup으로 못 긁힘.
+# Playwright 미설치 시 dorm tool은 외부 링크 안내로 graceful fallback.
+# 설치 후 `python -m playwright install chromium` 한 번 실행 필요.
+playwright>=1.40
+
+# Notes:
+#   · 평가 환경에 GPU 없으면 LLM은 CPU 폴백되며 매우 느림(>30s/응답).
+#   · faiss-cpu로 충분. GPU FAISS는 권장 X.
+#   · pytorch-lightning은 사용 안 함(가이드에서 옵션). 미설치.
+#   · FAISS index가 비어 있으면 BM25-only 모드로 자동 폴백.
+#     dense 빌드는 `python scripts/build_faiss.py` (bge-m3 ~2.3GB 다운로드).
