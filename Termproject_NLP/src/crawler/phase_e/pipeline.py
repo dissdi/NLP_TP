@@ -91,3 +91,24 @@ class RAGPipeline:
 
     def _answer_with_tool(self, query: str, tool_name: str, tr: dict, max_new_tokens: int) -> AnswerResult:
         """Build LLM context from the tool result, generate answer with the same prompt rules."""
+        from .generate import _ANSWER_SYS, _USER_TEMPLATE
+        context = tr["context"]
+        user_msg = _USER_TEMPLATE.format(query=query, context=context)
+        answer = chat(
+            user_msg=user_msg,
+            system_msg=_ANSWER_SYS,
+            model_id=DEFAULT_LLM,
+            load_in_4bit=DEFAULT_4BIT,
+            max_new_tokens=max_new_tokens,
+            temperature=0.0,
+        )
+        return AnswerResult(
+            query=query,
+            retrieval_pool=0,
+            rerank_top_k=0,
+            answer=answer.strip(),
+            used_fallback=False,
+            top_rerank_score=1.0,
+            sources=tr.get("sources") or [],
+            used_tool=tool_name,
+        )
