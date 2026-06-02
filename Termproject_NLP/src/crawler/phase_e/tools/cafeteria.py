@@ -73,53 +73,140 @@ class CafeteriaTool:
 
     @staticmethod
     def _parse_menu(html: str) -> str:
-        """Parse the menu table out of mobileadmin.cnu HTML.
+        """Parse mobileadmin.cnu menu table with rowspan-aware grid construction.
 
-        Strategy: rely on the simple, stable structure of the page —
-        first `table.menu_div` (if class) or first table after a `요일별` marker.
-        Fall back to extracting all <td> cells in order.
+        Returns a column-labeled string like:
+          [조회 날짜] 2026.06.02
+          [제1학생회관] 조식·중식·석식: 메뉴운영내역 (상인 운영)
+          [제2학생회관]
+            - 조식/학생: 정식(1000) 삼계닭죽 ...
+            - 중식/직원: 정식(6000) 취나물밥 ...
+          ...
         """
         try:
             from bs4 import BeautifulSoup
             soup = BeautifulSoup(html, "html.parser")
         except Exception:
-            # Fallback: regex strip tags
-            text = re.sub(r"<[^>]+>", " ", html)
-            text = re.sub(r"\s+", " ", text)
-            return text.strip()[:4000]
+            return ""
 
-        # Try to find the date header e.g. "금요일 2026.05.29"
-        date_match = re.search(r"\d{4}\.\d{2}\.\d{2}", html)
-        date_str = date_match.group(0) if date_match else ""
+        date_m = re.search(r"\d{4}\.\d{2}\.\d{2}", html)
+        date_str = date_m.group(0) if date_m else ""
 
         tables = soup.find_all("table")
         if not tables:
             return ""
-
-        # Prefer the largest table (assumed to be the menu matrix)
         menu_table = max(tables, key=lambda t: len(t.find_all("td")))
-        rows = []
-        for tr in menu_table.find_all("tr"):
-            cells = [c.get_text(" ", strip=True) for c in tr.find_all(["td", "th"])]
-            if not any(cells):
+
+        # Build 2D grid with rowspan/colspan expansion
+        trs = menu_table.find_all("tr")
+        grid: list = []
+        occupied = {}  # (r, c) -> True if filled by rowspan from prior row
+        max_cols = 0
+        for r, tr in enumerate(trs):
+            row = []
+            cells = tr.find_all(["td", "th"])
+            c = 0
+            for cell in cells:
+                while (r, c) in occupied:
+                    row.append(occupied[(r, c)])
+                    c += 1
+                text = cell.get_text(" ", strip=True)
+                rs = int(cell.get("rowspan", 1))
+                cs = int(cell.get("colspan", 1))
+                for dc in range(cs):
+                    row.append(text)
+                    for dr in range(1, rs):
+                        occupied[(r + dr, c + dc)] = text
+                    c += 1
+            # Drain any trailing rowspan'd cells
+            while (r, c) in occupied:
+                row.append(occupied[(r, c)])
+                c += 1
+            grid.append(row)
+            max_cols = max(max_cols, len(row))
+
+        if len(grid) < 3:
+            return ""
+
+        # Header row: find row containing "학생회관" or "학생회관"-related labels
+        header_idx = -1
+        for i, row in enumerate(grid):
+            joined = " ".join(row)
+            if "학생회관" in joined or "생활과학" in joined:
+                header_idx = i
+                break
+        if header_idx < 0:
+            return ""
+
+        header = grid[header_idx]
+        # Filter cafeteria columns: skip empty + duplicated header labels (구분/직원/학생).
+        # "구분" repeats due to colspan=2 over 구분+직원/학생 sub-columns.
+        HEADER_NOISE = {"구분", "직원", "학생", "조식", "중식", "석식", ""}
+        seen = set()
+        cafeteria_names = []
+        cafeteria_cols = []  # column indices in grid corresponding to each cafeteria
+        for col_idx, c in enumerate(header):
+            if not c or c.strip() in HEADER_NOISE:
                 continue
-            rows.append(" | ".join(cells))
-        # Filter rows that are mostly empty cells (page skeleton, no actual menu)
-        meaningful_rows = []
-        for row in rows:
-            # Strip header markers and check for non-trivial content
-            stripped = row.replace("|", "").replace(" ", "").replace("\t", "")
-            if len(stripped) < 4:
+            name = c.strip()
+            if name in seen:
                 continue
-            meaningful_rows.append(row)
-        # Require at least a few rows that look like food items (Korean chars)
-        food_rows = [r for r in meaningful_rows if re.search(r"[가-힣]{3,}", r)]
-        if len(food_rows) < 3:
-            return ""  # treat as empty → force fallback
-        text = "\n".join(meaningful_rows)
+            seen.add(name)
+            cafeteria_names.append(name)
+            cafeteria_cols.append(col_idx)
+        if len(cafeteria_names) < 2:
+            return ""
+
+        # Data rows: after the header. Each data row format expected:
+        #   [meal_label, target_label, cafe1_menu, cafe2_menu, ...]
+        # Where meal_label may repeat (rowspan from 조식/중식/석식).
+        # Determine first meal-row index and parse meal/target/menus.
+        data_rows = grid[header_idx + 1:]
+
+        # Group menus per cafeteria
+        cafe_entries: dict = {name: [] for name in cafeteria_names}
+        for row in data_rows:
+            # Expected first two cols: meal (조식/중식/석식), target (직원/학생)
+            if len(row) < 2:
+                continue
+            meal = row[0].strip() if row[0] else ""
+            target = row[1].strip() if len(row) > 1 and row[1] else ""
+            if meal not in ("조식", "중식", "석식"):
+                continue
+            if target not in ("직원", "학생"):
+                continue
+            for name, col_idx in zip(cafeteria_names, cafeteria_cols):
+                menu = row[col_idx] if col_idx < len(row) else ""
+                menu_text = (menu or "").strip()
+                if not menu_text:
+                    continue
+                # Skip uninformative cells but keep "운영안함" as info
+                cafe_entries[name].append((meal, target, menu_text))
+
+        # Format output
+        lines = []
         if date_str:
-            text = f"[조회 날짜] {date_str}\n\n" + text
-        return text.strip()
+            lines.append(f"[조회 날짜] {date_str}")
+            lines.append("")
+        for name in cafeteria_names:
+            entries = cafe_entries.get(name, [])
+            lines.append(f"[{name}]")
+            # Special handling: if every entry is "메뉴운영내역" → 상인 운영
+            unique_menus = set(e[2] for e in entries)
+            if entries and unique_menus == {"메뉴운영내역"}:
+                lines.append("- 푸드코트 형식 (라면·양식·스낵·한식·일식·중식 코너별 단품 주문, 정해진 정식 없음)")
+            elif not entries:
+                lines.append("- 정보 없음")
+            else:
+                for meal, target, menu in entries:
+                    lines.append(f"- {meal}/{target}: {menu}")
+            lines.append("")
+        text = "\n".join(lines).strip()
+        # Require non-trivial content
+        if "정식" not in text and "메뉴운영내역" not in text:
+            return ""
+        return text
+
 
     def run(self, query: str) -> Optional[dict]:
         html = self._fetch_html()
@@ -128,8 +215,8 @@ class CafeteriaTool:
         # 항상 동봉되는 운영 안내 (LLM이 grounded 답변을 만들 anchor).
         OPERATIONAL_INFO = (
             "충남대학교 학생식당 운영 정보:\n"
-            "운영 식당 5곳 — 제1학생회관 식당, 제2학생회관 식당, 제3학생회관 식당(생활과학대), "
-            "제4학생회관 식당, 산학연식당.\n"
+            "운영 식당 5곳 — 제1학생회관, 제2학생회관, 제3학생회관, 제4학생회관, 생활과학대학 식당.\n"
+            "참고: 제1학생회관은 푸드코트 형식(라면·양식·스낵·한식·일식·중식 코너별 단품 주문)이라 정해진 정식 메뉴가 없습니다.\n"
             "운영 시간: 학기 중 평일 정상 운영 / 주말·공휴일·방학 미운영 또는 단축 운영.\n"
             "당일 점심·저녁 상세 메뉴는 실시간 모바일 페이지에서 확인: " + MENU_URL
         )

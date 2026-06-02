@@ -21,7 +21,8 @@ jsonlines>=4.0
 tqdm>=4.66
 
 # --- UI ---
-gradio>=4.0
+# Gradio 6.0에서 gr.Chatbot의 type 인자가 제거됨 → 5.x 이하 고정.
+gradio>=4.0,<6.0
 
 # --- 옵션 (학사일정·식단 크롤링 fetch) ---
 requests>=2.31
