@@ -240,61 +240,237 @@ def launch_ui(server_name: str = "0.0.0.0", server_port: int = 7860,
               share: bool = False) -> None:
     import gradio as gr
 
-    # Pre-load pipeline so the first chat turn doesn't pay the cold-start.
     get_pipeline()
 
+    CUSTOM_CSS = """
+    /* ------- Claude-style dark theme ------- */
+    :root {
+      --cn-bg: #1f1e1d;
+      --cn-bg-2: #262524;
+      --cn-bg-3: #2f2d2b;
+      --cn-bg-4: #3a3835;
+      --cn-border: #38353230;
+      --cn-text: #ececec;
+      --cn-text-dim: #9b958e;
+      --cn-accent: #d97757;
+      --cn-accent-hover: #c66643;
+    }
+    html, body { background: var(--cn-bg) !important; color: var(--cn-text) !important;
+                 height: 100vh !important; overflow: hidden !important; margin: 0 !important; }
+    .gradio-container { max-width: 100% !important; height: 100vh !important;
+                         padding: 0 !important; background: var(--cn-bg) !important;
+                         overflow: hidden !important; }
+    .gradio-container *, body, html { font-family: -apple-system, BlinkMacSystemFont,
+                                       "Pretendard", "Apple SD Gothic Neo", sans-serif; }
+    .gradio-container > .main { height: 100vh !important; overflow: hidden !important; }
+    footer, .footer { display: none !important; }
+
+    /* Top row fills viewport */
+    .gradio-container > .main > div { height: 100vh !important; overflow: hidden !important; }
+
+    /* Sidebar */
+    #sidebar { background: var(--cn-bg-2) !important; border-right: 1px solid #34322f !important;
+               height: 100vh !important; padding: 14px 10px !important;
+               display: flex !important; flex-direction: column !important; gap: 8px !important;
+               box-sizing: border-box; overflow: hidden; }
+    #sidebar > .gr-button, #sidebar button#new_chat_btn { width: 100% !important; }
+    #new_chat_btn { background: transparent !important; color: var(--cn-text) !important;
+                    border: 1px solid #4a4744 !important; border-radius: 14px !important;
+                    padding: 11px 14px !important; font-size: 13.5px !important;
+                    font-weight: 500 !important; cursor: pointer !important;
+                    transition: background 0.15s ease; }
+    #new_chat_btn:hover { background: var(--cn-bg-3) !important; }
+    #sidebar .sidebar-title { font-weight: 500; font-size: 11.5px; color: var(--cn-text-dim);
+                              padding: 14px 8px 4px; letter-spacing: 0.04em;
+                              text-transform: uppercase; }
+    #sidebar .session-list { flex: 1; overflow-y: auto; }
+    #sidebar .session-list button { width: 100%; text-align: left; background: transparent;
+                                     border: none; padding: 9px 10px; border-radius: 8px;
+                                     color: var(--cn-text); font-size: 13.5px; cursor: default;
+                                     margin-bottom: 2px; }
+    #sidebar .session-list .active { background: var(--cn-bg-3); }
+    #sidebar .session-list .disabled { color: var(--cn-text-dim); font-style: italic; font-size: 12.5px; }
+
+    /* Main column */
+    #main_col { background: var(--cn-bg) !important; height: 100vh !important;
+                display: flex !important; flex-direction: column !important;
+                padding: 0 !important; gap: 0 !important; overflow: hidden !important; }
+    #main_area { width: 100%; max-width: 920px; margin: 0 auto;
+                 padding: 22px 28px 12px; flex: 1; min-height: 0;
+                 display: flex; flex-direction: column; overflow: hidden; }
+    #main_area h3 { color: var(--cn-text); margin: 0 0 14px 0; font-weight: 600; }
+
+    /* Chatbot */
+    #chatbot { background: transparent !important; border: none !important;
+               box-shadow: none !important; flex: 1 !important; min-height: 0 !important; }
+    #chatbot > div { background: transparent !important; }
+    /* Hide chatbot built-in toolbar/trash/scroll buttons */
+    #chatbot button[aria-label="Clear"],
+    #chatbot button[title="Clear"],
+    #chatbot .toolbar,
+    #chatbot .icon-button-wrapper:has(svg[aria-label*="Delete"]),
+    #chatbot > div > button { display: none !important; }
+    /* Message bubbles */
+    #chatbot .message-wrap, #chatbot .message { background: transparent !important; }
+    .bot-row .md, .user-row .md,
+    #chatbot .bot, #chatbot .user,
+    .message-content {
+      background: var(--cn-bg-2) !important; color: var(--cn-text) !important;
+      border: 1px solid #34322f !important; border-radius: 14px !important;
+      padding: 12px 14px !important;
+    }
+    #chatbot .copy-button, #chatbot .icon-button { color: var(--cn-text-dim) !important; }
+
+    /* Input area */
+    #input_wrap { width: 100%; max-width: 920px; margin: 0 auto;
+                  padding: 6px 28px 22px; box-sizing: border-box; flex-shrink: 0; }
+    #input_area { gap: 10px !important; align-items: flex-end !important; }
+    #user_box, #user_box > div, #user_box .gr-form { background: transparent !important;
+                                                       border: none !important; box-shadow: none !important; }
+    #user_box textarea { background: var(--cn-bg-2) !important; color: var(--cn-text) !important;
+                          border: 1px solid #34322f !important;
+                          border-radius: 16px !important; padding: 14px 18px !important;
+                          font-size: 15px !important; line-height: 1.55 !important;
+                          resize: none !important; overflow-y: hidden !important;
+                          min-height: 84px !important; max-height: 200px !important;
+                          box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
+                          transition: border-color 0.15s ease; }
+    #user_box textarea:focus { border-color: var(--cn-accent) !important; outline: none !important; }
+    #user_box textarea::placeholder { color: var(--cn-text-dim) !important; }
+    #submit_btn { background: var(--cn-accent) !important; color: white !important;
+                  border: none !important; border-radius: 14px !important;
+                  height: 84px !important; min-width: 88px !important;
+                  font-weight: 600 !important; font-size: 14px !important;
+                  cursor: pointer !important; transition: background 0.15s ease;
+                  box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important; }
+    #submit_btn:hover { background: var(--cn-accent-hover) !important; }
+
+    /* Force chatbot to fill remaining height */
+    #chatbot { height: 100% !important; min-height: 0 !important; }
+    #chatbot > div { height: 100% !important; }
+    #chatbot .bubble-wrap { height: 100% !important; padding: 8px 0 !important; }
+
+    /* Kill ALL toolbar chrome on chatbot (trash, scroll-down arrow, etc) */
+    #chatbot button.icon-button,
+    #chatbot .icon-button-wrapper,
+    #chatbot button[aria-label*="Clear"],
+    #chatbot button[aria-label*="trash"],
+    #chatbot button[aria-label*="Delete"],
+    #chatbot button[aria-label*="Scroll"],
+    #chatbot .scroll-hide,
+    #chatbot > button,
+    #chatbot > div > button { display: none !important; }
+
+    /* Flatten nested message containers — single bubble per message */
+    #chatbot .message,
+    #chatbot .message-row,
+    #chatbot .message-wrap,
+    #chatbot .bot-row,
+    #chatbot .user-row { background: transparent !important; border: none !important;
+                         box-shadow: none !important; padding: 6px 0 !important; }
+    #chatbot .message > div,
+    #chatbot .message-content { background: var(--cn-bg-2) !important;
+                                 border: 1px solid #34322f !important;
+                                 border-radius: 14px !important;
+                                 padding: 12px 14px !important;
+                                 color: var(--cn-text) !important; }
+    #chatbot .message > div > div,
+    #chatbot .message-content > div { background: transparent !important;
+                                       border: none !important; padding: 0 !important; }
+    """
+
     with gr.Blocks(title="충남대 학내 정보 RAG 챗봇",
-                   theme=gr.themes.Soft()) as demo:
-        gr.Markdown("# 충남대학교 학내 정보 RAG 챗봇")
+                   theme=gr.themes.Soft(),
+                   css=CUSTOM_CSS) as demo:
+        with gr.Row(equal_height=False):
+            # Sidebar — 새 채팅 (top) + 대화 리스트
+            with gr.Column(scale=1, min_width=240, elem_id="sidebar"):
+                clear_btn = gr.Button("＋ 새 채팅", elem_id="new_chat_btn", variant="secondary")
+                gr.HTML('<div class="sidebar-title">대화</div>')
+                gr.HTML(
+                    '<div class="session-list">'
+                    '<button class="active">현재 대화</button>'
+                    '<button class="disabled">(이전 대화 없음)</button>'
+                    '</div>'
+                )
 
-        chatbot = gr.Chatbot(
-            label="대화 흐름",
-            value=[{"role": "assistant", "content": WELCOME}],
-            type="messages",
-            height=520,
-            show_copy_button=True,
-        )
-        with gr.Row():
-            user_box = gr.Textbox(
-                label="",
-                placeholder="질문을 입력하고 Enter (예: 졸업학점 몇 학점이야?)",
-                lines=2,
-                scale=7,
-                autofocus=True,
-            )
-            with gr.Column(scale=1, min_width=80):
-                submit_btn = gr.Button("전송", variant="primary")
-                clear_btn = gr.Button("새 대화")
-
-        gr.Examples(
-            examples=_load_examples(),
-            inputs=user_box,
-            label="추천 질문",
-            examples_per_page=8,
-        )
+            # Main column
+            with gr.Column(scale=5, elem_id="main_col"):
+                with gr.Column(elem_id="main_area"):
+                    gr.Markdown("### 충남대학교 학내 정보 RAG 챗봇")
+                    chatbot = gr.Chatbot(
+                        label="",
+                        value=[{"role": "assistant", "content": WELCOME}],
+                        type="messages",
+                        show_copy_button=True,
+                        elem_id="chatbot",
+                        show_label=False,
+                        show_share_button=False,
+                        bubble_full_width=False,
+                    )
+                with gr.Column(elem_id="input_wrap"):
+                    with gr.Row(elem_id="input_area"):
+                        user_box = gr.Textbox(
+                            label="",
+                            placeholder="질문을 입력하고 Enter (Shift+Enter = 줄바꿈)",
+                            lines=3,
+                            max_lines=10,
+                            scale=10,
+                            autofocus=True,
+                            elem_id="user_box",
+                            show_label=False,
+                            container=False,
+                        )
+                        submit_btn = gr.Button("전송", variant="primary",
+                                               scale=1, min_width=84, elem_id="submit_btn")
 
         submit_btn.click(_chat_turn, [user_box, chatbot], [chatbot, user_box])
         user_box.submit(_chat_turn, [user_box, chatbot], [chatbot, user_box])
         clear_btn.click(_chat_reset, None, [chatbot, user_box])
 
+        # Enter = submit, Shift+Enter = newline + auto-resize textarea (no scrollbar)
+        demo.load(
+            None, None, None,
+            js="""
+            () => {
+              const wait = setInterval(() => {
+                const ta = document.querySelector('#user_box textarea');
+                const btn = document.querySelector('#submit_btn');
+                if (!ta || !btn) return;
+                clearInterval(wait);
+                const autoResize = () => {
+                  ta.style.height = 'auto';
+                  ta.style.height = Math.min(ta.scrollHeight, 220) + 'px';
+                };
+                ta.addEventListener('input', autoResize);
+                ta.addEventListener('keydown', (e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+                    e.preventDefault();
+                    btn.click();
+                    setTimeout(autoResize, 0);
+                  }
+                });
+                autoResize();
+              }, 200);
+            }
+            """,
+        )
+
     demo.launch(server_name=server_name, server_port=server_port, share=share)
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ----------------------------------------------------------------------
 # CLI
-# ────────────────────────────────────────────────────────────────────────
+# ----------------------------------------------------------------------
 def parse_args():
     ap = argparse.ArgumentParser(description="Termproject chatbot (chat UI + batch)")
-    ap.add_argument("--batch", action="store_true",
-                    help="batch mode: read --input, write --output")
+    ap.add_argument("--batch", action="store_true", help="batch mode")
     ap.add_argument("--input", default=DEFAULT_BATCH_INPUT)
     ap.add_argument("--output", default=DEFAULT_BATCH_OUTPUT)
-    ap.add_argument("--minimal", action="store_true",
-                    help="batch output keeps only id+answer (per spec narrowing)")
+    ap.add_argument("--minimal", action="store_true", help="batch: only {id, answer}")
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=7860)
-    ap.add_argument("--share", action="store_true",
-                    help="UI: gradio public share link")
+    ap.add_argument("--share", action="store_true")
     return ap.parse_args()
 
 

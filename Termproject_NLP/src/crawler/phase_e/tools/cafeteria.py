@@ -180,7 +180,6 @@ class CafeteriaTool:
                 menu_text = (menu or "").strip()
                 if not menu_text:
                     continue
-                # Skip uninformative cells but keep "운영안함" as info
                 cafe_entries[name].append((meal, target, menu_text))
 
         # Format output
@@ -190,16 +189,19 @@ class CafeteriaTool:
             lines.append("")
         for name in cafeteria_names:
             entries = cafe_entries.get(name, [])
-            lines.append(f"[{name}]")
-            # Special handling: if every entry is "메뉴운영내역" → 상인 운영
+            lines.append(f"=== {name} ===")
             unique_menus = set(e[2] for e in entries)
             if entries and unique_menus == {"메뉴운영내역"}:
-                lines.append("- 푸드코트 형식 (라면·양식·스낵·한식·일식·중식 코너별 단품 주문, 정해진 정식 없음)")
+                lines.append("푸드코트 형식 (라면·양식·스낵·한식·일식·중식 코너별 단품 주문, 정해진 정식 없음)")
             elif not entries:
-                lines.append("- 정보 없음")
+                lines.append("오늘 운영 없음 또는 메뉴 미게시")
             else:
-                for meal, target, menu in entries:
-                    lines.append(f"- {meal}/{target}: {menu}")
+                # Lookup table by (meal, target)
+                m_target = {(m, t): menu for (m, t, menu) in entries}
+                for meal in ("조식", "중식", "석식"):
+                    for target in ("직원", "학생"):
+                        menu = m_target.get((meal, target), "정보 없음")
+                        lines.append(f"  {meal}/{target} → {menu}")
             lines.append("")
         text = "\n".join(lines).strip()
         # Require non-trivial content
