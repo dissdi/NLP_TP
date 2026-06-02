@@ -1,17 +1,12 @@
-"""Shuttle tool: 충남대 셔틀버스 정보 실시간 fetch.
+"""Shuttle tool: 충남대 셔틀버스 정보 (정적 시간표 + 실시간 변경 공지).
 
 Strategy:
-  1) 정적 안내 페이지(시간표·노선): plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html
-     이 페이지는 JS 렌더 가능성이 있어 requests로 못 긁히면 STATIC_FALLBACK 사용.
-  2) 최신 셔틀 운영 변경 공지(통제/단축/임시): 백마광장 게시판 sub07_0701
-     '셔틀' 키워드 포함 게시물 최근 N건만.
+  1) 정적 시간표·노선: STATIC_FALLBACK 상수 (학기간 거의 안 바뀜).
+  2) 실시간 fetch: 안내 페이지(JS 렌더 가능성)와 백마광장 게시판의 셔틀 관련 공지.
+     fetch가 풍부히 들어오면 보조 자료로 동봉, 비면 정적 시간표만으로도 답변 가능.
 
-Reasoning:
-  Static page → 평상시 시간표·노선 답변에 활용.
-  최신 공지   → "이번 주 운행해?" / "오늘 운휴인가?" 같은 동적 질의에 활용.
-
-키워드:
-  셔틀, 셔틀버스, 통학버스, 캠퍼스순환, 교내순환, 보운 셔틀
+키워드: 셔틀, 셔틀버스, 통학버스, 캠퍼스순환, 교내순환, 보운 셔틀
+EXCLUDE: 셔틀콕 (배드민턴)
 """
 from __future__ import annotations
 
@@ -27,12 +22,9 @@ KEYWORDS = [
     "캠퍼스순환", "교내순환", "보운 셔틀",
 ]
 EXCLUDE = [
-    "셔틀콕",  # 배드민턴 등 동음이의 회피
+    "셔틀콕",
 ]
 
-# 정적 fallback — 페이지가 JS 렌더라 requests로 못 긁어올 때 사용.
-# 출처: plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html (Phase C 크롤링본).
-# 학기 중 운영 시간표·노선이므로 학기간 거의 안 바뀜.
 STATIC_FALLBACK = """충남대학교 학교셔틀버스 운영 안내 (2026학년도)
 
 운영 기준:
@@ -102,7 +94,6 @@ class ShuttleTool:
 
     @staticmethod
     def _extract_main_text(html: str, max_len: int = 3000) -> str:
-        """Pull main body text from the static info page."""
         if not html:
             return ""
         try:
@@ -119,7 +110,6 @@ class ShuttleTool:
 
     @staticmethod
     def _extract_recent_notices(html: str, k: int = 5) -> list:
-        """Parse the board list page for the latest k posts whose title mentions a shuttle keyword."""
         if not html:
             return []
         try:
@@ -159,12 +149,12 @@ class ShuttleTool:
         main_text = self._extract_main_text(static_html)
         notices = self._extract_recent_notices(notice_html, k=5)
 
-        # Static page often JS-rendered → fall back to bundled schedule if too thin
-        if len(main_text) < 200 or "시간표" not in main_text:
-            main_text = STATIC_FALLBACK
-
         blocks = []
-        blocks.append("[출처] 셔틀버스 안내 — " + STATIC_URL + "\n\n" + main_text)
+        # 정적 시간표 항상 동봉 — 학기간 거의 안 바뀜.
+        blocks.append("[출처] 충남대 셔틀버스 안내 (운영 시간표·노선)\n\n" + STATIC_FALLBACK)
+        # 실시간 fetch는 보조 자료. "시간표" 키워드가 포함된 충실한 텍스트일 때만 추가.
+        if main_text and "시간표" in main_text and len(main_text) > 500:
+            blocks.append("[출처 보조] 실시간 페이지 발췌 — " + STATIC_URL + "\n\n" + main_text)
         if notices:
             lines = ["[출처] 최신 셔틀 관련 공지 — " + NOTICE_LIST_URL]
             for n in notices:

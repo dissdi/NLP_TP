@@ -104,22 +104,46 @@ class CafeteriaTool:
             if not any(cells):
                 continue
             rows.append(" | ".join(cells))
-        text = "\n".join(rows)
+        # Filter rows that are mostly empty cells (page skeleton, no actual menu)
+        meaningful_rows = []
+        for row in rows:
+            # Strip header markers and check for non-trivial content
+            stripped = row.replace("|", "").replace(" ", "").replace("\t", "")
+            if len(stripped) < 4:
+                continue
+            meaningful_rows.append(row)
+        # Require at least a few rows that look like food items (Korean chars)
+        food_rows = [r for r in meaningful_rows if re.search(r"[가-힣]{3,}", r)]
+        if len(food_rows) < 3:
+            return ""  # treat as empty → force fallback
+        text = "\n".join(meaningful_rows)
         if date_str:
             text = f"[조회 날짜] {date_str}\n\n" + text
         return text.strip()
 
     def run(self, query: str) -> Optional[dict]:
         html = self._fetch_html()
-        if not html:
-            return None
-        menu_text = self._parse_menu(html)
-        if not menu_text:
-            return None
-        # Format context for the LLM
+        menu_text = self._parse_menu(html) if html else ""
+
+        # 항상 동봉되는 운영 안내 (LLM이 grounded 답변을 만들 anchor).
+        OPERATIONAL_INFO = (
+            "충남대학교 학생식당 운영 정보:\n"
+            "운영 식당 5곳 — 제1학생회관 식당, 제2학생회관 식당, 제3학생회관 식당(생활과학대), "
+            "제4학생회관 식당, 산학연식당.\n"
+            "운영 시간: 학기 중 평일 정상 운영 / 주말·공휴일·방학 미운영 또는 단축 운영.\n"
+            "당일 점심·저녁 상세 메뉴는 실시간 모바일 페이지에서 확인: " + MENU_URL
+        )
+
+        # Context 구성: 메뉴(있을 때 우선) → 운영 안내(항상 보조)
+        parts = []
+        if menu_text and len(menu_text) >= 100:
+            parts.append("[오늘의 메뉴 — 실시간 fetch]\n" + menu_text)
+        parts.append(OPERATIONAL_INFO)
+        body = "\n\n".join(parts)
+
         context_block = (
             "[출처] 충남대 식당 메뉴 (실시간) — " + MENU_URL + "\n\n"
-            + menu_text
+            + body
         )
         sources = [{
             "chunk_id": "tool:cafeteria",
