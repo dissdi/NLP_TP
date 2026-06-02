@@ -2,6 +2,7 @@
 
 Strategy:
   1) 정적 안내 페이지(시간표·노선): plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html
+     이 페이지는 JS 렌더 가능성이 있어 requests로 못 긁히면 STATIC_FALLBACK 사용.
   2) 최신 셔틀 운영 변경 공지(통제/단축/임시): 백마광장 게시판 sub07_0701
      '셔틀' 키워드 포함 게시물 최근 N건만.
 
@@ -10,7 +11,7 @@ Reasoning:
   최신 공지   → "이번 주 운행해?" / "오늘 운휴인가?" 같은 동적 질의에 활용.
 
 키워드:
-  셔틀, 셔틀버스, 통학버스, 캠퍼스순환, 교내순환, 보운 셔틀, 운행 시간(셔틀+컨텍스트)
+  셔틀, 셔틀버스, 통학버스, 캠퍼스순환, 교내순환, 보운 셔틀
 """
 from __future__ import annotations
 
@@ -28,6 +29,47 @@ KEYWORDS = [
 EXCLUDE = [
     "셔틀콕",  # 배드민턴 등 동음이의 회피
 ]
+
+# 정적 fallback — 페이지가 JS 렌더라 requests로 못 긁어올 때 사용.
+# 출처: plus.cnu.ac.kr/html/kr/sub05/sub05_050403.html (Phase C 크롤링본).
+# 학기 중 운영 시간표·노선이므로 학기간 거의 안 바뀜.
+STATIC_FALLBACK = """충남대학교 학교셔틀버스 운영 안내 (2026학년도)
+
+운영 기준:
+- 학기 중 평일 주간 운영
+- 평일 야간, 주말, 공휴일, 방학, 수학능력시험일(10시 이전) 미운영
+- 운행시간은 학사일정·교통상황 등에 따라 변경될 수 있음 (5분 내외 오차)
+
+운행 노선:
+1) 교내순환 (대덕캠퍼스 내)
+2) 캠퍼스 순환 (대덕캠퍼스 ↔ 보운캠퍼스)
+
+[교내순환 시간표]
+오전: 08:20(월평역 등교), 08:30, 09:30, 09:40, 10:30, 11:30
+오후: 13:30, 14:30, 15:30, 16:30, 17:30
+첫차 08:30 · 막차 17:30 · 1일 10회 운행
+
+교내순환 노선:
+정심화 국제문화회관 → 사회과학대학 입구(한누리회관 뒤) → 서문(공동실험실습관 앞) →
+음악2호관 앞 → 공동동물실험센터(회차) → 체육관 입구 → 예술대학 앞 →
+도서관 앞(대학본부 옆 농대방향) → 학생생활관 3거리 → 농업생명과학대학 앞 →
+동문주차장 → 농업생명과학대학 앞 → 도서관 앞(도서관삼거리 방향) → 예술대학 앞 →
+서문 → 사회과학대학 입구 → 산학연교육연구관 앞 → 정심화 국제문화회관
+※ 오전(등교) 1회만 월평역 출발
+
+[캠퍼스 순환 시간표]
+오전: 08:10(대덕 출발, 골프연습장), 08:50(보운 회차)
+오후: 미운영
+1일 1회(회차)
+
+캠퍼스 순환 노선:
+①골프연습장 출발(08:10) → ②중앙도서관(08:11) → ③산학연교육연구관(08:12) →
+④충남대학교입구 버스정류장(홈플러스유성점 방면)(08:13) → ⑤월평역(08:15) →
+⑥보운캠퍼스(회차, 08:50) → ⑦다솔아파트 건너편 → 제2학생회관 →
+중앙도서관 → 골프연습장 도착
+
+문의: 총괄(5052), 총무과(배차·운행) 042-821-5115
+"""
 
 
 class ShuttleTool:
@@ -53,7 +95,7 @@ class ShuttleTool:
             r.encoding = "utf-8"
             html = r.text
         except Exception as e:
-            print(f"[shuttle] fetch {key} failed: {e}", flush=True)
+            print("[shuttle] fetch " + key + " failed: " + str(e), flush=True)
             html = ""
         self._cache[key] = (now, html)
         return html
@@ -68,7 +110,6 @@ class ShuttleTool:
             soup = BeautifulSoup(html, "html.parser")
             for tag in soup(["script", "style", "nav", "footer", "header"]):
                 tag.decompose()
-            # Prefer #contents or .contents body if present
             body = soup.select_one("#contents") or soup.select_one(".contents") or soup.body or soup
             txt = body.get_text("\n", strip=True)
         except Exception:
@@ -77,9 +118,8 @@ class ShuttleTool:
         return txt[:max_len].strip()
 
     @staticmethod
-    def _extract_recent_notices(html: str, k: int = 5) -> list[dict]:
-        """Parse the board list page for the latest k posts whose title mentions
-        a shuttle keyword."""
+    def _extract_recent_notices(html: str, k: int = 5) -> list:
+        """Parse the board list page for the latest k posts whose title mentions a shuttle keyword."""
         if not html:
             return []
         try:
@@ -88,7 +128,7 @@ class ShuttleTool:
         except Exception:
             return []
         rows = soup.select("table tr") or soup.select("tr")
-        out: list[dict] = []
+        out = []
         for tr in rows:
             text = tr.get_text(" ", strip=True)
             if not text or not any(k_ in text for k_ in ("셔틀", "통학")):
@@ -119,27 +159,25 @@ class ShuttleTool:
         main_text = self._extract_main_text(static_html)
         notices = self._extract_recent_notices(notice_html, k=5)
 
-        if not main_text and not notices:
-            return None
+        # Static page often JS-rendered → fall back to bundled schedule if too thin
+        if len(main_text) < 200 or "시간표" not in main_text:
+            main_text = STATIC_FALLBACK
 
         blocks = []
-        if main_text:
-            blocks.append(
-                f"[출처] 셔틀버스 안내 (정적 페이지) — {STATIC_URL}\n\n{main_text}"
-            )
+        blocks.append("[출처] 셔틀버스 안내 — " + STATIC_URL + "\n\n" + main_text)
         if notices:
             lines = ["[출처] 최신 셔틀 관련 공지 — " + NOTICE_LIST_URL]
             for n in notices:
-                line = f"- ({n['date']}) {n['title']}"
+                line = "- (" + n["date"] + ") " + n["title"]
                 if n["url"]:
-                    line += f"  <{n['url']}>"
+                    line += "  <" + n["url"] + ">"
                 lines.append(line)
             blocks.append("\n".join(lines))
         context_block = "\n\n".join(blocks)
 
         sources = [{
             "chunk_id": "tool:shuttle",
-            "title": "충남대 셔틀버스 안내 (plus.cnu 실시간)",
+            "title": "충남대 셔틀버스 안내 (운영 시간표·노선)",
             "source_url": STATIC_URL,
             "rerank_score": 1.0,
         }]

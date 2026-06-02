@@ -19,6 +19,10 @@ MENU_URL = "https://mobileadmin.cnu.ac.kr/food/index.jsp"
 # We require either dining-context words OR specific compound forms.
 KEYWORDS = [
     "학식", "식단", "학생회관 식당", "학생회관 메뉴",
+    # 자연어 — 학생식당 / N학 메뉴 / 식당 메뉴
+    "학생식당", "학생 식당", "교내식당",
+    "점심 메뉴", "저녁 메뉴", "아침 메뉴",
+    "오늘 메뉴", "오늘 식단",
     "1학 메뉴", "2학 메뉴", "3학 메뉴", "4학 메뉴",
     "1학 식당", "2학 식당", "3학 식당", "4학 식당",
     "1학식당", "2학식당", "3학식당", "4학식당",
@@ -121,6 +125,6 @@ class CafeteriaTool:
             "chunk_id": "tool:cafeteria",
             "title": "충남대 학식 메뉴 (mobileadmin 실시간)",
             "source_url": MENU_URL,
-            "rerank_score": 1.0,  # synthetic, tool source is authoritative
+            "rerank_score": 1.0,
         }]
         return {"context": context_block, "sources": sources}
