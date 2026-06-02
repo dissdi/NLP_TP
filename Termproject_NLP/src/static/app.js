@@ -21,16 +21,17 @@ let isSending = false;
 const WELCOME_HTML = `
   <div class="welcome">
     <p>안녕하세요! <strong>충남대학교 학내 정보 RAG 챗봇</strong>입니다. 🎓</p>
-    <p>다음 영역의 질문에 답할 수 있어요:</p>
+    <p>다음과 같은 질문에 잘 답할 수 있어요:</p>
     <ul>
-      <li>📜 <strong>졸업요건</strong> — 졸업학점, 전공·교양 요건</li>
-      <li>📢 <strong>학교 공지사항</strong> — 백마광장·학사공지</li>
-      <li>📅 <strong>학사일정</strong> — 수강신청·정정·시험·방학</li>
-      <li>🍽 <strong>식단</strong> — 학생식당·기숙사 식당 메뉴</li>
-      <li>🚌 <strong>통학·셔틀버스</strong> — 시간표·노선·운휴</li>
+      <li>📜 <strong>졸업요건</strong> — 졸업학점, 전공·교양 이수요건</li>
+      <li>📢 <strong>학교 공지사항</strong> — 백마광장·학사공지 최근 게시물</li>
+      <li>📅 <strong>학사일정</strong> — 수강신청·정정·등록금·방학·개강·성적발표 일정</li>
+      <li>🍽 <strong>학생식당 메뉴</strong> — 오늘 점심·저녁, 5개 식당</li>
+      <li>🚌 <strong>셔틀버스 시간표</strong> — 교내순환·캠퍼스 순환 노선</li>
     </ul>
-    <p style="color: var(--text-dim); font-size: 13px;">
-      검색된 출처 context만 사용해 답변하며, 모르면 거절합니다.
+    <p style="color: var(--text-dim); font-size: 12.5px; margin-top: 10px;">
+      ※ 시험 기간, 기숙사 식당 실시간 메뉴, 셔틀 운휴일 등은 공식 자료가 부족해 답하기 어려울 수 있어요.<br>
+      검색된 출처만 사용해 답변하며, 모르면 거절합니다.
     </p>
   </div>
 `;
