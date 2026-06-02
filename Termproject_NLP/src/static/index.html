@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>충남대 학내 정보 RAG 챗봇</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ── Sidebar ─────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <button id="new-chat-btn" class="new-chat" type="button">
+        <span class="plus">＋</span><span>새 채팅</span>
+      </button>
+
+      <div class="sb-section">
+        <div class="sb-title">대화</div>
+        <div class="session-list">
+          <button class="session active" type="button">현재 대화</button>
+          <button class="session disabled" type="button" disabled>(이전 대화 없음)</button>
+        </div>
+      </div>
+
+      <div class="sb-foot">
+        <div class="sb-brand">CNU NLP RAG</div>
+        <div class="sb-sub">Qwen3-14B · BM25+bge-m3</div>
+      </div>
+    </aside>
+
+    <!-- ── Main ────────────────────────────────────────────────── -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="brand">충남대학교 학내 정보 RAG 챗봇</div>
+          <div class="status">
+            <span id="status-dot" class="dot loading" title="모델 로딩 확인 중…"></span>
+            <span id="status-text">대기 중</span>
+          </div>
+        </div>
+      </header>
+
+      <section id="messages" class="messages" aria-live="polite"></section>
+
+      <footer class="composer">
+        <div class="composer-inner">
+          <div class="input-box">
+            <textarea
+              id="user-input"
+              rows="1"
+              placeholder="질문을 입력하고 Enter (Shift+Enter = 줄바꿈)"
+              autocomplete="off"
+            ></textarea>
+            <button id="send-btn" type="button" aria-label="전송">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div class="hint">출처는 답변 아래에서 펼쳐 볼 수 있습니다.</div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- markdown-it CDN — 코드/링크/리스트 렌더링 -->
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

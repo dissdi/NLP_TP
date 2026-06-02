@@ -2,10 +2,13 @@
 # Termproject 평가자 진입점.
 #
 # 모드:
-#   bash chatbot.sh                # 인터랙티브 Gradio UI (기본)
+#   bash chatbot.sh                # 인터랙티브 FastAPI 웹 UI (기본, http://localhost:7860)
 #   bash chatbot.sh --batch        # data/test_chat.json → outputs/chat_output.json
 #   bash chatbot.sh --realtime     # Task 3 optional: outputs/realtime_output.json
 #   bash chatbot.sh --classify     # Task 1 추론: data/test_cls.json → outputs/cls_output.json
+#
+# UI 옵션:
+#   HOST=0.0.0.0 PORT=7860 bash chatbot.sh ui
 #
 # 환경:
 #   Python 3.10.12 / torch 2.5.1 가정. requirements.txt 참조.
@@ -25,6 +28,8 @@ export CLS_MODEL_DIR="${CLS_MODEL_DIR:-$HERE/model}"
 export PYTHONPATH="$HERE/src:${PYTHONPATH:-}"
 
 MODE="${1:-ui}"
+HOST="${HOST:-0.0.0.0}"
+PORT="${PORT:-7860}"
 
 case "$MODE" in
   --batch|batch)
@@ -40,10 +45,13 @@ case "$MODE" in
     python -m classifier.predict "$@"
     ;;
   ui|--ui|"")
-    python -m chatbot_ui "$@"
+    # FastAPI + HTML/JS (Claude 다크 톤 UI)
+    cd "$HERE/src"
+    exec uvicorn app:app --host "$HOST" --port "$PORT"
     ;;
   *)
-    # default: pass through to chatbot_ui (UI mode + flags)
-    python -m chatbot_ui "$@"
+    echo "Unknown mode: $MODE" >&2
+    echo "Usage: bash chatbot.sh [ui|--batch|--realtime|--classify]" >&2
+    exit 2
     ;;
 esac

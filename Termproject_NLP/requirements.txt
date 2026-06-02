@@ -20,9 +20,10 @@ pyarrow>=14.0
 jsonlines>=4.0
 tqdm>=4.66
 
-# --- UI ---
-# Gradio 6.0에서 gr.Chatbot의 type 인자가 제거됨 → 5.x 이하 고정.
-gradio>=4.0,<6.0
+# --- UI (FastAPI + 정적 HTML/JS; Claude 다크 톤 직접 작성) ---
+# Gradio는 디자인 컨트롤이 부족해 폐기. FastAPI + uvicorn으로 교체.
+fastapi>=0.110
+uvicorn[standard]>=0.27
 
 # --- 옵션 (학사일정·식단 크롤링 fetch) ---
 requests>=2.31
