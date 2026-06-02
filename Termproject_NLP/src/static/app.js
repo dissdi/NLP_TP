@@ -1,23 +1,20 @@
 /* ──────────────────────────────────────────────────────────────────
    충남대 RAG 챗봇 — client logic
-   - POST /api/chat 호출
-   - markdown-it 으로 답변 렌더
-   - Enter 전송 / Shift+Enter 줄바꿈 / textarea 자동 확장
-   - 출처는 접을 수 있는 토글
+   - 사이드바: 세션 목록 (새 채팅으로 누적, 클릭 시 전환, X로 삭제)
+   - localStorage persist (한 브라우저 내 영구)
+   - POST /api/chat → 답변 / 출처 / 메타 칩
+   - Enter 전송 · Shift+Enter 줄바꿈 · textarea 자동 확장
    ────────────────────────────────────────────────────────────────── */
 
-const md = window.markdownit({
-  html: false,
-  linkify: true,
-  breaks: true,
-});
+const md = window.markdownit({ html: false, linkify: true, breaks: true });
 
-const $messages   = document.getElementById('messages');
-const $input      = document.getElementById('user-input');
-const $sendBtn    = document.getElementById('send-btn');
-const $newChat    = document.getElementById('new-chat-btn');
-const $statusDot  = document.getElementById('status-dot');
-const $statusTxt  = document.getElementById('status-text');
+const $messages    = document.getElementById('messages');
+const $input       = document.getElementById('user-input');
+const $sendBtn     = document.getElementById('send-btn');
+const $newChat     = document.getElementById('new-chat-btn');
+const $statusDot   = document.getElementById('status-dot');
+const $statusTxt   = document.getElementById('status-text');
+const $sessionList = document.getElementById('session-list');
 
 let isSending = false;
 
@@ -38,6 +35,77 @@ const WELCOME_HTML = `
   </div>
 `;
 
+// ── State / persist ────────────────────────────────────────────────
+const STORE_KEY = 'cnu_rag_sessions_v1';
+const state = {
+  sessions: [],
+  activeId: null,
+};
+
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch (e) { console.warn('localStorage save fail', e); }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.sessions)) {
+        state.sessions = parsed.sessions;
+        state.activeId = parsed.activeId || null;
+      }
+    }
+  } catch (e) { console.warn('localStorage load fail', e); }
+  if (!state.sessions.length || !activeSession()) {
+    createSession(false);
+  }
+}
+
+function activeSession() {
+  return state.sessions.find(s => s.id === state.activeId) || null;
+}
+
+function createSession(rerender) {
+  const id = 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+  const s = { id: id, title: '새 채팅', messages: [], updatedAt: Date.now() };
+  state.sessions.unshift(s);
+  state.activeId = id;
+  saveState();
+  if (rerender) {
+    renderSessionList();
+    renderMessages();
+    $input.value = '';
+    autoresize();
+    $input.focus();
+  }
+}
+
+function selectSession(id) {
+  if (id === state.activeId) return;
+  state.activeId = id;
+  saveState();
+  renderSessionList();
+  renderMessages();
+  $input.focus();
+}
+
+function deleteSession(id) {
+  const i = state.sessions.findIndex(s => s.id === id);
+  if (i === -1) return;
+  state.sessions.splice(i, 1);
+  if (state.activeId === id) {
+    state.activeId = state.sessions[0] ? state.sessions[0].id : null;
+  }
+  if (!state.sessions.length) {
+    createSession(false);
+  }
+  saveState();
+  renderSessionList();
+  renderMessages();
+}
+
 // ── utilities ──────────────────────────────────────────────────────
 function el(tag, cls, html) {
   const e = document.createElement(tag);
@@ -47,7 +115,7 @@ function el(tag, cls, html) {
 }
 
 function escapeHtml(s) {
-  return String(s ?? '')
+  return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
@@ -61,8 +129,37 @@ function autoresize() {
   $input.style.height = Math.min($input.scrollHeight, 200) + 'px';
 }
 
-// ── rendering ──────────────────────────────────────────────────────
-function renderUserMessage(text) {
+// ── sidebar render ─────────────────────────────────────────────────
+function renderSessionList() {
+  $sessionList.innerHTML = '';
+  if (!state.sessions.length) {
+    const empty = el('button', 'session disabled', '(대화 없음)');
+    empty.disabled = true;
+    $sessionList.appendChild(empty);
+    return;
+  }
+  state.sessions.forEach(function (s) {
+    const btn = el('button', 'session' + (s.id === state.activeId ? ' active' : ''));
+    btn.type = 'button';
+    btn.dataset.id = s.id;
+    btn.innerHTML =
+      '<span class="label">' + escapeHtml(s.title || '새 채팅') + '</span>' +
+      '<span class="del" title="삭제" data-del="' + s.id + '">✕</span>';
+    btn.addEventListener('click', function (e) {
+      const tgt = e.target;
+      if (tgt.dataset && tgt.dataset.del) {
+        e.stopPropagation();
+        deleteSession(tgt.dataset.del);
+        return;
+      }
+      selectSession(s.id);
+    });
+    $sessionList.appendChild(btn);
+  });
+}
+
+// ── message render ────────────────────────────────────────────────
+function appendUserBubble(text) {
   const row = el('div', 'msg user');
   const bubble = el('div', 'bubble');
   bubble.innerHTML = md.render(text);
@@ -71,7 +168,7 @@ function renderUserMessage(text) {
   scrollToBottom();
 }
 
-function renderAssistantWelcome() {
+function appendWelcomeBubble() {
   const row = el('div', 'msg assistant');
   const bubble = el('div', 'bubble');
   bubble.innerHTML = WELCOME_HTML;
@@ -80,7 +177,7 @@ function renderAssistantWelcome() {
   scrollToBottom();
 }
 
-function renderTypingPlaceholder() {
+function appendTypingBubble() {
   const row = el('div', 'msg assistant typing-row');
   const bubble = el('div', 'bubble');
   bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
@@ -90,16 +187,14 @@ function renderTypingPlaceholder() {
   return row;
 }
 
-function renderAssistantAnswer(data) {
+function appendAssistantAnswer(data) {
   const row = el('div', 'msg assistant');
   const bubble = el('div', 'bubble');
 
-  // body
   const body = el('div');
   body.innerHTML = md.render(data.answer || '');
   bubble.appendChild(body);
 
-  // meta chips
   const meta = el('div', 'meta');
   if (data.fallback) {
     meta.appendChild(el('span', 'chip fb', '🛑 정보 부족'));
@@ -108,45 +203,43 @@ function renderAssistantAnswer(data) {
   }
   if (data.category) {
     meta.appendChild(el('span', 'chip',
-      `📂 ${escapeHtml(data.category)} (${(data.confidence || 0).toFixed(2)})`));
+      '📂 ' + escapeHtml(data.category) + ' (' + (data.confidence || 0).toFixed(2) + ')'));
   }
   if (data.tool) {
-    meta.appendChild(el('span', 'chip tool', `🛠 ${escapeHtml(data.tool)}`));
+    meta.appendChild(el('span', 'chip tool', '🛠 ' + escapeHtml(data.tool)));
   }
   if (typeof data.elapsed === 'number') {
-    meta.appendChild(el('span', 'chip', `⏱ ${data.elapsed.toFixed(1)}s`));
+    meta.appendChild(el('span', 'chip', '⏱ ' + data.elapsed.toFixed(1) + 's'));
   }
   bubble.appendChild(meta);
 
-  // sources (collapsible)
   const srcs = data.sources || [];
   if (srcs.length) {
     const wrap = el('div', 'sources');
     const toggle = el('button', 'sources-toggle');
     toggle.type = 'button';
-    toggle.innerHTML = `<span class="caret">▸</span>출처 ${srcs.length}건 펼치기`;
+    toggle.innerHTML = '<span class="caret">▸</span>출처 ' + srcs.length + '건 펼치기';
     const list = el('div', 'sources-list');
-    list.innerHTML = srcs.map((s, i) => {
+    list.innerHTML = srcs.map(function (s, i) {
       const score = (typeof s.rerank_score === 'number')
-        ? s.rerank_score.toFixed(2)
-        : '0.00';
+        ? s.rerank_score.toFixed(2) : '0.00';
       const title = escapeHtml((s.title || '').slice(0, 120));
       const url = s.source_url || '';
       const link = url
-        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">열기 ↗</a>`
+        ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">열기 ↗</a>'
         : '';
-      return `<div class="src-item">
-        <span class="score">${score}</span>
-        <span class="title">${i + 1}. ${title}</span>
-        ${link}
-      </div>`;
+      return '<div class="src-item">' +
+        '<span class="score">' + score + '</span>' +
+        '<span class="title">' + (i + 1) + '. ' + title + '</span>' +
+        link +
+        '</div>';
     }).join('');
-    toggle.addEventListener('click', () => {
+    toggle.addEventListener('click', function () {
       const open = wrap.classList.toggle('open');
       toggle.querySelector('.caret').textContent = open ? '▾' : '▸';
       toggle.lastChild.textContent = open
-        ? `출처 ${srcs.length}건 접기`
-        : `출처 ${srcs.length}건 펼치기`;
+        ? '출처 ' + srcs.length + '건 접기'
+        : '출처 ' + srcs.length + '건 펼치기';
     });
     wrap.appendChild(toggle);
     wrap.appendChild(list);
@@ -158,13 +251,29 @@ function renderAssistantAnswer(data) {
   scrollToBottom();
 }
 
-function renderError(msg) {
+function appendError(msg) {
   const row = el('div', 'msg assistant');
   const bubble = el('div', 'bubble');
-  bubble.innerHTML = `<div style="color: var(--danger)">⚠ ${escapeHtml(msg)}</div>`;
+  bubble.innerHTML = '<div style="color: var(--danger)">⚠ ' + escapeHtml(msg) + '</div>';
   row.appendChild(bubble);
   $messages.appendChild(row);
   scrollToBottom();
+}
+
+function renderMessages() {
+  $messages.innerHTML = '';
+  const s = activeSession();
+  if (!s || !s.messages.length) {
+    appendWelcomeBubble();
+    return;
+  }
+  for (const m of s.messages) {
+    if (m.role === 'user') appendUserBubble(m.text);
+    else if (m.role === 'assistant') {
+      if (m.data) appendAssistantAnswer(m.data);
+      else if (m.error) appendError(m.error);
+    }
+  }
 }
 
 // ── send ──────────────────────────────────────────────────────────
@@ -173,13 +282,24 @@ async function send() {
   const text = $input.value.trim();
   if (!text) return;
 
+  let s = activeSession();
+  if (!s) { createSession(false); s = activeSession(); }
+
   isSending = true;
   $sendBtn.disabled = true;
   $input.value = '';
   autoresize();
 
-  renderUserMessage(text);
-  const typing = renderTypingPlaceholder();
+  s.messages.push({ role: 'user', text: text });
+  s.updatedAt = Date.now();
+  if (!s.title || s.title === '새 채팅') {
+    s.title = text.length > 30 ? text.slice(0, 30) + '…' : text;
+    renderSessionList();
+  }
+  saveState();
+  appendUserBubble(text);
+
+  const typing = appendTypingBubble();
 
   try {
     const res = await fetch('/api/chat', {
@@ -189,14 +309,23 @@ async function send() {
     });
     typing.remove();
     if (!res.ok) {
-      renderError(`HTTP ${res.status}`);
+      const msg = 'HTTP ' + res.status;
+      s.messages.push({ role: 'assistant', error: msg });
+      saveState();
+      appendError(msg);
     } else {
       const data = await res.json();
-      renderAssistantAnswer(data);
+      s.messages.push({ role: 'assistant', data: data });
+      s.updatedAt = Date.now();
+      saveState();
+      appendAssistantAnswer(data);
     }
   } catch (e) {
     typing.remove();
-    renderError(`요청 실패: ${e.message || e}`);
+    const msg = '요청 실패: ' + (e.message || e);
+    s.messages.push({ role: 'assistant', error: msg });
+    saveState();
+    appendError(msg);
   } finally {
     isSending = false;
     $sendBtn.disabled = false;
@@ -204,16 +333,15 @@ async function send() {
   }
 }
 
-async function resetChat() {
-  try { await fetch('/api/reset', { method: 'POST' }); } catch {}
-  $messages.innerHTML = '';
-  renderAssistantWelcome();
-  $input.value = '';
-  autoresize();
-  $input.focus();
+function onNewChat() {
+  const s = activeSession();
+  if (s && !s.messages.length) {
+    $input.focus();
+    return;
+  }
+  createSession(true);
 }
 
-// ── health polling ────────────────────────────────────────────────
 async function pollHealth() {
   try {
     const res = await fetch('/api/health');
@@ -229,26 +357,26 @@ async function pollHealth() {
     }
     $statusDot.className = 'dot loading';
     $statusTxt.textContent = '모델 로딩 중…';
-  } catch {
+  } catch (e) {
     $statusDot.className = 'dot err';
     $statusTxt.textContent = '연결 끊김';
   }
   return false;
 }
 
-// ── events ────────────────────────────────────────────────────────
 $input.addEventListener('input', autoresize);
-$input.addEventListener('keydown', (e) => {
+$input.addEventListener('keydown', function (e) {
   if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
     e.preventDefault();
     send();
   }
 });
 $sendBtn.addEventListener('click', send);
-$newChat.addEventListener('click', resetChat);
+$newChat.addEventListener('click', onNewChat);
 
-// ── boot ──────────────────────────────────────────────────────────
-renderAssistantWelcome();
+loadState();
+renderSessionList();
+renderMessages();
 autoresize();
 $input.focus();
 
