@@ -50,6 +50,10 @@ def _load_once() -> None:
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         config = AutoConfig.from_pretrained(MODEL_DIR, num_labels=len(LABEL_NAMES))
+        # 저장된 config가 torchscript=True / return_dict=None이라
+        # forward가 tuple을 반환해 .logits 접근이 깨진다. 강제 정상화.
+        config.torchscript = False
+        config.return_dict = True
         tok_dir = os.path.join(MODEL_DIR, "tokenizer")
         tok_src = tok_dir if os.path.isdir(tok_dir) else base_name
         tokenizer = AutoTokenizer.from_pretrained(tok_src)
@@ -92,8 +96,9 @@ def classify(query: str) -> Optional[ClassifyResult]:
     with torch.no_grad():
         enc = tokenizer(query, truncation=True, max_length=max_len,
                         padding=True, return_tensors="pt").to(device)
-        out = model(**enc)
-        probs = F.softmax(out.logits, dim=-1).squeeze(0).cpu().tolist()
+        out = model(**enc, return_dict=True)
+        logits = out.logits if hasattr(out, "logits") else out[0]
+        probs = F.softmax(logits, dim=-1).squeeze(0).cpu().tolist()
     label = int(max(range(len(probs)), key=probs.__getitem__))
     return ClassifyResult(
         label=label,

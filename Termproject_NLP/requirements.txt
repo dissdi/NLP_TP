@@ -1,7 +1,13 @@
-# Termproject 의존성 (가이드: Python 3.10.12, torch 2.5.1)
+# Termproject 의존성 (Colab Free 기본 스택 호환)
+#
+# 평가 환경 = Colab Free. Colab은 torch / torchvision / torchaudio / torchcodec /
+# numpy 2.x 가 사전 설치돼 있고 ABI가 묶여 있어, 임의 핀(torch==2.5.1, numpy<2)을
+# 강제하면 torchcodec / torchvision import가 깨져서 transformers까지 같이 죽음.
+# → torch·numpy 핀을 풀고 Colab 사전 설치본을 그대로 사용한다.
 
 # --- Core ML ---
-torch==2.5.1
+# torch는 Colab 사전 설치본 사용 (2.5+ 권장, 2.11까지 동작 확인).
+torch>=2.5
 transformers>=4.40,<5.0
 accelerate>=0.30
 # 4-bit 양자화: Qwen3-14B를 15GB GPU에 적재 (enable_thinking=False로 CoT 차단)
@@ -14,7 +20,8 @@ rank_bm25>=0.2.2
 kiwipiepy>=0.20
 
 # --- Data ---
-numpy>=1.24,<2.0
+# numpy는 Colab 사전 설치본(2.x) 사용. 1.x 강제 시 jax/opencv/torchvision 등이 깨짐.
+numpy>=1.24
 pandas>=2.0
 pyarrow>=14.0
 jsonlines>=4.0

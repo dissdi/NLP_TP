@@ -22,8 +22,13 @@ MODEL_QUERY_PREFIX = {
 
 @lru_cache(maxsize=2)
 def _load_model(model_id: str):
+    import os
     from sentence_transformers import SentenceTransformer
-    return SentenceTransformer(model_id)
+    # 평가 환경 Colab Free T4(15GB): Qwen3-14B 4-bit(~9GB) + bge-m3 동시 적재 시
+    # KV 캐시 자리가 부족해 OOM. 인코더는 query 1건만 처리하므로 CPU로 내려도
+    # 1-2초/쿼리 수준이라 무방. 강제 변경하려면 env로 override 가능.
+    device = os.environ.get("RAG_ENCODER_DEVICE", "cpu")
+    return SentenceTransformer(model_id, device=device)
 
 
 def encode_query(query: str, model_id: str = "BAAI/bge-m3") -> np.ndarray:

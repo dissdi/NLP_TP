@@ -63,6 +63,10 @@ def normalize_input(raw: Any) -> list[dict]:
 def load_model(model_dir: str, device: torch.device):
     """Load model from state_dict (model.bin) + config + tokenizer."""
     config = AutoConfig.from_pretrained(model_dir, num_labels=NUM_LABELS)
+    # 저장된 config가 torchscript=True / return_dict=None이라
+    # forward가 tuple을 반환해 .logits 접근이 깨진다. 강제 정상화.
+    config.torchscript = False
+    config.return_dict = True
     # base_model_name from label_map.json if present
     label_map_path = os.path.join(model_dir, "label_map.json")
     base_name = "klue/roberta-small"
@@ -96,8 +100,9 @@ def predict_batch(model, tokenizer, texts: list[str], device, max_len: int, batc
         enc = tokenizer(batch, truncation=True, max_length=max_len, padding=True, return_tensors="pt")
         ids = enc["input_ids"].to(device)
         mask = enc["attention_mask"].to(device)
-        out = model(input_ids=ids, attention_mask=mask)
-        preds.extend(out.logits.argmax(-1).cpu().tolist())
+        out = model(input_ids=ids, attention_mask=mask, return_dict=True)
+        logits = out.logits if hasattr(out, "logits") else out[0]
+        preds.extend(logits.argmax(-1).cpu().tolist())
     return preds
 
 
