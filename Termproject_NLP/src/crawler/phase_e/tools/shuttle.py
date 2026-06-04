@@ -82,13 +82,18 @@ class ShuttleTool:
         c = self._cache.get(key)
         if c and (now - c[0] < self._cache_ttl_s):
             return c[1]
-        try:
-            r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
-            r.encoding = "utf-8"
-            html = r.text
-        except Exception as e:
-            print("[shuttle] fetch " + key + " failed: " + str(e), flush=True)
-            html = ""
+        # Colab 네트워크에서 plus.cnu.ac.kr 8s 타임아웃 빈번. 20s + 1회 재시도.
+        html = ""
+        for attempt in range(2):
+            try:
+                r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                r.encoding = "utf-8"
+                html = r.text
+                break
+            except Exception as e:
+                print("[shuttle] fetch " + key + " try " + str(attempt + 1) + " failed: " + str(e), flush=True)
+                if attempt == 0:
+                    time.sleep(1.5)
         self._cache[key] = (now, html)
         return html
 

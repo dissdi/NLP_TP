@@ -111,13 +111,20 @@ class NoticeTool:
         c = self._cache.get(key)
         if c and (now - c[0] < self._cache_ttl_s):
             return c[1]
-        try:
-            r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
-            r.encoding = "utf-8"
-            html = r.text
-        except Exception as e:
-            print("[notice] fetch " + key + " failed: " + str(e), flush=True)
-            html = ""
+        # Colab 환경에서 plus.cnu.ac.kr 응답이 8s 안에 못 끝나는 경우 다수 관측 →
+        # RAG 폴백으로 빠지면 q005 같은 학사공지 질의에서 컨텍스트 폭증 + OOM.
+        # 타임아웃 20s + 1회 재시도(짧은 backoff)로 견고화.
+        html = ""
+        for attempt in range(2):
+            try:
+                r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                r.encoding = "utf-8"
+                html = r.text
+                break
+            except Exception as e:
+                print("[notice] fetch " + key + " try " + str(attempt + 1) + " failed: " + str(e), flush=True)
+                if attempt == 0:
+                    time.sleep(1.5)
         self._cache[key] = (now, html)
         return html
 

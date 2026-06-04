@@ -65,9 +65,18 @@ class CafeteriaTool:
         cached = self._cache.get("html")
         if cached and (now - cached[0] < self._cache_ttl_s):
             return cached[1]
-        r = requests.get(MENU_URL, timeout=8)
-        r.encoding = "utf-8"
-        html = r.text
+        # Colab 네트워크 8s 타임아웃 빈번. 20s + 1회 재시도.
+        html = ""
+        for attempt in range(2):
+            try:
+                r = requests.get(MENU_URL, timeout=20)
+                r.encoding = "utf-8"
+                html = r.text
+                break
+            except Exception as e:
+                print("[cafeteria] fetch try " + str(attempt + 1) + " failed: " + str(e), flush=True)
+                if attempt == 0:
+                    time.sleep(1.5)
         self._cache["html"] = (now, html)
         return html
 
