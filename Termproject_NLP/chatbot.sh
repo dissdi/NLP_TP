@@ -3,9 +3,9 @@
 #
 # 모드:
 #   bash chatbot.sh                # 인터랙티브 FastAPI 웹 UI (기본, http://localhost:7860)
-#   bash chatbot.sh --batch        # data/test_chat.json → outputs/chat_output.json
-#   bash chatbot.sh --realtime     # Task 3 optional: outputs/realtime_output.json
-#   bash chatbot.sh --classify     # Task 1 추론: data/test_cls.json → outputs/cls_output.json
+#   bash chatbot.sh --batch        # Task 2: data/test_chat.json → outputs/chat_output.json
+#   bash chatbot.sh --realtime     # Task 3 (optional): data/test_realtime.json → outputs/realtime_output.json
+#   bash chatbot.sh --classify     # Task 1: data/test_cls.json → outputs/cls_output.json
 #
 # UI 옵션:
 #   HOST=0.0.0.0 PORT=7860 bash chatbot.sh ui

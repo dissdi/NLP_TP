@@ -3,10 +3,12 @@
 UI는 FastAPI + 정적 HTML/JS(`app.py`)로 옮겨갔다. 본 파일은
 `bash chatbot.sh --batch` 진입점만 유지한다.
 
-Output schema (chat_output.json):
-  [{"id": "q001", "question": "...", "answer": "...",
-    "predicted_category": 0, "predicted_category_name": "졸업요건",
-    "sources": [...], "used_fallback": false}]
+가이드 PDF 확정 schema:
+  Input  (data/test_chat.json):     [{"user": "..."}, ...]
+  Output (outputs/chat_output.json): [{"user": "...", "model": "..."}, ...]
+
+--debug 옵션을 주면 풍부한 메타(predicted_category, sources 등)도
+outputs/chat_output.debug.json에 별도 저장한다. 기본 output은 가이드 spec 준수.
 """
 from __future__ import annotations
 
@@ -63,7 +65,14 @@ def _normalize_batch_input(raw: Any) -> list[dict]:
         for i, x in enumerate(raw):
             if isinstance(x, dict):
                 qid = x.get("id") or x.get("qa_id") or x.get("qid") or f"q{i:05d}"
-                text = x.get("question") or x.get("text") or x.get("query") or ""
+                # 가이드 spec은 "user" 키. 호환성 위해 question/text/query도 인식.
+                text = (
+                    x.get("user")
+                    or x.get("question")
+                    or x.get("text")
+                    or x.get("query")
+                    or ""
+                )
             elif isinstance(x, str):
                 qid, text = f"q{i:05d}", x
             else:
@@ -89,14 +98,18 @@ def _serialize_sources(sources: list[dict], k: int = 5) -> list[dict]:
     return out
 
 
-def run_batch(input_path: str, output_path: str, minimal: bool = False) -> None:
+def run_batch(input_path: str, output_path: str, debug: bool = False) -> None:
     pipe = get_pipeline()
     with open(input_path, "r", encoding="utf-8") as f:
         raw = json.load(f)
     items = _normalize_batch_input(raw)
     print(f"[chatbot_ui] batch {len(items)} items from {input_path}", flush=True)
 
-    results = []
+    # 가이드 spec 출력 (필수)
+    results: list[dict] = []
+    # 디버그용 풍부 메타 (옵션)
+    debug_results: list[dict] = []
+
     for i, it in enumerate(items, 1):
         q = it["text"]
         t0 = time.time()
@@ -116,13 +129,15 @@ def run_batch(input_path: str, output_path: str, minimal: bool = False) -> None:
         elapsed = time.time() - t0
         print(f"[chatbot_ui] [{i}/{len(items)}] {elapsed:.1f}s · {it['id']}",
               flush=True)
-        if minimal:
-            results.append({"id": it["id"], "answer": ans})
-        else:
-            results.append({
+
+        # 가이드 spec: {"user": "질문", "model": "답변"}
+        results.append({"user": q, "model": ans})
+
+        if debug:
+            debug_results.append({
                 "id": it["id"],
-                "question": q,
-                "answer": ans,
+                "user": q,
+                "model": ans,
                 "predicted_category": cat,
                 "predicted_category_name": cat_name,
                 "classifier_confidence": conf,
@@ -136,6 +151,14 @@ def run_batch(input_path: str, output_path: str, minimal: bool = False) -> None:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"[chatbot_ui] wrote {len(results)} answers → {output_path}", flush=True)
 
+    if debug:
+        debug_path = output_path.replace(".json", ".debug.json")
+        if debug_path == output_path:
+            debug_path = output_path + ".debug.json"
+        with open(debug_path, "w", encoding="utf-8") as f:
+            json.dump(debug_results, f, ensure_ascii=False, indent=2)
+        print(f"[chatbot_ui] wrote debug meta → {debug_path}", flush=True)
+
 
 # ----------------------------------------------------------------------
 # CLI
@@ -148,7 +171,8 @@ def parse_args():
                     help="batch mode (required — UI는 app.py로 이동)")
     ap.add_argument("--input", default=DEFAULT_BATCH_INPUT)
     ap.add_argument("--output", default=DEFAULT_BATCH_OUTPUT)
-    ap.add_argument("--minimal", action="store_true", help="batch: only {id, answer}")
+    ap.add_argument("--debug", action="store_true",
+                    help="batch: 풍부한 메타(predicted_category, sources 등)를 chat_output.debug.json에 추가 저장")
     return ap.parse_args()
 
 
@@ -162,4 +186,4 @@ if __name__ == "__main__":
             file=sys.stderr,
         )
         sys.exit(2)
-    run_batch(a.input, a.output, minimal=a.minimal)
+    run_batch(a.input, a.output, debug=a.debug)

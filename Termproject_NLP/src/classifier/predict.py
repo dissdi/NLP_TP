@@ -6,13 +6,12 @@ Input:
 Output:
   outputs/cls_output.json
 
-가이드라인의 정확한 schema 미공개. 다음 두 입력 형태를 모두 지원:
-  Form A (list):  [{"id": "q001", "question": "..."}, ...]
-  Form B (dict):  {"q001": "...", "q002": "..."}
-  Form C (list with `text`): [{"id": "...", "text": "..."}]
+가이드 PDF 확정 schema:
+  Input:  [{"question": "..."}, ...]
+  Output: [{"question": "...", "label": 0}, ...]   ← label은 int 0~4
 
-Output schema (현재 가정, 평가셋 공개 시 조정):
-  [{"id": "q001", "label": 0}, ...]
+방어적으로 변형 입력도 허용 (id/text/dict map 형태) — 평가셋이 정확히 위 형식이라도
+파이프라인 깨지지 않도록 normalize_input은 다양한 키 인식.
 """
 from __future__ import annotations
 
@@ -119,7 +118,8 @@ def run(input_path: str, output_path: str, model_dir: str) -> None:
     texts = [x["text"] for x in items]
     preds = predict_batch(model, tokenizer, texts, device, max_len)
 
-    out = [{"id": items[i]["id"], "label": int(preds[i])} for i in range(len(items))]
+    # 가이드 spec: [{"question": "...", "label": int}, ...]
+    out = [{"question": items[i]["text"], "label": int(preds[i])} for i in range(len(items))]
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
