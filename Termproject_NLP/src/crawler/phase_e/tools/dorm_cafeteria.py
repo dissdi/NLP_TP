@@ -39,6 +39,34 @@ class DormCafeteriaTool:
             return False
         return any(k in query for k in KEYWORDS)
 
+    # Chromium 바이너리 자동 설치 가드 — 프로세스 당 1회만 시도.
+    # requirements.txt의 `playwright`는 Python 패키지만 깔고 브라우저는 별도 다운로드 필요.
+    # 평가자가 따로 명령 안 쳐도 첫 호출 시 자동 install. 실패해도 graceful fallback.
+    _chromium_checked: bool = False
+
+    @classmethod
+    def _ensure_chromium(cls) -> None:
+        if cls._chromium_checked:
+            return
+        cls._chromium_checked = True
+        import os
+        # 마커 파일이 있으면 이미 설치됨 (재실행 빠르게).
+        marker = os.path.expanduser("~/.cache/ms-playwright/.cnu-installed")
+        if os.path.exists(marker):
+            return
+        import subprocess, sys
+        print("[dorm_cafeteria] installing Playwright Chromium (first run, ~150MB ~2min)…", flush=True)
+        try:
+            subprocess.run(
+                [sys.executable, "-m", "playwright", "install", "chromium"],
+                check=True, timeout=300,
+            )
+            os.makedirs(os.path.dirname(marker), exist_ok=True)
+            open(marker, "w").close()
+            print("[dorm_cafeteria] Chromium ready", flush=True)
+        except Exception as e:
+            print(f"[dorm_cafeteria] Chromium install failed ({e}) — falling back to corpus", flush=True)
+
     def _fetch_via_playwright(self) -> str:
         # cache
         now = time.time()
@@ -50,6 +78,8 @@ class DormCafeteriaTool:
         except ImportError:
             print("[dorm_cafeteria] playwright not installed", flush=True)
             return ""
+        # Chromium 자동 install (1회).
+        self._ensure_chromium()
         text = ""
         try:
             with sync_playwright() as p:

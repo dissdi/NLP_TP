@@ -27,6 +27,9 @@ export RAG_REPORT_DIR="${RAG_REPORT_DIR:-$HERE/assets/index/reports}"
 export CLS_MODEL_DIR="${CLS_MODEL_DIR:-$HERE/model}"
 export PYTHONPATH="$HERE/src:${PYTHONPATH:-}"
 
+# 기숙사 식당(Playwright Chromium) 자동 설치는 src/crawler/phase_e/tools/dorm_cafeteria.py에
+# 위임 — 실제 tool 첫 호출 시 한 번만 설치되며 다른 모드(분류기/UI/배치)에는 영향 없음.
+
 MODE="${1:-ui}"
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-7860}"
