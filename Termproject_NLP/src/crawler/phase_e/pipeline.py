@@ -15,6 +15,7 @@ from .retriever import HybridRetriever, build_default
 from .query_expand import expand_query
 from .tools import maybe_use_tool
 from .classifier_router import classify as _classify
+from .dept_rescue import rescue as _dept_rescue, detect_target_hosts as _dept_hosts
 
 
 @dataclass
@@ -70,8 +71,15 @@ class RAGPipeline:
             bm25_pool=bm25_pool,
             dense_pool=dense_pool,
         )
-        # Rerank with the ORIGINAL query so cross-encoder evaluates real intent
-        hits = rerank(query, pool, top_k=rerank_top_k)
+        # Rerank with the ORIGINAL query so cross-encoder evaluates real intent.
+        # Rerank the FULL pool so dept_rescue can swap in dept-domain chunks
+        # that were pushed past top_k by generic '졸업요건' chunks from other depts.
+        # Cost: extra sorting of ~30 already-scored pairs — negligible.
+        all_reranked = rerank(query, pool, top_k=len(pool))
+        # Dept-aware rescue: if query targets a specific dept (간호/전자/기계/
+        # 컴공/의예/약학/수학/통계/화공/물리 등) and top_k has no chunk from
+        # that dept's canonical host, promote the highest-reranked match.
+        hits = _dept_rescue(query, all_reranked, top_k=rerank_top_k)
         gen = generate_answer(
             query,
             hits,

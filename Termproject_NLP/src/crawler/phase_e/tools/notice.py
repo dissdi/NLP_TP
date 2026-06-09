@@ -38,6 +38,17 @@ ACADEMIC_TIME_KEYWORDS = [
 EXCLUDE = [
     "장학",  # 장학공지는 별도 라우팅 영역 (학생복지 페이지)
 ]
+# "공지" substring 오매칭 방지: 매칭 직전에 query에서 제거하는 토큰 목록.
+# "인공지능"이 들어간 학과/학부 쿼리(컴퓨터인공지능학부 등)가 NoticeTool로 잘못
+# 라우팅되는 버그 차단. 학과 졸업요건 RAG 경로로 빠져야 한다.
+SANITIZE_BEFORE_MATCH = ["인공지능", "공지능"]
+# 학과 졸업요건/전공 관련 쿼리는 정적 corpus(RAG)에서 답해야 함.
+# 이 키워드가 query에 있으면 NoticeTool 매칭을 비활성화한다.
+DEPT_GRAD_BLOCKERS = [
+    "졸업학점", "졸업요건", "졸업 요건", "졸업 학점",
+    "전공학점", "전공 학점", "전공필수", "전공 필수",
+    "트랙", "교육과정", "이수학점", "이수 학점",
+]
 
 # 학사일정 정적 fallback — 학기간 거의 안 바뀜.
 # 출처: plus.cnu.ac.kr/_prog/academic_calendar/?menu_dvs_cd=05020101 (Phase C 크롤링본)
@@ -91,17 +102,29 @@ class NoticeTool:
             return False
         if any(x in query for x in EXCLUDE):
             return False
-        if any(k in query for k in KEYWORDS):
+        # 학과 졸업요건/전공 쿼리는 NoticeTool에서 처리하면 안 됨 → RAG 경로 강제.
+        if any(b in query for b in DEPT_GRAD_BLOCKERS):
+            return False
+        # "공지" substring 오매칭 차단: "인공지능"에 들어있는 "공지" 때문에
+        # 컴퓨터인공지능학부 쿼리가 NoticeTool로 잘못 라우팅되는 버그 방지.
+        sanitized = query
+        for tok in SANITIZE_BEFORE_MATCH:
+            sanitized = sanitized.replace(tok, " ")
+        if any(k in sanitized for k in KEYWORDS):
             return True
-        if any(k in query for k in ACADEMIC_TIME_KEYWORDS) and \
-           any(c in query for c in ("언제", "기간", "일정", "며칠", "몇 일")):
+        if any(k in sanitized for k in ACADEMIC_TIME_KEYWORDS) and \
+           any(c in sanitized for c in ("언제", "기간", "일정", "며칠", "몇 일")):
             return True
         return False
 
     def _matched_academic_keyword(self, query: str) -> str:
-        """query에 들어 있는 ACADEMIC_TIME_KEYWORDS의 첫 매칭 반환."""
+        """query에 들어 있는 ACADEMIC_TIME_KEYWORDS의 첫 매칭 반환.
+        '인공지능' 등 SANITIZE 토큰은 매칭 전 제거 → fallback도 동일 기준."""
+        sanitized = query
+        for tok in SANITIZE_BEFORE_MATCH:
+            sanitized = sanitized.replace(tok, " ")
         for k in ACADEMIC_TIME_KEYWORDS:
-            if k in query:
+            if k in sanitized:
                 return k
         return ""
 
