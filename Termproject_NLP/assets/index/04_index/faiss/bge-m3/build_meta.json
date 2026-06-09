@@ -1,0 +1,14 @@
+{
+  "model_id": "BAAI/bge-m3",
+  "model_tag": "bge-m3",
+  "passage_prefix": "",
+  "tracks": [
+    {
+      "track": "general",
+      "n_chunks": 1265,
+      "dim": 1024,
+      "encode_seconds": 32.9
+    }
+  ],
+  "built_at": "2026-06-09T19:41:05Z"
+}

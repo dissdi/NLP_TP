@@ -1,0 +1,10 @@
+{
+  "model_id": "BAAI/bge-m3",
+  "model_tag": "bge-m3",
+  "track": "general",
+  "n_chunks": 1151,
+  "dim": 1024,
+  "device": "cuda:0",
+  "built_at": "2026-06-01T17:01:11Z",
+  "source": "assets/index/03_enriched/general/chunks.jsonl"
+}
