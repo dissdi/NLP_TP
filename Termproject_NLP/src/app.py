@@ -29,6 +29,10 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
 from crawler.phase_e.pipeline import RAGPipeline  # noqa: E402
+from crawler.phase_e.gpu_guard import apply_limit, log_peak, reset_peak  # noqa: E402
+
+# Apply GPU memory cap (e.g. Colab Free T4 = 15GB) ASAP — before any model load.
+apply_limit()
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -47,12 +51,14 @@ def get_pipeline() -> RAGPipeline:
             _PIPELINE = RAGPipeline()
             print(f"[app] retriever+reranker ready in {time.time()-t0:.1f}s",
                   flush=True)
+            log_peak("retriever+reranker loaded")
             try:
                 from crawler.phase_e.llm import chat as _chat
                 print("[app] warming up LLM…", flush=True)
                 t1 = time.time()
                 _ = _chat(user_msg="ping", max_new_tokens=4)
                 print(f"[app] LLM warmed up in {time.time()-t1:.1f}s", flush=True)
+                log_peak("LLM warmed up")
             except Exception as e:
                 print(f"[app] LLM warmup skipped: {e}", flush=True)
         except Exception as e:
@@ -115,10 +121,12 @@ def chat_endpoint(req: ChatRequest) -> ChatResponse:
     if not q:
         return ChatResponse(answer="", sources=[])
     t0 = time.time()
+    reset_peak()
     try:
         pipe = get_pipeline()
         r = pipe.answer(q)
         elapsed = time.time() - t0
+        log_peak(f"answer({q[:30]}…)")
         srcs = [
             SourceOut(
                 title=(s.get("title", "") or "")[:200],
