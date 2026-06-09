@@ -55,6 +55,9 @@ def generate_answer(
     if not reranked:
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=0.0, sources=[])
     top_score = float((reranked[0].meta or {}).get("_rerank_score", 0.0))
+    # dept_rescue가 promote한 chunk는 도메인 매칭이라는 deterministic 신호.
+    # cross-encoder가 점수를 낮게 줘도(예: 기계 me.cnu.ac.kr 0.13) fallback 우회.
+    dept_rescued = bool((reranked[0].meta or {}).get("_dept_rescued"))
     sources: list[dict] = []
     for c in reranked[:max_chunks]:
         m = c.meta or {}
@@ -64,7 +67,7 @@ def generate_answer(
             "source_url": (m.get("_canonical_url") or m.get("source_url") or "").strip(),
             "rerank_score": float(m.get("_rerank_score", 0.0)),
         })
-    if top_score < fallback_threshold:
+    if top_score < fallback_threshold and not dept_rescued:
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=top_score, sources=sources)
     context = _format_context(reranked, max_chunks=max_chunks)
     user_msg = _USER_TEMPLATE.format(query=query, context=context)
