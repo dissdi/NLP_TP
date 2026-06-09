@@ -1,0 +1,12 @@
+[
+  { "name": "[공과] 컴퓨터인공지능학부", "home": "https://computer.cnu.ac.kr/" },
+  { "name": "[의과] 의예·의학과", "home": "http://medicine.cnu.ac.kr/" },
+  { "name": "[약학] 약학과", "home": "http://pharm.cnu.ac.kr/" },
+  { "name": "[간호] 간호학과", "home": "http://nursing.cnu.ac.kr/" },
+  { "name": "[공과] 전자공학과", "home": "http://ee.cnu.ac.kr/" },
+  { "name": "[공과] 응용화학공학과", "home": "https://ceac.cnu.ac.kr/" },
+  { "name": "[공과] 기계공학부", "home": "http://me.cnu.ac.kr/" },
+  { "name": "[자연] 수학과", "home": "http://math.cnu.ac.kr/" },
+  { "name": "[자연] 정보통계학과", "home": "http://stat.cnu.ac.kr/" },
+  { "name": "[자연] 물리학과", "home": "http://physics.cnu.ac.kr/" }
+]
