@@ -1,0 +1,31 @@
+[
+  {
+    "name": "[공과] 기계공학부",
+    "home": "https://me.cnu.ac.kr/",
+    "direct_url": [
+      "https://me.cnu.ac.kr/me/edu/requirements.do",
+      "https://me.cnu.ac.kr/me/edu/curriculum.do",
+      "https://me.cnu.ac.kr/me/edu/graduation.do",
+      "https://me.cnu.ac.kr/me/undergrad/curriculum.do",
+      "https://me.cnu.ac.kr/me/undergrad/requirements.do",
+      "https://me.cnu.ac.kr/me/bachelor/curriculum.do",
+      "https://me.cnu.ac.kr/me/bachelor/requirements.do",
+      "https://me.cnu.ac.kr/me/data/grad.do",
+      "https://me.cnu.ac.kr/me/data/curri-bachelor.do"
+    ]
+  },
+  {
+    "name": "[자연] 물리학과",
+    "home": "https://physics.cnu.ac.kr/",
+    "direct_url": [
+      "https://physics.cnu.ac.kr/physics/edu/requirements.do",
+      "https://physics.cnu.ac.kr/physics/edu/curriculum.do",
+      "https://physics.cnu.ac.kr/physics/edu/graduation.do",
+      "https://physics.cnu.ac.kr/physics/undergrad/curriculum.do",
+      "https://physics.cnu.ac.kr/physics/undergrad/requirements.do",
+      "https://physics.cnu.ac.kr/physics/bachelor/curriculum.do",
+      "https://physics.cnu.ac.kr/physics/bachelor/curriculum-under.do",
+      "https://physics.cnu.ac.kr/physics/bachelor/requirements.do"
+    ]
+  }
+]
