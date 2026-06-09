@@ -41,9 +41,11 @@ class RAGPipeline:
         retrieve_top_k: int = 30,
         # Colab Free T4(15GB) 한계: 14B 4-bit + bge-m3 CPU + sdpa attention 조합
         # 이어도 컨텍스트 2500+ 토큰이면 RAG 풀패스에서 KV/attention 버퍼가 3GB+
-        # 요구 → OOM. 4/320으로 절단. D-1 평가셋 답 대부분 ≤200 토큰 이내라 영향 미미.
+        # 요구 → OOM. 4/320으로 절단했었음. 8B 4-bit + GPU_MEM_LIMIT_GB=15 측정 결과
+        # peak 9.4GB / 15GB → 5GB+ 여유 → 학식(5학생회관×3식 = ~450 토큰)이
+        # 잘리지 않도록 480으로 상향. 추가 KV 증가 ≈ +0.5GB로 안전 마진 유지.
         rerank_top_k: int = 4,
-        max_new_tokens: int = 320,
+        max_new_tokens: int = 480,
         enable_expand: bool = False,
     ) -> AnswerResult:
         # 0) Classifier (meta-only: surface category in response; no retrieval gating)
