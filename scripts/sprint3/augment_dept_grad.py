@@ -237,8 +237,9 @@ def build_bm25(enriched_rows: list[dict]) -> None:
         if os.path.exists(p):
             backup(p)
 
+    # NOTE: loader 가 d["bm25"] / d["chunk_ids"] 로 읽음. dict로 wrap 필수.
     with open(pkl, "wb") as f:
-        pickle.dump(bm25, f)
+        pickle.dump({"bm25": bm25, "chunk_ids": chunk_ids}, f)
     with open(ids_path, "w", encoding="utf-8") as f:
         json.dump(chunk_ids, f, ensure_ascii=False)
     with open(tok_path, "w", encoding="utf-8") as f:
