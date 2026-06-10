@@ -40,7 +40,14 @@ def chat(
     load_in_4bit: bool = DEFAULT_4BIT,
     max_new_tokens: int = 256,
     temperature: float = 0.0,
-) -> str:
+    return_meta: bool = False,
+):
+    """Generate a chat response.
+
+    If return_meta=False (default, backward-compatible): returns the text string.
+    If return_meta=True: returns (text, eos_reached: bool) — eos_reached is False
+    when generation hit max_new_tokens without emitting eos_token (i.e. truncated).
+    """
     import torch
     tok, model = _load(model_id, load_in_4bit)
     messages = []
@@ -62,7 +69,14 @@ def chat(
         )
     gen_tokens = out[0][inputs["input_ids"].shape[1]:]
     text = tok.decode(gen_tokens, skip_special_tokens=True)
+    # EOS-reached check: last generated token equals eos_token_id.
+    # When False, generation hit max_new_tokens — answer likely truncated.
+    eos_id = tok.eos_token_id
+    eos_reached = bool(gen_tokens.numel() > 0 and int(gen_tokens[-1].item()) == eos_id)
     # Free KV cache + intermediate tensors so peak doesn't accumulate across calls
     del inputs, out, gen_tokens
     torch.cuda.empty_cache()
-    return text.strip()
+    text = text.strip()
+    if return_meta:
+        return text, eos_reached
+    return text

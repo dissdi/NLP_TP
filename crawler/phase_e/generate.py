@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,6 +10,50 @@ from .llm import DEFAULT_4BIT, DEFAULT_LLM, chat
 
 _PROMPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts")
 RERANK_FALLBACK_THRESHOLD = 0.15
+
+# --- Truncation handling -----------------------------------------------------
+# When the LLM hits max_new_tokens without emitting EOS, the answer is cut mid-
+# sentence. We detect this (EOS missing OR final token isn't a sentence-ender),
+# trim to the last complete sentence, and append a notice pointing users to
+# the sources panel for the omitted detail.
+
+TRUNCATION_NOTICE = " (자세한 사항은 위 출처를 참고하세요.)"
+# Match Korean and ASCII sentence terminators; require non-letter after to
+# avoid false hits inside numbers like "1.75".
+_SENT_END_RE = re.compile(r"(다\.|요\.|니다\.|습니다\.|까\?|[.?!])(?=\s|$|[\"')\]])")
+_TAIL_TERMINATORS = (
+    "다.", "요.", "니다.", "습니다.", "까?", ".", "?", "!",
+    ".)", ".\"", "요.)", "다.)",
+)
+
+
+def _looks_finished(text: str) -> bool:
+    return text.rstrip().endswith(_TAIL_TERMINATORS)
+
+
+def _truncate_at_last_sentence(text: str) -> str:
+    """Return text trimmed to the last complete sentence terminator.
+
+    If no terminator is found, returns the stripped original (the notice
+    still gets appended by the caller so the user knows it was incomplete).
+    """
+    matches = list(_SENT_END_RE.finditer(text))
+    if not matches:
+        return text.rstrip()
+    return text[: matches[-1].end()].rstrip()
+
+
+def _apply_truncation_notice(text: str, eos_reached: bool) -> str:
+    """Trim + append notice if the answer appears truncated.
+
+    Truncated = (EOS not emitted) OR (EOS emitted but tail is not a terminator).
+    """
+    if eos_reached and _looks_finished(text):
+        return text
+    trimmed = _truncate_at_last_sentence(text)
+    if TRUNCATION_NOTICE.strip() in trimmed:
+        return trimmed
+    return trimmed + TRUNCATION_NOTICE
 
 
 def _load_prompt(name: str) -> str:
@@ -68,12 +113,14 @@ def generate_answer(
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=top_score, sources=sources)
     context = _format_context(reranked, max_chunks=max_chunks)
     user_msg = _USER_TEMPLATE.format(query=query, context=context)
-    answer = chat(
+    answer, eos_reached = chat(
         user_msg=user_msg,
         system_msg=_ANSWER_SYS,
         model_id=model_id,
         load_in_4bit=load_in_4bit,
         max_new_tokens=max_new_tokens,
         temperature=0.0,
+        return_meta=True,
     )
-    return GenerationResult(answer=answer.strip(), used_fallback=False, top_rerank_score=top_score, sources=sources)
+    answer = _apply_truncation_notice(answer.strip(), eos_reached)
+    return GenerationResult(answer=answer, used_fallback=False, top_rerank_score=top_score, sources=sources)
