@@ -8,7 +8,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Optional
 
-DEFAULT_LLM = "Qwen/Qwen3-14B"
+DEFAULT_LLM = "Qwen/Qwen3-8B"
 DEFAULT_4BIT = True
 
 
