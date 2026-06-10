@@ -93,7 +93,7 @@ def generate_answer(
     reranked: list,
     fallback_threshold: float = RERANK_FALLBACK_THRESHOLD,
     max_chunks: int = 8,
-    max_new_tokens: int = 512,
+    max_new_tokens: int = 768,
     model_id: str = DEFAULT_LLM,
     load_in_4bit: bool = DEFAULT_4BIT,
 ) -> GenerationResult:
@@ -113,14 +113,13 @@ def generate_answer(
         return GenerationResult(answer=FALLBACK_MSG, used_fallback=True, top_rerank_score=top_score, sources=sources)
     context = _format_context(reranked, max_chunks=max_chunks)
     user_msg = _USER_TEMPLATE.format(query=query, context=context)
-    answer, eos_reached = chat(
+    # truncation-notice 후처리는 false positive가 많아 비활성화 (helpers는 남겨둠).
+    answer = chat(
         user_msg=user_msg,
         system_msg=_ANSWER_SYS,
         model_id=model_id,
         load_in_4bit=load_in_4bit,
         max_new_tokens=max_new_tokens,
         temperature=0.0,
-        return_meta=True,
     )
-    answer = _apply_truncation_notice(answer.strip(), eos_reached)
-    return GenerationResult(answer=answer, used_fallback=False, top_rerank_score=top_score, sources=sources)
+    return GenerationResult(answer=answer.strip(), used_fallback=False, top_rerank_score=top_score, sources=sources)

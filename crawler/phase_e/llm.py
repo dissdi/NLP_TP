@@ -69,10 +69,32 @@ def chat(
         )
     gen_tokens = out[0][inputs["input_ids"].shape[1]:]
     text = tok.decode(gen_tokens, skip_special_tokens=True)
-    # EOS-reached check: last generated token equals eos_token_id.
-    # When False, generation hit max_new_tokens — answer likely truncated.
-    eos_id = tok.eos_token_id
-    eos_reached = bool(gen_tokens.numel() > 0 and int(gen_tokens[-1].item()) == eos_id)
+    # EOS-reached check: last generated token is any registered stop token.
+    # Qwen3 has multiple EOS ids (<|im_end|>=151645, <|endoftext|>=151643),
+    # so we collect every candidate from tokenizer + model config + generation
+    # config. Length-cap stops (max_new_tokens) leave a non-EOS final token.
+    eos_ids: set[int] = set()
+
+    def _collect(v):
+        if v is None:
+            return
+        if isinstance(v, int):
+            eos_ids.add(v)
+        else:
+            try:
+                for x in v:
+                    if isinstance(x, int):
+                        eos_ids.add(x)
+            except TypeError:
+                pass
+
+    _collect(getattr(tok, "eos_token_id", None))
+    _collect(getattr(model.config, "eos_token_id", None))
+    gen_cfg = getattr(model, "generation_config", None)
+    if gen_cfg is not None:
+        _collect(getattr(gen_cfg, "eos_token_id", None))
+    last_id = int(gen_tokens[-1].item()) if gen_tokens.numel() > 0 else -1
+    eos_reached = last_id in eos_ids
     # Free KV cache + intermediate tensors so peak doesn't accumulate across calls
     del inputs, out, gen_tokens
     torch.cuda.empty_cache()
