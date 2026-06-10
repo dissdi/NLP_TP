@@ -38,9 +38,9 @@ from datetime import datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 RAW = os.path.join(ROOT, "data", "sprint3", "dept_grad_10", "chunks_raw.jsonl")
-ENRICHED = os.path.join(ROOT, "Termproject_NLP", "assets", "index", "03_enriched", "general", "chunks.jsonl")
-META = os.path.join(ROOT, "Termproject_NLP", "assets", "index", "04_index", "meta", "chunks.jsonl")
-BM25_DIR = os.path.join(ROOT, "Termproject_NLP", "assets", "index", "04_index", "bm25", "general")
+ENRICHED = os.path.join(ROOT, "Termproject_손동인", "assets", "index", "03_enriched", "general", "chunks.jsonl")
+META = os.path.join(ROOT, "Termproject_손동인", "assets", "index", "04_index", "meta", "chunks.jsonl")
+BM25_DIR = os.path.join(ROOT, "Termproject_손동인", "assets", "index", "04_index", "bm25", "general")
 
 MAX_CHARS = 2000
 WINDOW_CHARS = 1500

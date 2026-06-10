@@ -3,29 +3,26 @@
     "name": "[공과] 기계공학부",
     "home": "https://me.cnu.ac.kr/",
     "direct_url": [
-      "https://me.cnu.ac.kr/me/edu/requirements.do",
-      "https://me.cnu.ac.kr/me/edu/curriculum.do",
-      "https://me.cnu.ac.kr/me/edu/graduation.do",
-      "https://me.cnu.ac.kr/me/undergrad/curriculum.do",
-      "https://me.cnu.ac.kr/me/undergrad/requirements.do",
-      "https://me.cnu.ac.kr/me/bachelor/curriculum.do",
-      "https://me.cnu.ac.kr/me/bachelor/requirements.do",
+      "https://me.cnu.ac.kr/me/under/completion.do",
+      "https://me.cnu.ac.kr/me/under/goal.do",
+      "https://me.cnu.ac.kr/me/data/curri.do",
+      "https://me.cnu.ac.kr/me/under/curri.do",
+      "https://me.cnu.ac.kr/me/under/grad.do",
+      "https://me.cnu.ac.kr/me/under/notice.do",
+      "https://me.cnu.ac.kr/me/under/intro.do",
       "https://me.cnu.ac.kr/me/data/grad.do",
-      "https://me.cnu.ac.kr/me/data/curri-bachelor.do"
+      "https://me.cnu.ac.kr/me/data/grad01.do",
+      "https://me.cnu.ac.kr/me/data/info.do"
     ]
   },
   {
     "name": "[자연] 물리학과",
     "home": "https://physics.cnu.ac.kr/",
     "direct_url": [
-      "https://physics.cnu.ac.kr/physics/edu/requirements.do",
-      "https://physics.cnu.ac.kr/physics/edu/curriculum.do",
-      "https://physics.cnu.ac.kr/physics/edu/graduation.do",
-      "https://physics.cnu.ac.kr/physics/undergrad/curriculum.do",
-      "https://physics.cnu.ac.kr/physics/undergrad/requirements.do",
-      "https://physics.cnu.ac.kr/physics/bachelor/curriculum.do",
-      "https://physics.cnu.ac.kr/physics/bachelor/curriculum-under.do",
-      "https://physics.cnu.ac.kr/physics/bachelor/requirements.do"
+      "https://physics.cnu.ac.kr/_custom/cnu/_app/curriculum.do?siteId=physics",
+      "https://physics.cnu.ac.kr/physics/intro/curriculum.do",
+      "https://physics.cnu.ac.kr/physics/intro/intro.do",
+      "https://physics.cnu.ac.kr/physics/intro/plan.do"
     ]
   }
 ]

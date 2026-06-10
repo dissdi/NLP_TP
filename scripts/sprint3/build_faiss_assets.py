@@ -1,15 +1,15 @@
-"""Termproject_NLP/assets/index/ 경로로 FAISS bge-m3 인덱스 빌드.
+"""Termproject_손동인/assets/index/ 경로로 FAISS bge-m3 인덱스 빌드.
 
 기존 phase_c.index_faiss는 data/phase_c/03_enriched 를 보지만,
-실제 운영 corpus는 Termproject_NLP/assets/index 로 옮겨졌으므로 경로만 갈아끼운 빌더.
+실제 운영 corpus는 Termproject_손동인/assets/index 로 옮겨졌으므로 경로만 갈아끼운 빌더.
 
 사용 (랩실 GPU):
   pip install sentence-transformers faiss-cpu  # 또는 faiss-gpu
   python -m scripts.sprint3.build_faiss_assets
 
 출력:
-  Termproject_NLP/assets/index/04_index/faiss/bge-m3/general/{index.faiss, chunk_ids.json, embeddings.npy}
-  Termproject_NLP/assets/index/04_index/faiss/bge-m3/build_meta.json
+  Termproject_손동인/assets/index/04_index/faiss/bge-m3/general/{index.faiss, chunk_ids.json, embeddings.npy}
+  Termproject_손동인/assets/index/04_index/faiss/bge-m3/build_meta.json
 """
 from __future__ import annotations
 
@@ -20,8 +20,8 @@ import time
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-IN_DIR = os.path.join(ROOT, "Termproject_NLP", "assets", "index", "03_enriched")
-OUT_DIR = os.path.join(ROOT, "Termproject_NLP", "assets", "index", "04_index", "faiss")
+IN_DIR = os.path.join(ROOT, "Termproject_손동인", "assets", "index", "03_enriched")
+OUT_DIR = os.path.join(ROOT, "Termproject_손동인", "assets", "index", "04_index", "faiss")
 
 MODEL_ID = "BAAI/bge-m3"
 MODEL_TAG = "bge-m3"

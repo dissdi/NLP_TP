@@ -36,8 +36,8 @@ python -m scripts.sprint3.augment_dept_grad_me_phy --no-bm25
 ```
 
 산출 (덮어쓰기 + .bak 백업):
-- `Termproject_NLP/assets/index/03_enriched/general/chunks.jsonl`
-- `Termproject_NLP/assets/index/04_index/meta/chunks.jsonl`
+- `Termproject_손동인/assets/index/03_enriched/general/chunks.jsonl`
+- `Termproject_손동인/assets/index/04_index/meta/chunks.jsonl`
 
 확인 포인트:
 - `me.cnu.ac.kr chunks: X -> Y` (Y > X 여야 함)
@@ -55,9 +55,9 @@ python -m scripts.sprint3.augment_dept_grad_me_phy
 옵션 B: 따로 돌리고 싶을 때 — augment 의 `build_bm25(final_enr)` 가 재실행되도록 dry-run 결과 보고 결정. 보통 옵션 A 권장. ≈ 20초.
 
 산출 (덮어쓰기 + .bak 백업):
-- `Termproject_NLP/assets/index/04_index/bm25/general/bm25.pkl`
-- `Termproject_NLP/assets/index/04_index/bm25/general/chunk_ids.json`
-- `Termproject_NLP/assets/index/04_index/bm25/general/tokens.jsonl`
+- `Termproject_손동인/assets/index/04_index/bm25/general/bm25.pkl`
+- `Termproject_손동인/assets/index/04_index/bm25/general/chunk_ids.json`
+- `Termproject_손동인/assets/index/04_index/bm25/general/tokens.jsonl`
 
 ---
 
@@ -70,7 +70,7 @@ python -m scripts.sprint3.build_faiss_assets
 ```
 
 산출 (덮어쓰기):
-- `Termproject_NLP/assets/index/04_index/faiss/general/index.faiss`
+- `Termproject_손동인/assets/index/04_index/faiss/general/index.faiss`
 - 동반 메타파일
 
 ---
