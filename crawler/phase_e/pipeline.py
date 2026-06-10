@@ -39,7 +39,7 @@ class RAGPipeline:
         dense_pool: int = 50,
         retrieve_top_k: int = 30,
         rerank_top_k: int = 8,
-        max_new_tokens: int = 768,
+        max_new_tokens: int = 640,
         enable_expand: bool = False,
     ) -> AnswerResult:
         # 0) Classifier (meta-only: surface category in response; no retrieval gating)

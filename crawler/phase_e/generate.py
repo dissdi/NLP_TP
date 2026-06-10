@@ -93,7 +93,7 @@ def generate_answer(
     reranked: list,
     fallback_threshold: float = RERANK_FALLBACK_THRESHOLD,
     max_chunks: int = 8,
-    max_new_tokens: int = 768,
+    max_new_tokens: int = 640,
     model_id: str = DEFAULT_LLM,
     load_in_4bit: bool = DEFAULT_4BIT,
 ) -> GenerationResult:
