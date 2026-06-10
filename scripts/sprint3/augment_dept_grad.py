@@ -13,9 +13,9 @@
   7) BM25 재빌드 (kiwipiepy)
 
 출력:
-  Termproject_NLP/assets/index/03_enriched/general/chunks.jsonl  (덮어쓰기)
-  Termproject_NLP/assets/index/04_index/meta/chunks.jsonl        (덮어쓰기)
-  Termproject_NLP/assets/index/04_index/bm25/general/{bm25.pkl, chunk_ids.json, tokens.jsonl}
+  Termproject_손동인/assets/index/03_enriched/general/chunks.jsonl  (덮어쓰기)
+  Termproject_손동인/assets/index/04_index/meta/chunks.jsonl        (덮어쓰기)
+  Termproject_손동인/assets/index/04_index/bm25/general/{bm25.pkl, chunk_ids.json, tokens.jsonl}
   .bak.YYYYMMDD-HHMM 백업 동시 생성
 
 사용:
