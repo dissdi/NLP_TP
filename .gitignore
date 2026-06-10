@@ -32,9 +32,17 @@ notebooks/.ipynb_checkpoints/
 
 # 로그
 logs/sprint0/*.log
-"Termproject_NLP/model/*.bin" 
-"Termproject_NLP/outputs/" 
-"Termproject_NLP/model/*.bin" 
-"Termproject_NLP/outputs/" 
-Termproject_NLP/model/*.bin 
-Termproject_NLP/outputs/ 
+"Termproject_손동인/model/*.bin" 
+"Termproject_손동인/outputs/" 
+"Termproject_손동인/model/*.bin" 
+"Termproject_손동인/outputs/" 
+Termproject_손동인/model/*.bin 
+Termproject_손동인/outputs/ 
+
+# Submission folder (zipped for upload)
+Termproject_손동인/
+
+# Runtime artifacts
+.gradio/
+logs/
+eval/results/
